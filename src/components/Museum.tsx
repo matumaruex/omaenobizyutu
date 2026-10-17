@@ -12,15 +12,13 @@ import {
 } from "lucide-react";
 import { collection } from "@/lib/collection";
 import type { Exhibit, Exhibition } from "@/lib/types";
-import type { Motion } from "./Room";
 import ArtworkView from "./ArtworkView";
 import Dialog from "./Dialog";
-import Joystick from "./Joystick";
 const Room = dynamic(() => import("./Room"), {
   ssr: false,
   loading: () => (
     <div className="room-loading">
-      白い展示室を準備しています
+      空間を準備しています
       <span className="loading-line" />
     </div>
   ),
@@ -62,7 +60,6 @@ export default function Museum() {
     [reducedMotion, setReducedMotion] = useState(false),
     [webglError, setWebglError] = useState(false);
   const [roomVisit, setRoomVisit] = useState(0);
-  const joystick = useRef<Motion>({ x: 0, y: 0 });
   const abort = useRef<AbortController | null>(null),
     pendingImages = useRef<HTMLImageElement[]>([]);
   const mounted = useRef(true);
@@ -248,7 +245,6 @@ export default function Museum() {
               active={active}
               reducedMotion={reducedMotion}
               lowQuality={lowQuality}
-              joystick={joystick}
               onSelect={select}
               key={roomVisit}
             />
@@ -266,7 +262,7 @@ export default function Museum() {
         <section className="entrance" aria-labelledby="entrance-heading">
           <h1 id="entrance-heading">余白の美術館</h1>
           <button className="entrance-button" onClick={() => setEntered(true)}>
-            部屋に入る <ArrowRight size={16} />
+            空間に入る <ArrowRight size={16} />
           </button>
           <div className="entrance-tools">
             <button
@@ -295,7 +291,7 @@ export default function Museum() {
       {entered && (
         <>
           <button className="leave-room" onClick={leaveRoom}>
-            部屋から出る
+            空間から出る
           </button>
           {formOpen && (
             <section className="feeling-panel" aria-label="気持ちを入力">
@@ -303,7 +299,7 @@ export default function Museum() {
                 <button
                   className="icon-button form-close"
                   onClick={() => setFormOpen(false)}
-                  aria-label={exhibition ? "展示に戻る" : "部屋を見回す"}
+                  aria-label={exhibition ? "展示に戻る" : "空間を見回す"}
                 >
                   <X size={16} />
                 </button>
@@ -406,7 +402,6 @@ export default function Museum() {
                   気持ちを教える
                 </button>
               </div>
-              {active && !webglError && <Joystick motion={joystick} />}
               {error && (
                 <div className="toast" role="status">
                   {error}
@@ -440,19 +435,19 @@ export default function Museum() {
             <div>
               <h3>気持ちを、ことばに。</h3>
               <p>
-                短くても、まとまらなくても。今の気持ちを書くと、実在する絵画が白い壁に現れます。
+                短くても、まとまらなくても。今の気持ちを書くと、実在する絵画が周囲や上下に浮かび上がります。
               </p>
             </div>
           </div>
           <div className="guide-step">
             <span>02</span>
             <div>
-              <h3>自由に、歩く。</h3>
+              <h3>ゆっくり、見回す。</h3>
               <p>
-                PCはWASD・矢印キーで移動。ドラッグ、または画面クリック後のマウスで視点を変更。ESCでマウスを解除します。
+                歩く操作はありません。PCはドラッグ、スマホはスワイプで、左右も上下も見回せます。PCの矢印キーでも視点を動かせます。
               </p>
               <p>
-                スマホは左下のスティックで移動し、空間をスワイプして見回せます。視点は、ドラッグ・スワイプ・マウスの上下左右と逆向きに動きます。
+                ドラッグ・スワイプの上下左右と逆向きに視点が動きます。絵をクリック・タップすると、大きく鑑賞できます。
               </p>
             </div>
           </div>

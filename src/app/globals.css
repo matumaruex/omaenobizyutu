@@ -664,7 +664,12 @@ svg {
   justify-content: center;
   flex-direction: column;
   gap: 38px;
-  background: #fafbf8f5;
+  background: radial-gradient(
+    ellipse at 65% 20%,
+    #fff9f1,
+    #efedf6 60%,
+    #e3eae8
+  );
 }
 .entrance h1 {
   font-family: var(--serif);
@@ -758,34 +763,13 @@ svg {
 }
 .room-actions {
   position: absolute;
-  right: max(28px, env(safe-area-inset-right));
-  bottom: max(40px, env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: max(32px, env(safe-area-inset-bottom));
 }
 .room-actions .pill-button {
   padding: 13px 20px;
   font-size: 11px;
-}
-.joystick {
-  position: absolute;
-  bottom: max(32px, env(safe-area-inset-bottom));
-  left: max(28px, env(safe-area-inset-left));
-  width: 90px;
-  height: 90px;
-  border: 1px solid #acb99bc0;
-  border-radius: 50%;
-  background: #f7faf09c;
-  display: grid;
-  place-items: center;
-  touch-action: none;
-  user-select: none;
-}
-.joystick-thumb {
-  width: 34px;
-  height: 34px;
-  background: #a8b99678;
-  border: 1px solid #96aa82aa;
-  border-radius: 50%;
-  pointer-events: none;
 }
 .artwork-list-button {
   margin-top: 14px;

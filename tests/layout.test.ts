@@ -1,32 +1,34 @@
 import { describe, it, expect } from "vitest";
-import {
-  exhibitionSlots,
-  paintingSize,
-  constrainPosition,
-} from "../src/lib/layout";
+import { Euler, Vector3 } from "three";
+import { exhibitionSlots, paintingSize, SPHERE } from "../src/lib/layout";
 import { collection } from "../src/lib/collection";
-describe("variable exhibition architecture", () => {
+describe("spherical exhibition", () => {
   for (let count = 4; count <= 12; count++)
-    it(`${count} works have distinct, bounded wall intervals`, () => {
+    it(`${count} works surround the viewer, face inward and do not overlap`, () => {
       const slots = exhibitionSlots(count);
       expect(slots).toHaveLength(count);
-      expect(new Set(slots.map((s) => s.position.join(","))).size).toBe(count);
+      expect(slots[0].position).toEqual([0, 0, -SPHERE.radius]);
+      expect(slots.some((s) => s.position[1] > 3)).toBe(true);
+      expect(slots.some((s) => s.position[1] < -3)).toBe(true);
+      expect(slots.some((s) => s.position[2] > 0)).toBe(true);
+      const cap = Math.atan(Math.hypot(2.8, 2.4) / 2 / SPHERE.radius);
       for (const slot of slots) {
-        expect(
-          Math.max(Math.abs(slot.position[0]), Math.abs(slot.position[2])),
-        ).toBe(9.85);
-        expect(slot.position[1]).toBe(2.2);
+        const position = new Vector3(...slot.position);
+        expect(position.length()).toBeCloseTo(SPHERE.radius);
+        const front = new Vector3(0, 0, 1).applyEuler(
+          new Euler(...slot.rotation, "YXZ"),
+        );
+        expect(front.dot(position.normalize().negate())).toBeCloseTo(1);
       }
-      for (let i = 0; i < slots.length; i++)
-        for (let j = i + 1; j < slots.length; j++)
+      for (let i = 0; i < count; i++)
+        for (let j = i + 1; j < count; j++)
           expect(
-            Math.hypot(
-              slots[i].position[0] - slots[j].position[0],
-              slots[i].position[2] - slots[j].position[2],
+            new Vector3(...slots[i].position).angleTo(
+              new Vector3(...slots[j].position),
             ),
-          ).toBeGreaterThan(4);
+          ).toBeGreaterThan(cap * 2);
     });
-  it("preserves portrait, square and landscape ratios within the frame bounds", () => {
+  it("preserves portrait, square and landscape ratios within the image bounds", () => {
     for (const [width, height] of [
       [1, 4],
       [1, 1],
@@ -39,8 +41,9 @@ describe("variable exhibition architecture", () => {
       expect(size.height).toBeLessThanOrEqual(2.40001);
     }
   });
-  it("stops the camera before the wall", () => {
-    expect(constrainPosition(500, -500)).toEqual([9.55, -9.55]);
-    expect(constrainPosition(0, 3)).toEqual([0, 3]);
+  it("keeps an empty sky empty and rejects unsupported counts", () => {
+    expect(exhibitionSlots(0)).toEqual([]);
+    for (const count of [-1, 13, 4.5])
+      expect(() => exhibitionSlots(count)).toThrow();
   });
 });
