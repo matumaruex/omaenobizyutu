@@ -16,7 +16,7 @@ test("downloaded HTML opens offline and creates an exhibition", async ({
   await page.getByRole("button", { name: "気持ちを教える" }).click();
   await expect(page.locator("canvas")).toBeVisible();
   await expect(
-    page.locator('[aria-label="球状の3D空間、展示作品0点"]'),
+    page.locator('[aria-label="霧の中の絵の空間、展示作品0点"]'),
   ).toBeVisible();
   await page.getByLabel("今の気持ちを教えてください").fill("明日が楽しみ");
   await page.getByRole("button", { name: "展示する" }).click();

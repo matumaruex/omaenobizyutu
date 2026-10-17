@@ -83,6 +83,10 @@ svg {
 }
 .room-canvas {
   touch-action: none;
+  cursor: grab;
+}
+.room-canvas:active {
+  cursor: grabbing;
 }
 .room-loading {
   position: absolute;

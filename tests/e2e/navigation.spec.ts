@@ -1,51 +1,64 @@
 import { test, expect, type Page } from "@playwright/test";
+import { PerspectiveCamera, Vector3 } from "three";
 import { collection } from "../../src/lib/collection";
-// The same gesture angles are applied through real mouse or touch events.
-async function look(
-  page: Page,
-  mobile: boolean,
-  degreesX: number,
-  degreesY: number,
-) {
+import { exhibitionSlots, fieldOverview, FIELD } from "../../src/lib/layout";
+async function drag(page: Page, mobile: boolean, dx: number, dy: number) {
   const box = (await page.locator("canvas").boundingBox())!;
-  const dx = (degreesX * Math.PI) / 180 / 0.0024,
-    dy = (degreesY * Math.PI) / 180 / 0.0024;
-  const steps = Math.ceil(
-    Math.max(
-      Math.abs(dx) / (box.width * 0.45),
-      Math.abs(dy) / (box.height * 0.4),
-    ),
-  );
-  const touch = mobile ? await page.context().newCDPSession(page) : null;
-  for (let i = 0; i < steps; i++) {
-    const start = {
-      x: box.width * 0.5 - dx / steps / 2,
-      y: box.height * 0.45 - dy / steps / 2,
-    };
-    const end = { x: start.x + dx / steps, y: start.y + dy / steps };
-    if (touch) {
-      await touch.send("Input.dispatchTouchEvent", {
-        type: "touchStart",
-        touchPoints: [start],
-      });
-      await touch.send("Input.dispatchTouchEvent", {
-        type: "touchMove",
-        touchPoints: [end],
-      });
-      await touch.send("Input.dispatchTouchEvent", {
-        type: "touchEnd",
-        touchPoints: [],
-      });
-    } else {
-      await page.mouse.move(start.x, start.y);
-      await page.mouse.down();
-      await page.mouse.move(end.x, end.y, { steps: 6 });
-      await page.mouse.up();
-    }
+  const start = { x: box.width * 0.5 - dx / 2, y: box.height * 0.45 - dy / 2 };
+  const end = { x: start.x + dx, y: start.y + dy };
+  if (mobile) {
+    const touch = await page.context().newCDPSession(page);
+    await touch.send("Input.dispatchTouchEvent", {
+      type: "touchStart",
+      touchPoints: [{ ...start, id: 1 }],
+    });
+    await touch.send("Input.dispatchTouchEvent", {
+      type: "touchMove",
+      touchPoints: [{ ...end, id: 1 }],
+    });
+    await touch.send("Input.dispatchTouchEvent", {
+      type: "touchEnd",
+      touchPoints: [],
+    });
+    await touch.detach();
+  } else {
+    await page.mouse.move(start.x, start.y);
+    await page.mouse.down();
+    await page.mouse.move(end.x, end.y, { steps: 6 });
+    await page.mouse.up();
   }
-  await touch?.detach();
 }
-test("fixed viewpoint, upper and lower paintings, and view restoration", async ({
+async function zoom(page: Page, mobile: boolean, inward: boolean) {
+  const box = (await page.locator("canvas").boundingBox())!;
+  const x = box.width / 2,
+    y = box.height / 2;
+  if (mobile) {
+    const touch = await page.context().newCDPSession(page);
+    const points = (d: number) => [
+      { x: x - d, y, id: 1 },
+      { x: x + d, y, id: 2 },
+    ];
+    await touch.send("Input.dispatchTouchEvent", {
+      type: "touchStart",
+      touchPoints: points(inward ? 40 : 80),
+    });
+    await touch.send("Input.dispatchTouchEvent", {
+      type: "touchMove",
+      touchPoints: points(inward ? 80 : 40),
+    });
+    await touch.send("Input.dispatchTouchEvent", {
+      type: "touchEnd",
+      touchPoints: [],
+    });
+    await touch.detach();
+  } else {
+    await page.mouse.move(x, y);
+    await page.mouse.wheel(0, inward ? -100 : 100);
+    await page.mouse.wheel(0, inward ? -100 : 100);
+  }
+  await page.waitForTimeout(150);
+}
+test("free choice from overview, pinch or wheel zoom, panning and view retention", async ({
   page,
 }, testInfo) => {
   test.setTimeout(60000);
@@ -64,19 +77,31 @@ test("fixed viewpoint, upper and lower paintings, and view restoration", async (
   await expect(
     page.getByRole("button", { name: "気持ちを教える" }),
   ).toBeVisible();
-  const canvas = page.locator("canvas");
+  const canvas = page.locator("canvas"),
+    box = (await canvas.boundingBox())!;
+  const view = fieldOverview(
+    exhibition.selections.length,
+    box.width / box.height,
+  );
+  const slots = exhibitionSlots(exhibition.selections.length);
+  const pose = { x: view.x, y: view.y, z: view.z };
   await page.waitForTimeout(500);
-  const front = await canvas.screenshot();
-  await page.keyboard.down("w");
-  await page.waitForTimeout(450);
-  await page.keyboard.up("w");
-  expect((await canvas.screenshot()).equals(front)).toBe(true);
-  await expect(page.locator(".joystick")).toHaveCount(0);
   const pick = async (index: number) => {
-    const box = (await canvas.boundingBox())!;
-    if (mobile) await page.touchscreen.tap(box.width / 2, box.height / 2);
-    else
-      await canvas.click({ position: { x: box.width / 2, y: box.height / 2 } });
+    const camera = new PerspectiveCamera(
+      FIELD.fov,
+      box.width / box.height,
+      0.1,
+      400,
+    );
+    camera.position.set(pose.x, pose.y, pose.z);
+    camera.updateMatrixWorld();
+    const p = new Vector3(...slots[index].position).project(camera);
+    const position = {
+      x: ((p.x + 1) * box.width) / 2,
+      y: ((1 - p.y) * box.height) / 2,
+    };
+    if (mobile) await page.touchscreen.tap(position.x, position.y);
+    else await canvas.click({ position });
     await expect(
       page.getByRole("dialog", { name: "作品を鑑賞する" }),
     ).toBeVisible();
@@ -91,27 +116,39 @@ test("fixed viewpoint, upper and lower paintings, and view restoration", async (
     ).toBeVisible();
     await page.getByRole("button", { name: "閉じる", exact: true }).click();
   };
+  // Choose the last work first: all works are available without a viewing order.
+  await pick(exhibition.selections.length - 1);
   await pick(0);
-  expect((await canvas.screenshot()).equals(front)).toBe(true);
-  await look(page, mobile, 18, 35);
-  await page.screenshot({
-    path: `artifacts/${testInfo.project.name}-upper.png`,
-  });
-  const upper = await canvas.screenshot();
-  expect(upper.equals(front)).toBe(false);
-  await pick(1);
-  await pick(1);
+  const overview = await canvas.screenshot();
+  await zoom(page, mobile, true);
+  pose.z *= mobile ? 0.5 : Math.exp(-0.4);
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  expect((await canvas.screenshot()).equals(overview)).toBe(false);
+  await pick(0);
+  const dx = 25,
+    dy = 20,
+    height = 2 * Math.tan((FIELD.fov * Math.PI) / 360) * pose.z;
+  await drag(page, mobile, dx, dy);
+  pose.x -= ((dx / box.width) * height * box.width) / box.height;
+  pose.y += (dy / box.height) * height;
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await pick(0);
   await page.getByRole("button", { name: "気持ちを教える" }).click();
   await page.getByLabel("今の気持ちを教えてください").fill("まだ言葉の途中");
   await page.keyboard.press("ArrowUp");
   await page.getByRole("button", { name: "展示に戻る" }).click();
-  await pick(1);
-  await look(page, mobile, -36, -70);
+  await pick(0);
   await page.screenshot({
-    path: `artifacts/${testInfo.project.name}-lower.png`,
+    path: `artifacts/${testInfo.project.name}-zoomed.png`,
   });
-  await pick(2);
-  await expect
-    .poll(() => page.evaluate(() => document.pointerLockElement))
-    .toBeNull();
+  await drag(page, mobile, -dx, -dy);
+  pose.x = view.x;
+  pose.y = view.y;
+  await zoom(page, mobile, false);
+  pose.z = view.z;
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await pick(exhibition.selections.length - 1);
+  await page.screenshot({
+    path: `artifacts/${testInfo.project.name}-overview.png`,
+  });
 });

@@ -3,7 +3,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "余白の美術館 — その気持ちに、ひとつの美術館を。",
   description:
-    "今の気持ちをことばにすると、球状の光の空間に実在の絵画が浮かぶ。あなただけの、静かな3D美術館。",
+    "今の気持ちをことばにすると、霧の中に実在の絵画が星座のように浮かぶ。あなただけの、静かな3D美術館。",
   robots: { index: false, follow: false },
 };
 export const viewport: Viewport = {

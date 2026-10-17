@@ -2,7 +2,12 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import { exhibitionSlots, paintingSize, SPHERE } from "@/lib/layout";
+import {
+  exhibitionSlots,
+  paintingSize,
+  fieldOverview,
+  FIELD,
+} from "@/lib/layout";
 import type { Exhibit } from "@/lib/types";
 
 interface Props {
@@ -48,7 +53,7 @@ const skyFragment = `
 function DreamSky() {
   return (
     <mesh>
-      <sphereGeometry args={[30, 48, 32]} />
+      <sphereGeometry args={[150, 48, 32]} />
       <shaderMaterial
         vertexShader={skyVertex}
         fragmentShader={skyFragment}
@@ -108,7 +113,7 @@ function Painting({
       materials.current.push(material);
   };
   return (
-    <group position={slot.position} rotation={[...slot.rotation, "YXZ"]}>
+    <group position={slot.position} rotation={slot.rotation}>
       <mesh position={[0, 0, 0]} userData={{ artworkId: exhibit.id }}>
         <planeGeometry args={[width, height]} />
         <meshBasicMaterial
@@ -122,44 +127,130 @@ function Painting({
     </group>
   );
 }
+interface Point {
+  x: number;
+  y: number;
+}
 function Controls({
   active,
   onSelect,
-}: Omit<
-  Props,
-  "exhibits" | "reducedMotion" | "lowQuality" | "exhibitionVersion" | "fading"
->) {
-  const { camera, gl, scene } = useThree();
-  const keys = useRef(new Set<string>());
-  const yaw = useRef(0);
-  const pitch = useRef(0);
+  count,
+}: {
+  active: boolean;
+  onSelect: Props["onSelect"];
+  count: number;
+}) {
+  const { camera, gl, scene, size } = useThree();
+  const previous = useRef<{
+    count: number;
+    aspect: number;
+    overview: ReturnType<typeof fieldOverview>;
+  } | null>(null);
   const activeRef = useRef(active);
   activeRef.current = active;
+  const overview = fieldOverview(count, size.width / size.height);
+  const bounds = useRef(overview);
+  bounds.current = overview;
   useEffect(() => {
-    if (!active) {
-      keys.current.clear();
+    const next = fieldOverview(count, size.width / size.height);
+    const old = previous.current;
+    if (!old || (old.count === 0 && count > 0)) {
+      camera.position.set(next.x, next.y, next.z);
+    } else if (old.aspect !== size.width / size.height) {
+      const scale = next.z / old.overview.z;
+      camera.position.set(
+        next.x + (camera.position.x - old.overview.x) * scale,
+        next.y + (camera.position.y - old.overview.y) * scale,
+        THREE.MathUtils.clamp(
+          camera.position.z * scale,
+          FIELD.nearest,
+          next.z * 1.1,
+        ),
+      );
     }
-  }, [active]);
+    if (old && old.count !== count && count > 0) {
+      camera.position.z = Math.min(camera.position.z, next.z * 1.1);
+      camera.updateMatrixWorld();
+      const visible = exhibitionSlots(count).some((slot) => {
+        const p = new THREE.Vector3(...slot.position).project(camera);
+        return Math.abs(p.x) < 0.9 && Math.abs(p.y) < 0.84;
+      });
+      if (!visible) camera.position.set(next.x, next.y, next.z);
+    }
+    camera.updateMatrixWorld();
+    previous.current = {
+      count,
+      aspect: size.width / size.height,
+      overview: next,
+    };
+  }, [camera, count, size.width, size.height]);
   useEffect(() => {
     if (!active) return;
     const canvas = gl.domElement;
+    const points = new Map<number, Point>();
     const raycaster = new THREE.Raycaster();
-    let drag: {
-      startX: number;
-      startY: number;
-      moved: boolean;
-      lastX: number;
-      lastY: number;
-      distance: number;
-      pointerId: number;
-    } | null = null;
-    const select = (x: number, y: number) => {
-      const bounds = canvas.getBoundingClientRect();
-      const point = new THREE.Vector2(
-        ((x - bounds.left) / bounds.width) * 2 - 1,
-        (-(y - bounds.top) / bounds.height) * 2 + 1,
+    let start: Point | null = null,
+      last: Point | null = null;
+    let lastDistance = 0,
+      moved = false,
+      multiple = false;
+    const rect = () => canvas.getBoundingClientRect();
+    const viewSize = () => {
+      const r = rect(),
+        height = 2 * Math.tan((FIELD.fov * Math.PI) / 360) * camera.position.z;
+      return { width: (height * r.width) / r.height, height };
+    };
+    const constrain = () => {
+      const b = bounds.current,
+        v = viewSize();
+      const x = Math.max(0, b.halfWidth - v.width * 0.35),
+        y = Math.max(0, b.halfHeight - v.height * 0.35);
+      camera.position.x = THREE.MathUtils.clamp(
+        camera.position.x,
+        b.x - x,
+        b.x + x,
       );
-      raycaster.setFromCamera(point, camera);
+      camera.position.y = THREE.MathUtils.clamp(
+        camera.position.y,
+        b.y - y,
+        b.y + y,
+      );
+      camera.updateMatrixWorld();
+    };
+    const pan = (dx: number, dy: number) => {
+      const r = rect(),
+        v = viewSize();
+      camera.position.x -= (dx / r.width) * v.width;
+      camera.position.y += (dy / r.height) * v.height;
+      constrain();
+    };
+    // Keep the point between the fingers beneath their midpoint while zooming.
+    const zoom = (factor: number, from: Point, to = from) => {
+      const r = rect(),
+        before = viewSize();
+      const nx = (p: Point) => (p.x - r.left) / r.width - 0.5;
+      const ny = (p: Point) => 0.5 - (p.y - r.top) / r.height;
+      const wx = camera.position.x + nx(from) * before.width;
+      const wy = camera.position.y + ny(from) * before.height;
+      camera.position.z = THREE.MathUtils.clamp(
+        camera.position.z * factor,
+        FIELD.nearest,
+        bounds.current.z * 1.1,
+      );
+      const after = viewSize();
+      camera.position.x = wx - nx(to) * after.width;
+      camera.position.y = wy - ny(to) * after.height;
+      constrain();
+    };
+    const select = (p: Point) => {
+      const r = rect();
+      raycaster.setFromCamera(
+        new THREE.Vector2(
+          ((p.x - r.left) / r.width) * 2 - 1,
+          (-(p.y - r.top) / r.height) * 2 + 1,
+        ),
+        camera,
+      );
       const hit = raycaster
         .intersectObjects(scene.children, true)
         .find(
@@ -168,62 +259,97 @@ function Controls({
             (i.object as THREE.Mesh<THREE.BufferGeometry, THREE.Material>)
               .material.opacity > 0.25,
         );
-      if (hit) {
-        onSelect(hit.object.userData.artworkId);
-        return true;
-      }
-      return false;
+      if (hit) onSelect(hit.object.userData.artworkId);
     };
-    const look = (dx: number, dy: number) => {
-      yaw.current =
-        THREE.MathUtils.euclideanModulo(
-          yaw.current + dx * 0.0024 + Math.PI,
-          Math.PI * 2,
-        ) - Math.PI;
-      pitch.current = THREE.MathUtils.clamp(
-        pitch.current + dy * 0.0024,
-        -SPHERE.lookLimit,
-        SPHERE.lookLimit,
-      );
-      camera.rotation.set(pitch.current, yaw.current, 0, "YXZ");
+    const pair = () => {
+      const [a, b] = [...points.values()];
+      return {
+        midpoint: { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 },
+        distance: Math.hypot(a.x - b.x, a.y - b.y),
+      };
     };
     const down = (e: PointerEvent) => {
-      if (!activeRef.current || drag) return;
-      drag = {
-        startX: e.clientX,
-        startY: e.clientY,
-        moved: false,
-        lastX: e.clientX,
-        lastY: e.clientY,
-        distance: 0,
-        pointerId: e.pointerId,
-      };
+      if (
+        !activeRef.current ||
+        (e.pointerType === "mouse" && e.button !== 0) ||
+        points.size >= 2
+      )
+        return;
+      const p = { x: e.clientX, y: e.clientY };
+      points.set(e.pointerId, p);
       canvas.setPointerCapture(e.pointerId);
+      if (points.size === 1) {
+        start = last = p;
+        moved = false;
+        multiple = false;
+      } else {
+        multiple = moved = true;
+        const p = pair();
+        last = p.midpoint;
+        lastDistance = p.distance;
+      }
     };
     const move = (e: PointerEvent) => {
-      if (!activeRef.current) return;
-      if (drag && drag.pointerId === e.pointerId) {
-        const dx = e.clientX - drag.lastX,
-          dy = e.clientY - drag.lastY;
-        drag.distance += Math.abs(dx) + Math.abs(dy);
-        drag.lastX = e.clientX;
-        drag.lastY = e.clientY;
-        if (!drag.moved) {
-          if (drag.distance < 8) return;
-          drag.moved = true;
-          look(e.clientX - drag.startX, e.clientY - drag.startY);
-        } else {
-          look(dx, dy);
-        }
+      if (!activeRef.current || !points.has(e.pointerId)) return;
+      const p = { x: e.clientX, y: e.clientY };
+      points.set(e.pointerId, p);
+      if (points.size === 2) {
+        const next = pair();
+        if (last && lastDistance > 1 && next.distance > 1)
+          zoom(lastDistance / next.distance, last, next.midpoint);
+        last = next.midpoint;
+        lastDistance = next.distance;
+      } else if (start && last) {
+        if (!moved) {
+          if (Math.hypot(p.x - start.x, p.y - start.y) < 8) return;
+          moved = true;
+          pan(p.x - start.x, p.y - start.y);
+        } else pan(p.x - last.x, p.y - last.y);
+        last = p;
       }
     };
     const up = (e: PointerEvent) => {
-      if (!activeRef.current || !drag || drag.pointerId !== e.pointerId) return;
-      const tap = !drag.moved;
-      drag = null;
+      if (!points.has(e.pointerId)) return;
+      const tap = !moved && !multiple && points.size === 1;
+      points.delete(e.pointerId);
       if (canvas.hasPointerCapture(e.pointerId))
         canvas.releasePointerCapture(e.pointerId);
-      if (tap) select(e.clientX, e.clientY);
+      if (points.size) {
+        start = last = [...points.values()][0];
+        moved = true;
+      } else {
+        start = last = null;
+        lastDistance = 0;
+      }
+      if (tap && activeRef.current) select({ x: e.clientX, y: e.clientY });
+    };
+    const cancel = (e: PointerEvent) => {
+      if (!points.delete(e.pointerId)) return;
+      start = last = [...points.values()][0] ?? null;
+      moved = true;
+      multiple = true;
+      lastDistance = 0;
+    };
+    const clear = () => {
+      const ids = [...points.keys()];
+      points.clear();
+      start = last = null;
+      moved = multiple = false;
+      lastDistance = 0;
+      ids.forEach((id) => {
+        if (canvas.hasPointerCapture(id)) canvas.releasePointerCapture(id);
+      });
+    };
+    const wheel = (e: WheelEvent) => {
+      if (!activeRef.current) return;
+      e.preventDefault();
+      const delta =
+        e.deltaY *
+        (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? rect().height : 1);
+      zoom(Math.exp(THREE.MathUtils.clamp(delta, -150, 150) * 0.002), {
+        x: e.clientX,
+        y: e.clientY,
+      });
     };
     const keydown = (e: KeyboardEvent) => {
       if (
@@ -231,75 +357,80 @@ function Controls({
         (e.target as HTMLElement)?.matches("textarea,input,select")
       )
         return;
+      const r = rect(),
+        center = { x: r.left + r.width / 2, y: r.top + r.height / 2 };
       if (
-        ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.code)
-      ) {
+        [
+          "ArrowLeft",
+          "ArrowRight",
+          "ArrowUp",
+          "ArrowDown",
+          "+",
+          "=",
+          "-",
+          "0",
+        ].includes(e.key)
+      )
         e.preventDefault();
-        keys.current.add(e.code);
+      if (e.key === "ArrowLeft") pan(42, 0);
+      if (e.key === "ArrowRight") pan(-42, 0);
+      if (e.key === "ArrowUp") pan(0, 42);
+      if (e.key === "ArrowDown") pan(0, -42);
+      if (e.key === "+" || e.key === "=") zoom(0.85, center);
+      if (e.key === "-") zoom(1.15, center);
+      if (e.key === "0") {
+        const b = bounds.current;
+        camera.position.set(b.x, b.y, b.z);
       }
-    };
-    const keyup = (e: KeyboardEvent) => {
-      keys.current.delete(e.code);
-    };
-    const clear = () => {
-      keys.current.clear();
-      drag = null;
     };
     canvas.addEventListener("pointerdown", down);
     canvas.addEventListener("pointermove", move);
     canvas.addEventListener("pointerup", up);
-    canvas.addEventListener("pointercancel", clear);
+    canvas.addEventListener("pointercancel", cancel);
+    canvas.addEventListener("lostpointercapture", cancel);
+    canvas.addEventListener("wheel", wheel, { passive: false });
     window.addEventListener("keydown", keydown);
-    window.addEventListener("keyup", keyup);
     window.addEventListener("blur", clear);
     document.addEventListener("visibilitychange", clear);
-    canvas.addEventListener("lostpointercapture", clear);
     return () => {
+      clear();
       canvas.removeEventListener("pointerdown", down);
       canvas.removeEventListener("pointermove", move);
       canvas.removeEventListener("pointerup", up);
-      canvas.removeEventListener("pointercancel", clear);
+      canvas.removeEventListener("pointercancel", cancel);
+      canvas.removeEventListener("lostpointercapture", cancel);
+      canvas.removeEventListener("wheel", wheel);
       window.removeEventListener("keydown", keydown);
-      window.removeEventListener("keyup", keyup);
       window.removeEventListener("blur", clear);
       document.removeEventListener("visibilitychange", clear);
-      canvas.removeEventListener("lostpointercapture", clear);
     };
   }, [active, camera, gl, scene, onSelect]);
-  useFrame((_, delta) => {
-    if (!active) return;
-    const pressed = (code: string) => (keys.current.has(code) ? 1 : 0);
-    const step = Math.min(delta, 0.05) * 0.9;
-    yaw.current += (pressed("ArrowLeft") - pressed("ArrowRight")) * step;
-    pitch.current = THREE.MathUtils.clamp(
-      pitch.current + (pressed("ArrowUp") - pressed("ArrowDown")) * step,
-      -SPHERE.lookLimit,
-      SPHERE.lookLimit,
-    );
-    camera.rotation.set(pitch.current, yaw.current, 0, "YXZ");
-  });
   return null;
 }
 export default function Room(props: Props) {
   return (
     <Canvas
       className="room-canvas"
-      aria-label={`球状の3D空間、展示作品${props.exhibits.length}点`}
+      aria-label={`霧の中の絵の空間、展示作品${props.exhibits.length}点`}
       camera={{
-        position: [0, 0, 0],
+        position: [0, 0, 20],
         rotation: [0, 0, 0],
-        fov: 68,
+        fov: FIELD.fov,
         near: 0.1,
-        far: 65,
+        far: 400,
       }}
-      dpr={props.lowQuality ? 1 : [1, 1.7]}
-      gl={{ antialias: !props.lowQuality, powerPreference: "high-performance" }}
+      dpr={props.lowQuality ? [1, 1.5] : [1, 1.7]}
+      gl={{ antialias: true, powerPreference: "high-performance" }}
       onCreated={({ gl }) => {
         gl.setClearColor("#eeedf5");
       }}
     >
       <DreamSky />
-      <Controls {...props} />
+      <Controls
+        active={props.active}
+        onSelect={props.onSelect}
+        count={props.exhibits.length}
+      />
       {props.exhibits.map((exhibit, index) => (
         <Painting
           key={`${props.exhibitionVersion}:${exhibit.id}`}
