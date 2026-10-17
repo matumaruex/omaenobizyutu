@@ -3,13 +3,16 @@ test("movement, look, artwork picking and restoration in the 3D room", async ({
   page,
 }, testInfo) => {
   await page.goto("/");
+  await page.getByRole("button", { name: "部屋に入る" }).click();
   await expect(page.locator("canvas")).toBeVisible();
-  await page.getByLabel("今、何を感じていますか？").fill("ひとりで寂しい");
-  await page.getByRole("button", { name: "美術館をつくる" }).click();
+  await page.getByLabel("今の気持ちを教えてください").fill("ひとりで寂しい");
+  await page.getByRole("button", { name: "展示する" }).click();
   await expect(page.getByRole("button", { name: /作品一覧/ })).toBeVisible();
   await page.waitForTimeout(2500);
   const marker = page.locator(".minimap > span");
-  const before = await marker.getAttribute("style");
+  const before = await marker.evaluate((el) =>
+    parseFloat((el as HTMLElement).style.top),
+  );
   if (testInfo.project.name === "desktop") {
     await page.keyboard.down("w");
     await page.waitForTimeout(700);
@@ -31,11 +34,16 @@ test("movement, look, artwork picking and restoration in the 3D room", async ({
     });
     await touch.detach();
   }
-  await expect.poll(() => marker.getAttribute("style")).not.toBe(before);
+  // Forward input still moves forward (toward the front wall), on keyboard and joystick.
+  await expect
+    .poll(() =>
+      marker.evaluate((el) => parseFloat((el as HTMLElement).style.top)),
+    )
+    .toBeLessThan(before);
   await page.waitForTimeout(350);
   const stopped = await marker.getAttribute("style");
-  await page.getByRole("button", { name: "気持ちをことばにする" }).click();
-  await page.getByLabel("今、何を感じていますか？").fill("wasd");
+  await page.getByRole("button", { name: "気持ちを入力する" }).click();
+  await page.getByLabel("今の気持ちを教えてください").fill("wasd");
   await page.keyboard.press("w");
   await page.waitForTimeout(450);
   await page.getByRole("button", { name: "展示に戻る" }).click();
@@ -93,4 +101,17 @@ test("movement, look, artwork picking and restoration in the 3D room", async ({
   await page.waitForTimeout(350);
   const end = await page.screenshot();
   expect(start.equals(end)).toBe(false);
+  // A rightward drag/swipe turns the view left. Forward movement must then
+  // move left in world space; this catches accidental changes to either sign.
+  const leftBefore = await marker.evaluate((el) =>
+    parseFloat((el as HTMLElement).style.left),
+  );
+  await page.keyboard.down("w");
+  await page.waitForTimeout(700);
+  await page.keyboard.up("w");
+  await expect
+    .poll(() =>
+      marker.evaluate((el) => parseFloat((el as HTMLElement).style.left)),
+    )
+    .toBeLessThan(leftBefore);
 });

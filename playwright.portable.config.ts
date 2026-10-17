@@ -3,6 +3,7 @@ import base from "./playwright.config";
 export default defineConfig({
   ...base,
   testDir: "tests/portable",
+  outputDir: "test-results-portable",
   webServer: {
     command:
       "python -m http.server 3001 --bind 127.0.0.1 --directory artifacts",

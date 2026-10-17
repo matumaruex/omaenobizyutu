@@ -23,7 +23,6 @@ interface Props {
   lowQuality: boolean;
   joystick: React.RefObject<Motion>;
   onSelect: (id: number) => void;
-  onLock: (locked: boolean) => void;
   onPosition?: (x: number, z: number) => void;
 }
 function Architecture() {
@@ -198,7 +197,6 @@ function Controls({
   active,
   joystick,
   onSelect,
-  onLock,
   onPosition,
 }: Omit<
   Props,
@@ -251,9 +249,9 @@ function Controls({
       return false;
     };
     const look = (dx: number, dy: number) => {
-      yaw.current -= dx * 0.0024;
+      yaw.current += dx * 0.0024;
       pitch.current = THREE.MathUtils.clamp(
-        pitch.current - dy * 0.0024,
+        pitch.current + dy * 0.0024,
         -1.15,
         1.15,
       );
@@ -340,7 +338,6 @@ function Controls({
       joystick.current.y = 0;
     };
     const lock = () => {
-      onLock(document.pointerLockElement === canvas);
       if (!document.pointerLockElement) clear();
     };
     canvas.addEventListener("pointerdown", down);
@@ -363,7 +360,7 @@ function Controls({
       document.removeEventListener("visibilitychange", clear);
       document.removeEventListener("pointerlockchange", lock);
     };
-  }, [camera, gl, scene, onSelect, onLock, onPosition, joystick]);
+  }, [camera, gl, scene, onSelect, onPosition, joystick]);
   useFrame((state, delta) => {
     if (!active) return;
     const pressed = (codes: string[]) =>

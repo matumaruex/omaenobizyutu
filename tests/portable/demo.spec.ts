@@ -11,12 +11,13 @@ test("downloaded HTML opens offline and creates an exhibition", async ({
   });
   await page.goto("http://127.0.0.1:3001/yohaku-demo.html");
   await page.context().setOffline(true);
+  await page.getByRole("button", { name: "部屋に入る" }).click();
   await expect(page.locator("canvas")).toBeVisible();
   await expect(
     page.locator('[aria-label="白い3D展示室、展示作品0点"]'),
   ).toBeVisible();
-  await page.getByLabel("今、何を感じていますか？").fill("明日が楽しみ");
-  await page.getByRole("button", { name: "美術館をつくる" }).click();
+  await page.getByLabel("今の気持ちを教えてください").fill("明日が楽しみ");
+  await page.getByRole("button", { name: "展示する" }).click();
   await expect(page.getByRole("button", { name: /作品一覧/ })).toBeVisible();
   await page.getByRole("button", { name: /作品一覧/ }).click();
   const image = page.locator(".artwork-grid img").first();
@@ -31,7 +32,8 @@ test("downloaded HTML opens offline and creates an exhibition", async ({
   ).toBeVisible();
   await page.getByRole("button", { name: "閉じる", exact: true }).click();
   await page.getByRole("link", { name: "余白の美術館 トップ" }).click();
-  await expect(page.getByLabel("今、何を感じていますか？")).toBeVisible();
+  await expect(page.getByRole("button", { name: "部屋に入る" })).toBeVisible();
+  await expect(page.locator("textarea")).toHaveCount(0);
   expect(errors).toEqual([]);
   expect(external).toEqual([]);
 });
