@@ -262,7 +262,7 @@ export default function Museum() {
         <section className="entrance" aria-labelledby="entrance-heading">
           <h1 id="entrance-heading">余白の美術館</h1>
           <button className="entrance-button" onClick={() => setEntered(true)}>
-            空間に入る <ArrowRight size={16} />
+            部屋に入る <ArrowRight size={16} />
           </button>
           <div className="entrance-tools">
             <button
@@ -291,7 +291,7 @@ export default function Museum() {
       {entered && (
         <>
           <button className="leave-room" onClick={leaveRoom}>
-            空間から出る
+            部屋から出る
           </button>
           {formOpen && (
             <section className="feeling-panel" aria-label="気持ちを入力">
@@ -299,7 +299,7 @@ export default function Museum() {
                 <button
                   className="icon-button form-close"
                   onClick={() => setFormOpen(false)}
-                  aria-label={exhibition ? "展示に戻る" : "空間を見回す"}
+                  aria-label={exhibition ? "展示に戻る" : "部屋を見回す"}
                 >
                   <X size={16} />
                 </button>
@@ -435,7 +435,7 @@ export default function Museum() {
             <div>
               <h3>気持ちを、ことばに。</h3>
               <p>
-                短くても、まとまらなくても。今の気持ちを書くと、実在する絵画が、霧の中に星座のように浮かび上がります。
+                短くても、まとまらなくても。今の気持ちを書くと、実在する絵画が、部屋の四方の壁に現れます。
               </p>
             </div>
           </div>
@@ -444,10 +444,10 @@ export default function Museum() {
             <div>
               <h3>ゆっくり、見回す。</h3>
               <p>
-                画面をドラッグして、気になる絵を自由に探せます。スマホはピンチ、PCはホイールで近づいたり全体を眺めたりできます。
+                部屋の中央から、ドラッグやスワイプで自由に見回せます。歩行や床タップの操作はありません。
               </p>
               <p>
-                絵をクリック・タップすると、大きく鑑賞できます。PCは矢印キーで移動、＋／−で拡大縮小、0で全体に戻れます。
+                絵をクリック・タップすると、大きく鑑賞できます。PCの矢印キーでも向きを変えられます。
               </p>
             </div>
           </div>

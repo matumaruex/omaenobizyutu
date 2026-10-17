@@ -668,12 +668,7 @@ svg {
   justify-content: center;
   flex-direction: column;
   gap: 38px;
-  background: radial-gradient(
-    ellipse at 65% 20%,
-    #fff9f1,
-    #efedf6 60%,
-    #e3eae8
-  );
+  background: #fafbf8f5;
 }
 .entrance h1 {
   font-family: var(--serif);

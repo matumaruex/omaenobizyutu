@@ -2,12 +2,7 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import {
-  exhibitionSlots,
-  paintingSize,
-  fieldOverview,
-  FIELD,
-} from "@/lib/layout";
+import { exhibitionSlots, paintingSize, ROOM } from "@/lib/layout";
 import type { Exhibit } from "@/lib/types";
 
 interface Props {
@@ -19,48 +14,80 @@ interface Props {
   lowQuality: boolean;
   onSelect: (id: number) => void;
 }
-// A continuous, inward-facing sky: no floor, horizon, walls or visual grid.
-// The material uses only direction, so it stays still while the viewer looks around.
-const skyVertex = `
-  varying vec3 direction;
-  void main() {
-    direction = position;
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-  }
-`;
-const skyFragment = `
-  varying vec3 direction;
-  float haze(vec3 p) {
-    return sin(p.x * 1.6 + sin(p.z * 1.3)) *
-      cos(p.y * 1.8 - sin(p.x * 1.2)) * .5 + .5;
-  }
-  void main() {
-    vec3 d = normalize(direction);
-    float cloud = haze(d * 2.4) * .65 + haze(d * 5.2 + 4.0) * .35;
-    vec3 lavender = vec3(.72, .72, .86);
-    vec3 pearl = vec3(.965, .958, .95);
-    vec3 color = mix(lavender, pearl, smoothstep(.12, .9, cloud));
-    float mint = pow(max(0.0, dot(d, normalize(vec3(-.8, -.4, -.6)))), 3.0);
-    color = mix(color, vec3(.85, .93, .91), mint * .5);
-    float glow = pow(max(0.0, dot(d, normalize(vec3(.5, .7, -.8)))), 5.0);
-    color = mix(color, vec3(1.0, .97, .94), glow * .75);
-    float veil = pow(.5 + .5 * sin(d.y * 4.0 + d.x * 2.0 + cloud), 16.0);
-    color = mix(color, vec3(.98, .975, 1.0), veil * .22);
-    gl_FragColor = vec4(color, 1.0);
-    #include <colorspace_fragment>
-  }
-`;
-function DreamSky() {
+function Architecture() {
   return (
-    <mesh>
-      <sphereGeometry args={[150, 48, 32]} />
-      <shaderMaterial
-        vertexShader={skyVertex}
-        fragmentShader={skyFragment}
-        side={THREE.BackSide}
-        depthWrite={false}
-      />
-    </mesh>
+    <group>
+      <ambientLight intensity={1.5} />
+      <hemisphereLight args={["#ffffff", "#d0cec8", 1.7]} />
+      <directionalLight position={[-6, 7, 5]} intensity={2.4} />
+      <mesh position={[0, -0.1, 0]} receiveShadow>
+        <boxGeometry args={[20.4, 0.2, 20.4]} />
+        <meshStandardMaterial color="#e9e8e3" roughness={0.88} />
+      </mesh>
+      <mesh position={[0, ROOM.height / 2, -10]}>
+        <boxGeometry args={[20.4, ROOM.height, 0.2]} />
+        <meshStandardMaterial color="#fdfdfb" />
+      </mesh>
+      <mesh position={[0, ROOM.height / 2, 10]}>
+        <boxGeometry args={[20.4, ROOM.height, 0.2]} />
+        <meshStandardMaterial color="#fdfdfb" />
+      </mesh>
+      <mesh position={[-10, ROOM.height / 2, 0]}>
+        <boxGeometry args={[0.2, ROOM.height, 20]} />
+        <meshStandardMaterial color="#f5f5f2" />
+      </mesh>
+      <mesh position={[10, ROOM.height / 2, 0]}>
+        <boxGeometry args={[0.2, ROOM.height, 20]} />
+        <meshStandardMaterial color="#f5f5f2" />
+      </mesh>
+      <mesh position={[0, ROOM.height, 0]}>
+        <boxGeometry args={[20.4, 0.15, 20.4]} />
+        <meshStandardMaterial color="#fafaf7" />
+      </mesh>
+      {/* Shallow reveals make the pure white architecture legible. */}
+      {[-9.87, 9.87].map((z) => (
+        <mesh key={z} position={[0, 0.05, z]}>
+          <boxGeometry args={[20, 0.09, 0.025]} />
+          <meshStandardMaterial color="#deded8" />
+        </mesh>
+      ))}
+      {[-9.87, 9.87].map((x) => (
+        <mesh key={x} position={[x, 0.05, 0]}>
+          <boxGeometry args={[0.025, 0.09, 20]} />
+          <meshStandardMaterial color="#deded8" />
+        </mesh>
+      ))}
+      {[-5, 5].map((x) => (
+        <group key={x}>
+          <mesh position={[x, 5.65, 0]}>
+            <boxGeometry args={[0.045, 0.035, 17]} />
+            <meshStandardMaterial color="#b7b8b2" />
+          </mesh>
+          {[-6, 0, 6].map((z) => (
+            <mesh key={z} position={[x, 5.56, z]} rotation={[0.25, 0, 0]}>
+              <cylinderGeometry args={[0.065, 0.065, 0.19, 12]} />
+              <meshStandardMaterial color="#d4d4ce" />
+            </mesh>
+          ))}
+        </group>
+      ))}
+      <mesh position={[0, 5.7, -1]} rotation={[Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[3.6, 13]} />
+        <meshBasicMaterial color="#ffffff" side={THREE.DoubleSide} />
+      </mesh>
+      {[-6.65, -3.33, 0, 3.33, 6.65].map((x) => (
+        <mesh key={x} position={[x, 0.006, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+          <planeGeometry args={[0.008, 20]} />
+          <meshStandardMaterial color="#deddd7" />
+        </mesh>
+      ))}
+      {[-6.65, -3.33, 0, 3.33, 6.65].map((z) => (
+        <mesh key={z} position={[0, 0.006, z]} rotation={[-Math.PI / 2, 0, 0]}>
+          <planeGeometry args={[20, 0.008]} />
+          <meshStandardMaterial color="#deddd7" />
+        </mesh>
+      ))}
+    </group>
   );
 }
 function Painting({
@@ -114,7 +141,26 @@ function Painting({
   };
   return (
     <group position={slot.position} rotation={slot.rotation}>
-      <mesh position={[0, 0, 0]} userData={{ artworkId: exhibit.id }}>
+      <mesh position={[0.018, -0.03, -0.035]}>
+        <boxGeometry args={[width + 0.14, height + 0.14, 0.025]} />
+        <meshBasicMaterial
+          ref={remember}
+          color="#cecec8"
+          transparent
+          opacity={0}
+        />
+      </mesh>
+      <mesh>
+        <boxGeometry args={[width + 0.09, height + 0.09, 0.075]} />
+        <meshStandardMaterial
+          ref={remember}
+          color="#bbb9b1"
+          roughness={0.7}
+          transparent
+          opacity={0}
+        />
+      </mesh>
+      <mesh position={[0, 0, 0.041]} userData={{ artworkId: exhibit.id }}>
         <planeGeometry args={[width, height]} />
         <meshBasicMaterial
           ref={remember}
@@ -127,130 +173,45 @@ function Painting({
     </group>
   );
 }
-interface Point {
-  x: number;
-  y: number;
-}
 function Controls({
   active,
   onSelect,
-  count,
-}: {
-  active: boolean;
-  onSelect: Props["onSelect"];
-  count: number;
-}) {
-  const { camera, gl, scene, size } = useThree();
-  const previous = useRef<{
-    count: number;
-    aspect: number;
-    overview: ReturnType<typeof fieldOverview>;
-  } | null>(null);
+}: Omit<
+  Props,
+  "exhibits" | "reducedMotion" | "lowQuality" | "exhibitionVersion" | "fading"
+>) {
+  const { camera, gl, scene } = useThree();
+  const keys = useRef(new Set<string>());
+  const yaw = useRef(0);
+  const pitch = useRef(0);
   const activeRef = useRef(active);
   activeRef.current = active;
-  const overview = fieldOverview(count, size.width / size.height);
-  const bounds = useRef(overview);
-  bounds.current = overview;
   useEffect(() => {
-    const next = fieldOverview(count, size.width / size.height);
-    const old = previous.current;
-    if (!old || (old.count === 0 && count > 0)) {
-      camera.position.set(next.x, next.y, next.z);
-    } else if (old.aspect !== size.width / size.height) {
-      const scale = next.z / old.overview.z;
-      camera.position.set(
-        next.x + (camera.position.x - old.overview.x) * scale,
-        next.y + (camera.position.y - old.overview.y) * scale,
-        THREE.MathUtils.clamp(
-          camera.position.z * scale,
-          FIELD.nearest,
-          next.z * 1.1,
-        ),
-      );
+    if (!active) {
+      keys.current.clear();
     }
-    if (old && old.count !== count && count > 0) {
-      camera.position.z = Math.min(camera.position.z, next.z * 1.1);
-      camera.updateMatrixWorld();
-      const visible = exhibitionSlots(count).some((slot) => {
-        const p = new THREE.Vector3(...slot.position).project(camera);
-        return Math.abs(p.x) < 0.9 && Math.abs(p.y) < 0.84;
-      });
-      if (!visible) camera.position.set(next.x, next.y, next.z);
-    }
-    camera.updateMatrixWorld();
-    previous.current = {
-      count,
-      aspect: size.width / size.height,
-      overview: next,
-    };
-  }, [camera, count, size.width, size.height]);
+  }, [active]);
   useEffect(() => {
     if (!active) return;
     const canvas = gl.domElement;
-    const points = new Map<number, Point>();
     const raycaster = new THREE.Raycaster();
-    let start: Point | null = null,
-      last: Point | null = null;
-    let lastDistance = 0,
-      moved = false,
-      multiple = false;
-    const rect = () => canvas.getBoundingClientRect();
-    const viewSize = () => {
-      const r = rect(),
-        height = 2 * Math.tan((FIELD.fov * Math.PI) / 360) * camera.position.z;
-      return { width: (height * r.width) / r.height, height };
-    };
-    const constrain = () => {
-      const b = bounds.current,
-        v = viewSize();
-      const x = Math.max(0, b.halfWidth - v.width * 0.35),
-        y = Math.max(0, b.halfHeight - v.height * 0.35);
-      camera.position.x = THREE.MathUtils.clamp(
-        camera.position.x,
-        b.x - x,
-        b.x + x,
+    const pointers = new Set<number>();
+    let drag: {
+      startX: number;
+      startY: number;
+      moved: boolean;
+      lastX: number;
+      lastY: number;
+      distance: number;
+      pointerId: number;
+    } | null = null;
+    const select = (x: number, y: number) => {
+      const bounds = canvas.getBoundingClientRect();
+      const point = new THREE.Vector2(
+        ((x - bounds.left) / bounds.width) * 2 - 1,
+        (-(y - bounds.top) / bounds.height) * 2 + 1,
       );
-      camera.position.y = THREE.MathUtils.clamp(
-        camera.position.y,
-        b.y - y,
-        b.y + y,
-      );
-      camera.updateMatrixWorld();
-    };
-    const pan = (dx: number, dy: number) => {
-      const r = rect(),
-        v = viewSize();
-      camera.position.x -= (dx / r.width) * v.width;
-      camera.position.y += (dy / r.height) * v.height;
-      constrain();
-    };
-    // Keep the point between the fingers beneath their midpoint while zooming.
-    const zoom = (factor: number, from: Point, to = from) => {
-      const r = rect(),
-        before = viewSize();
-      const nx = (p: Point) => (p.x - r.left) / r.width - 0.5;
-      const ny = (p: Point) => 0.5 - (p.y - r.top) / r.height;
-      const wx = camera.position.x + nx(from) * before.width;
-      const wy = camera.position.y + ny(from) * before.height;
-      camera.position.z = THREE.MathUtils.clamp(
-        camera.position.z * factor,
-        FIELD.nearest,
-        bounds.current.z * 1.1,
-      );
-      const after = viewSize();
-      camera.position.x = wx - nx(to) * after.width;
-      camera.position.y = wy - ny(to) * after.height;
-      constrain();
-    };
-    const select = (p: Point) => {
-      const r = rect();
-      raycaster.setFromCamera(
-        new THREE.Vector2(
-          ((p.x - r.left) / r.width) * 2 - 1,
-          (-(p.y - r.top) / r.height) * 2 + 1,
-        ),
-        camera,
-      );
+      raycaster.setFromCamera(point, camera);
       const hit = raycaster
         .intersectObjects(scene.children, true)
         .find(
@@ -259,97 +220,72 @@ function Controls({
             (i.object as THREE.Mesh<THREE.BufferGeometry, THREE.Material>)
               .material.opacity > 0.25,
         );
-      if (hit) onSelect(hit.object.userData.artworkId);
+      if (hit) {
+        onSelect(hit.object.userData.artworkId);
+        return true;
+      }
+      return false;
     };
-    const pair = () => {
-      const [a, b] = [...points.values()];
-      return {
-        midpoint: { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 },
-        distance: Math.hypot(a.x - b.x, a.y - b.y),
-      };
+    const look = (dx: number, dy: number) => {
+      yaw.current =
+        THREE.MathUtils.euclideanModulo(
+          yaw.current + dx * 0.0024 + Math.PI,
+          Math.PI * 2,
+        ) - Math.PI;
+      pitch.current = THREE.MathUtils.clamp(
+        pitch.current + dy * 0.0024,
+        -ROOM.lookLimit,
+        ROOM.lookLimit,
+      );
+      camera.rotation.set(pitch.current, yaw.current, 0, "YXZ");
     };
     const down = (e: PointerEvent) => {
-      if (
-        !activeRef.current ||
-        (e.pointerType === "mouse" && e.button !== 0) ||
-        points.size >= 2
-      )
+      if (!activeRef.current || (e.pointerType === "mouse" && e.button !== 0))
         return;
-      const p = { x: e.clientX, y: e.clientY };
-      points.set(e.pointerId, p);
+      pointers.add(e.pointerId);
       canvas.setPointerCapture(e.pointerId);
-      if (points.size === 1) {
-        start = last = p;
-        moved = false;
-        multiple = false;
-      } else {
-        multiple = moved = true;
-        const p = pair();
-        last = p.midpoint;
-        lastDistance = p.distance;
+      if (pointers.size > 1) {
+        drag = null;
+        return;
       }
+      drag = {
+        startX: e.clientX,
+        startY: e.clientY,
+        moved: false,
+        lastX: e.clientX,
+        lastY: e.clientY,
+        distance: 0,
+        pointerId: e.pointerId,
+      };
     };
     const move = (e: PointerEvent) => {
-      if (!activeRef.current || !points.has(e.pointerId)) return;
-      const p = { x: e.clientX, y: e.clientY };
-      points.set(e.pointerId, p);
-      if (points.size === 2) {
-        const next = pair();
-        if (last && lastDistance > 1 && next.distance > 1)
-          zoom(lastDistance / next.distance, last, next.midpoint);
-        last = next.midpoint;
-        lastDistance = next.distance;
-      } else if (start && last) {
-        if (!moved) {
-          if (Math.hypot(p.x - start.x, p.y - start.y) < 8) return;
-          moved = true;
-          pan(p.x - start.x, p.y - start.y);
-        } else pan(p.x - last.x, p.y - last.y);
-        last = p;
+      if (!activeRef.current) return;
+      if (pointers.size === 1 && drag && drag.pointerId === e.pointerId) {
+        const dx = e.clientX - drag.lastX,
+          dy = e.clientY - drag.lastY;
+        drag.distance += Math.abs(dx) + Math.abs(dy);
+        drag.lastX = e.clientX;
+        drag.lastY = e.clientY;
+        if (!drag.moved) {
+          if (drag.distance < 8) return;
+          drag.moved = true;
+          look(e.clientX - drag.startX, e.clientY - drag.startY);
+        } else {
+          look(dx, dy);
+        }
       }
     };
     const up = (e: PointerEvent) => {
-      if (!points.has(e.pointerId)) return;
-      const tap = !moved && !multiple && points.size === 1;
-      points.delete(e.pointerId);
+      const tap =
+        activeRef.current &&
+        pointers.size === 1 &&
+        drag?.pointerId === e.pointerId &&
+        !drag.moved;
+      pointers.delete(e.pointerId);
+      drag = null;
       if (canvas.hasPointerCapture(e.pointerId))
         canvas.releasePointerCapture(e.pointerId);
-      if (points.size) {
-        start = last = [...points.values()][0];
-        moved = true;
-      } else {
-        start = last = null;
-        lastDistance = 0;
-      }
-      if (tap && activeRef.current) select({ x: e.clientX, y: e.clientY });
-    };
-    const cancel = (e: PointerEvent) => {
-      if (!points.delete(e.pointerId)) return;
-      start = last = [...points.values()][0] ?? null;
-      moved = true;
-      multiple = true;
-      lastDistance = 0;
-    };
-    const clear = () => {
-      const ids = [...points.keys()];
-      points.clear();
-      start = last = null;
-      moved = multiple = false;
-      lastDistance = 0;
-      ids.forEach((id) => {
-        if (canvas.hasPointerCapture(id)) canvas.releasePointerCapture(id);
-      });
-    };
-    const wheel = (e: WheelEvent) => {
-      if (!activeRef.current) return;
-      e.preventDefault();
-      const delta =
-        e.deltaY *
-        (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? rect().height : 1);
-      zoom(Math.exp(THREE.MathUtils.clamp(delta, -150, 150) * 0.002), {
-        x: e.clientX,
-        y: e.clientY,
-      });
+      if (tap) select(e.clientX, e.clientY);
     };
     const keydown = (e: KeyboardEvent) => {
       if (
@@ -357,80 +293,84 @@ function Controls({
         (e.target as HTMLElement)?.matches("textarea,input,select")
       )
         return;
-      const r = rect(),
-        center = { x: r.left + r.width / 2, y: r.top + r.height / 2 };
       if (
-        [
-          "ArrowLeft",
-          "ArrowRight",
-          "ArrowUp",
-          "ArrowDown",
-          "+",
-          "=",
-          "-",
-          "0",
-        ].includes(e.key)
-      )
+        ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.code)
+      ) {
         e.preventDefault();
-      if (e.key === "ArrowLeft") pan(42, 0);
-      if (e.key === "ArrowRight") pan(-42, 0);
-      if (e.key === "ArrowUp") pan(0, 42);
-      if (e.key === "ArrowDown") pan(0, -42);
-      if (e.key === "+" || e.key === "=") zoom(0.85, center);
-      if (e.key === "-") zoom(1.15, center);
-      if (e.key === "0") {
-        const b = bounds.current;
-        camera.position.set(b.x, b.y, b.z);
+        keys.current.add(e.code);
       }
+    };
+    const keyup = (e: KeyboardEvent) => {
+      keys.current.delete(e.code);
+    };
+    const clear = () => {
+      keys.current.clear();
+      drag = null;
+      const ids = [...pointers];
+      pointers.clear();
+      ids.forEach((id) => {
+        if (canvas.hasPointerCapture(id)) canvas.releasePointerCapture(id);
+      });
+    };
+    const cancelled = (e: PointerEvent) => {
+      if (pointers.has(e.pointerId)) clear();
     };
     canvas.addEventListener("pointerdown", down);
     canvas.addEventListener("pointermove", move);
     canvas.addEventListener("pointerup", up);
-    canvas.addEventListener("pointercancel", cancel);
-    canvas.addEventListener("lostpointercapture", cancel);
-    canvas.addEventListener("wheel", wheel, { passive: false });
+    canvas.addEventListener("pointercancel", cancelled);
     window.addEventListener("keydown", keydown);
+    window.addEventListener("keyup", keyup);
     window.addEventListener("blur", clear);
     document.addEventListener("visibilitychange", clear);
+    canvas.addEventListener("lostpointercapture", cancelled);
     return () => {
       clear();
       canvas.removeEventListener("pointerdown", down);
       canvas.removeEventListener("pointermove", move);
       canvas.removeEventListener("pointerup", up);
-      canvas.removeEventListener("pointercancel", cancel);
-      canvas.removeEventListener("lostpointercapture", cancel);
-      canvas.removeEventListener("wheel", wheel);
+      canvas.removeEventListener("pointercancel", cancelled);
       window.removeEventListener("keydown", keydown);
+      window.removeEventListener("keyup", keyup);
       window.removeEventListener("blur", clear);
       document.removeEventListener("visibilitychange", clear);
+      canvas.removeEventListener("lostpointercapture", cancelled);
     };
   }, [active, camera, gl, scene, onSelect]);
+  useFrame((_, delta) => {
+    if (!active) return;
+    const pressed = (code: string) => (keys.current.has(code) ? 1 : 0);
+    const step = Math.min(delta, 0.05) * 0.9;
+    yaw.current += (pressed("ArrowLeft") - pressed("ArrowRight")) * step;
+    pitch.current = THREE.MathUtils.clamp(
+      pitch.current + (pressed("ArrowUp") - pressed("ArrowDown")) * step,
+      -ROOM.lookLimit,
+      ROOM.lookLimit,
+    );
+    camera.rotation.set(pitch.current, yaw.current, 0, "YXZ");
+  });
   return null;
 }
 export default function Room(props: Props) {
   return (
     <Canvas
       className="room-canvas"
-      aria-label={`霧の中の絵の空間、展示作品${props.exhibits.length}点`}
+      aria-label={`中央から見回す白い展示室、展示作品${props.exhibits.length}点`}
       camera={{
-        position: [0, 0, 20],
+        position: [0, ROOM.eye, 0],
         rotation: [0, 0, 0],
-        fov: FIELD.fov,
+        fov: ROOM.fov,
         near: 0.1,
-        far: 400,
+        far: 65,
       }}
       dpr={props.lowQuality ? [1, 1.5] : [1, 1.7]}
       gl={{ antialias: true, powerPreference: "high-performance" }}
       onCreated={({ gl }) => {
-        gl.setClearColor("#eeedf5");
+        gl.setClearColor("#f6f6f2");
       }}
     >
-      <DreamSky />
-      <Controls
-        active={props.active}
-        onSelect={props.onSelect}
-        count={props.exhibits.length}
-      />
+      <Architecture />
+      <Controls active={props.active} onSelect={props.onSelect} />
       {props.exhibits.map((exhibit, index) => (
         <Painting
           key={`${props.exhibitionVersion}:${exhibit.id}`}

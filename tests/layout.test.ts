@@ -1,54 +1,56 @@
 import { describe, it, expect } from "vitest";
 import { PerspectiveCamera, Vector3, Euler } from "three";
-import {
-  exhibitionSlots,
-  paintingSize,
-  fieldOverview,
-  FIELD,
-} from "../src/lib/layout";
+import { exhibitionSlots, paintingSize, ROOM } from "../src/lib/layout";
 import { collection } from "../src/lib/collection";
-describe("scattered paintings", () => {
+describe("discovery from the center of a room", () => {
   for (let count = 4; count <= 12; count++)
-    it(`${count} works fit into the overview without overlapping on tall or wide screens`, () => {
+    it(`${count} works occupy all four walls without overlapping`, () => {
       const slots = exhibitionSlots(count);
       expect(slots).toHaveLength(count);
-      expect(new Set(slots.map((s) => s.position[2])).size).toBeGreaterThan(2);
-      for (const aspect of [0.4, 390 / 664, 1.44, 2.2]) {
-        const view = fieldOverview(count, aspect);
-        const camera = new PerspectiveCamera(FIELD.fov, aspect, 0.1, 400);
-        camera.position.set(view.x, view.y, view.z);
+      expect(new Set(slots.slice(0, 4).map((s) => s.rotation[1])).size).toBe(4);
+      for (const s of slots) {
+        expect(s.position[1]).toBe(ROOM.eye);
+        expect(Math.max(Math.abs(s.position[0]), Math.abs(s.position[2]))).toBe(
+          9.85,
+        );
+        const front = new Vector3(0, 0, 1).applyEuler(new Euler(...s.rotation));
+        expect(
+          front.dot(new Vector3(-s.position[0], 0, -s.position[2])),
+        ).toBeCloseTo(9.85);
+        // Turning toward each work brings its center into view from the same position.
+        const camera = new PerspectiveCamera(ROOM.fov, 390 / 664, 0.1, 65);
+        camera.position.set(0, ROOM.eye, 0);
+        camera.rotation.set(
+          0,
+          Math.atan2(-s.position[0], -s.position[2]),
+          0,
+          "YXZ",
+        );
         camera.updateMatrixWorld();
-        const boxes = slots.map((s) => {
-          const corners = [-1, 1].flatMap((x) =>
-            [-1, 1].map((y) =>
-              new Vector3(x * 1.4, y * 1.2, 0)
-                .applyEuler(new Euler(...s.rotation))
-                .add(new Vector3(...s.position))
-                .project(camera),
+        const p = new Vector3(...s.position).project(camera);
+        expect(p.x).toBeCloseTo(0);
+        expect(p.y).toBeCloseTo(0);
+        expect(p.z).toBeGreaterThan(-1);
+        expect(p.z).toBeLessThan(1);
+      }
+      for (let i = 0; i < count; i++)
+        for (let j = i + 1; j < count; j++)
+          expect(
+            new Vector3(...slots[i].position).distanceTo(
+              new Vector3(...slots[j].position),
             ),
-          );
-          corners.forEach((p) => {
-            expect(Math.abs(p.x)).toBeLessThan(0.95);
-            expect(Math.abs(p.y)).toBeLessThan(0.86);
-          });
-          return {
-            left: Math.min(...corners.map((p) => p.x)),
-            right: Math.max(...corners.map((p) => p.x)),
-            top: Math.max(...corners.map((p) => p.y)),
-            bottom: Math.min(...corners.map((p) => p.y)),
-          };
+          ).toBeGreaterThan(3);
+      for (const aspect of [390 / 664, 1.44]) {
+        const camera = new PerspectiveCamera(ROOM.fov, aspect, 0.1, 65);
+        camera.position.set(0, ROOM.eye, 0);
+        camera.updateMatrixWorld();
+        const visible = slots.filter((s) => {
+          const p = new Vector3(...s.position).project(camera);
+          return Math.abs(p.x) < 1 && Math.abs(p.y) < 1 && p.z > -1 && p.z < 1;
         });
-        for (let i = 0; i < count; i++)
-          for (let j = i + 1; j < count; j++) {
-            const a = boxes[i],
-              b = boxes[j];
-            expect(
-              a.right < b.left ||
-                b.right < a.left ||
-                a.top < b.bottom ||
-                b.top < a.bottom,
-            ).toBe(true);
-          }
+        expect(visible.length).toBeGreaterThanOrEqual(1);
+        expect(visible.length).toBeLessThan(count);
+        if (count <= 8) expect(visible.length).toBeLessThanOrEqual(2);
       }
     });
   it("preserves actual image proportions", () => {
@@ -64,9 +66,8 @@ describe("scattered paintings", () => {
       expect(size.height).toBeLessThanOrEqual(2.40001);
     }
   });
-  it("keeps an empty sky empty and rejects unsupported counts", () => {
+  it("starts without works and rejects unsupported counts", () => {
     expect(exhibitionSlots(0)).toEqual([]);
-    expect(Number.isFinite(fieldOverview(0, 0.5).z)).toBe(true);
     for (const count of [-1, 13, 4.5])
       expect(() => exhibitionSlots(count)).toThrow();
   });
