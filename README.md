@@ -12,7 +12,7 @@ HTMLを再生成する場合は、依存をインストールしたリポジト�
 
 ## 起動
 
-Node.js 24 LTS と npm を推奨します（アプリの最低要件はNode.js 22）。
+Node.js 24 LTS と npm を使用します。繰り返し同じ環境でビルドできるよう、Node.jsは24系に固定しています。
 
 ```bash
 npm ci
@@ -30,7 +30,9 @@ npm run build
 npm start
 ```
 
-VercelではNext.jsプロジェクトとしてそのまま取り込めます。公開デプロイはこの開発では実施していません。
+Vercelのテスト用サイトへ配信済みです。スマホでは[美術館の確認用URL](https://bijutsukan-git-codex-museum-preview-matumaruexs-projects.vercel.app)を開いてください。Vercelのログイン画面が出る場合は、接続したVercelアカウントで一度ログインします。
+
+今後は`codex/museum-preview`ブランチへのpushで、このブランチの確認用URLが更新されます。利用者がZIPやコマンドを操作する必要はありません。詳しくは[確認用サイトの運用](docs/PREVIEW.md)を参照してください。
 
 ## 実装した体験
 

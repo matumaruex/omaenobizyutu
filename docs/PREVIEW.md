@@ -24,6 +24,12 @@ AIキーは設定しないので、今回の確認用展示は無料デモです
 - リポジトリ：`matumaruex/bijutsukan`（非公開）
 - Vercelプロジェクト：`bijutsukan`
 - Vercelチーム：`matumaruexs-projects`
-- 用途：スマホで確認するためのpreviewデプロイ
+- 用途：スマホで確認するためのテスト用サイト（初回の自動配信はVercel上でproductionとして作成）
 
-本番ブランチの統合や有料AIの有効化とは分けて運用します。
+確認用ブランチは`codex/museum-preview`です。`main`への統合は行っていません。
+
+- 継続確認用URL：[美術館を開く](https://bijutsukan-git-codex-museum-preview-matumaruexs-projects.vercel.app)
+- 管理画面：[Vercelプロジェクト](https://vercel.com/matumaruexs-projects/bijutsukan)
+- 変更のレビュー：[PR #1](https://github.com/matumaruex/bijutsukan/pull/1)
+
+Vercelの認証保護を維持しています。初回はスマホでも同じVercelアカウントでログインしてください。初回配信のHTTP 200とAI未設定の応答を確認済みです。実機の操作感はスマホで確認してください。
