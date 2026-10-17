@@ -96,46 +96,6 @@ svg {
   color: var(--muted);
   background: linear-gradient(#f8f8f5 65%, #eeeee9);
 }
-.header {
-  position: absolute;
-  z-index: 3;
-  left: 46px;
-  right: 44px;
-  top: 31px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  font-family: var(--serif);
-  font-size: 18px;
-  letter-spacing: 0.15em;
-}
-.brand-mark {
-  font-size: 22px;
-  display: grid;
-  place-items: center;
-  border: 1px solid #7b8478;
-  width: 43px;
-  height: 49px;
-  font-weight: 400;
-}
-.brand small {
-  display: block;
-  font-family: Georgia, serif;
-  font-size: 8px;
-  letter-spacing: 0.2em;
-  margin-top: 8px;
-  color: #777e74;
-}
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
 .icon-button {
   width: 36px;
   height: 36px;
@@ -291,37 +251,6 @@ svg {
   inset: 0;
   animation: progress 1.4s infinite ease-in-out;
 }
-.exhibition-caption {
-  position: absolute;
-  top: 108px;
-  left: 48px;
-  pointer-events: none;
-}
-.exhibition-caption .eyebrow {
-  margin-bottom: 13px;
-}
-.exhibition-caption h1 {
-  font-family: var(--serif);
-  font-weight: 400;
-  font-size: 23px;
-  letter-spacing: 0.15em;
-  margin: 0 0 10px;
-}
-.exhibition-caption p {
-  font-size: 10px;
-  color: #89917d;
-  letter-spacing: 0.08em;
-  margin: 0 0 12px;
-}
-.exhibition-actions {
-  position: absolute;
-  right: 48px;
-  top: 120px;
-  display: flex;
-  align-items: flex-end;
-  flex-direction: column;
-  gap: 14px;
-}
 .pill-button {
   display: flex;
   gap: 20px;
@@ -333,54 +262,6 @@ svg {
   color: #5c6c52;
   font-size: 10px;
   backdrop-filter: blur(7px);
-}
-.exhibition-actions .text-button {
-  margin-right: 10px;
-}
-.exhibition-actions .text-button span {
-  font-family: Georgia, serif;
-  margin-left: 10px;
-}
-.crosshair {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 4px;
-  height: 4px;
-  background: #9aab8c99;
-  border: 1px solid #ffffffe6;
-  border-radius: 50%;
-  pointer-events: none;
-}
-.minimap {
-  position: absolute;
-  width: 72px;
-  height: 72px;
-  right: 49px;
-  bottom: 75px;
-  border: 1px solid #b5c0aa;
-  background: #fafcf560;
-  pointer-events: none;
-}
-.minimap > span {
-  position: absolute;
-  width: 5px;
-  height: 5px;
-  background: #778c65;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-}
-.minimap small {
-  position: absolute;
-  bottom: -19px;
-  left: 0;
-  right: 0;
-  text-align: center;
-  font-size: 8px;
-  color: #96a188;
-}
-.joystick {
-  display: none;
 }
 .no-webgl {
   position: absolute;
@@ -668,37 +549,10 @@ svg {
     padding: 16px 20px 12px;
   }
 }
-@media (max-width: 1000px) {
-  .minimap {
-    display: none;
-  }
-}
 @media (max-width: 760px) {
   .museum {
     height: 100svh;
     min-height: 320px;
-  }
-  .header {
-    left: 23px;
-    right: 18px;
-    top: 24px;
-  }
-  .brand {
-    gap: 12px;
-    font-size: 15px;
-  }
-  .brand-mark {
-    width: 34px;
-    height: 41px;
-    font-size: 18px;
-  }
-  .brand small {
-    font-size: 6px;
-    margin-top: 7px;
-    letter-spacing: 0.16em;
-  }
-  .header-right {
-    gap: 2px;
   }
   .eyebrow {
     font-size: 7px;
@@ -728,59 +582,10 @@ svg {
     font-size: 8px;
     line-height: 2.1;
   }
-  .exhibition-caption {
-    top: 94px;
-    left: 25px;
-  }
-  .exhibition-caption .eyebrow {
-    font-size: 7px;
-  }
-  .exhibition-caption h1 {
-    font-size: 21px;
-  }
-  .exhibition-caption p {
-    font-size: 9px;
-    max-width: 240px;
-    line-height: 1.8;
-  }
-  .exhibition-actions {
-    top: auto;
-    bottom: 90px;
-    right: 24px;
-    gap: 15px;
-  }
   .pill-button {
     font-size: 9px;
     padding: 12px 15px;
     gap: 13px;
-  }
-  .joystick {
-    position: absolute;
-    bottom: 98px;
-    left: 32px;
-    width: 90px;
-    height: 90px;
-    border: 1px solid #acb99bc0;
-    border-radius: 50%;
-    background: #f7faf09c;
-    display: grid;
-    place-items: center;
-    touch-action: none;
-    user-select: none;
-  }
-  .joystick-thumb {
-    width: 34px;
-    height: 34px;
-    background: #a8b99678;
-    border: 1px solid #96aa82aa;
-    border-radius: 50%;
-    pointer-events: none;
-  }
-  .joystick-label {
-    position: absolute;
-    bottom: -21px;
-    font-size: 8px;
-    color: #9eaa90;
   }
   .dialog-inner {
     padding: 44px 26px 28px;
@@ -828,14 +633,6 @@ svg {
     bottom: 190px;
     width: 80%;
     font-size: 9px;
-  }
-}
-@media (max-width: 380px) {
-  .header {
-    left: 20px;
-  }
-  .brand {
-    font-size: 14px;
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -940,7 +737,56 @@ svg {
     font-size: 16px;
     min-height: 70px;
   }
-  .exhibition-caption h1 {
-    font-size: 17px;
-  }
+}
+
+.entrance-tools {
+  position: absolute;
+  bottom: max(24px, env(safe-area-inset-bottom));
+  display: flex;
+  gap: 12px;
+}
+.leave-room {
+  position: absolute;
+  top: max(24px, env(safe-area-inset-top));
+  right: 28px;
+  padding: 10px;
+  font-size: 10px;
+  color: #7b817a;
+}
+.leave-room:hover {
+  color: var(--ink);
+}
+.room-actions {
+  position: absolute;
+  right: max(28px, env(safe-area-inset-right));
+  bottom: max(40px, env(safe-area-inset-bottom));
+}
+.room-actions .pill-button {
+  padding: 13px 20px;
+  font-size: 11px;
+}
+.joystick {
+  position: absolute;
+  bottom: max(32px, env(safe-area-inset-bottom));
+  left: max(28px, env(safe-area-inset-left));
+  width: 90px;
+  height: 90px;
+  border: 1px solid #acb99bc0;
+  border-radius: 50%;
+  background: #f7faf09c;
+  display: grid;
+  place-items: center;
+  touch-action: none;
+  user-select: none;
+}
+.joystick-thumb {
+  width: 34px;
+  height: 34px;
+  background: #a8b99678;
+  border: 1px solid #96aa82aa;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.artwork-list-button {
+  margin-top: 14px;
 }

@@ -8,7 +8,16 @@ test("empty room → emotion → real exhibition → quiet artwork view → new 
   await page.goto("/");
   await expect(page.locator("textarea")).toHaveCount(0);
   await page.getByRole("button", { name: "部屋に入る" }).click();
-  await expect(page.getByLabel("今の気持ちを教えてください")).toBeVisible();
+  await expect(page.getByRole("button")).toHaveText([
+    "部屋から出る",
+    "気持ちを教える",
+  ]);
+  await expect(page.getByRole("heading")).toHaveCount(0);
+  await expect(page.getByRole("link")).toHaveCount(0);
+  await expect(
+    page.getByRole("group", { name: "移動スティック" }),
+  ).toBeVisible();
+  await expect(page.locator("textarea, .minimap, .crosshair")).toHaveCount(0);
   await expect(
     page.locator(".intro-description, .prompt-row, .navigation-note"),
   ).toHaveCount(0);
@@ -20,6 +29,7 @@ test("empty room → emotion → real exhibition → quiet artwork view → new 
   await page.screenshot({
     path: `artifacts/${testInfo.project.name}-empty.png`,
   });
+  await page.getByRole("button", { name: "気持ちを教える" }).click();
   await page
     .getByLabel("今の気持ちを教えてください")
     .fill("恋人と別れて寂しい");
@@ -35,12 +45,15 @@ test("empty room → emotion → real exhibition → quiet artwork view → new 
   expect(first.selections.length).toBeGreaterThanOrEqual(4);
   for (const selection of first.selections)
     expect(collection.some((a) => a.id === selection.id)).toBeTruthy();
-  await expect(page.getByRole("button", { name: /作品一覧/ })).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "気持ちを教える" }),
+  ).toBeVisible();
   await expect(page.locator("textarea")).toHaveCount(0);
   await page.waitForTimeout(3000);
   await page.screenshot({
     path: `artifacts/${testInfo.project.name}-exhibition.png`,
   });
+  await page.getByRole("button", { name: "気持ちを教える" }).click();
   await page.getByRole("button", { name: /作品一覧/ }).click();
   const image = page.locator(".artwork-grid img").first();
   await expect(image).toBeVisible();
@@ -63,7 +76,7 @@ test("empty room → emotion → real exhibition → quiet artwork view → new 
   await page.getByRole("button", { name: "作品について" }).click();
   await expect(page.locator("#art-info")).toHaveCount(0);
   await page.getByRole("button", { name: "閉じる", exact: true }).click();
-  await page.getByRole("button", { name: "気持ちを入力する" }).click();
+  await page.getByRole("button", { name: "気持ちを教える" }).click();
   await page
     .getByLabel("今の気持ちを教えてください")
     .fill("明日が楽しみで嬉しい");
@@ -76,7 +89,21 @@ test("empty room → emotion → real exhibition → quiet artwork view → new 
   expect(second.selections.map((a: { id: number }) => a.id)).not.toEqual(
     first.selections.map((a: { id: number }) => a.id),
   );
-  await expect(page.getByRole("button", { name: /作品一覧/ })).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "気持ちを教える" }),
+  ).toBeVisible();
+  await expect(page.getByRole("heading")).toHaveCount(0);
+  await expect(page.getByRole("button")).toHaveText([
+    "部屋から出る",
+    "気持ちを教える",
+  ]);
+  await page.getByRole("button", { name: "部屋から出る" }).click();
+  await expect(page.getByRole("button", { name: "部屋に入る" })).toBeVisible();
+  await page.getByRole("button", { name: "部屋に入る" }).click();
+  await expect(
+    page.locator('[aria-label="白い3D展示室、展示作品0点"]'),
+  ).toBeVisible();
+  await expect(page.locator("textarea")).toHaveCount(0);
   expect(consoleErrors).toEqual([]);
 });
 test("API rejects invalid input and unavailable AI without paid calls", async ({
@@ -124,6 +151,7 @@ test("selection failures keep the room and show a retryable message", async ({
   );
   await page.goto("/");
   await page.getByRole("button", { name: "部屋に入る" }).click();
+  await page.getByRole("button", { name: "気持ちを教える" }).click();
   await page.getByLabel("今の気持ちを教えてください").fill("静かな気持ち");
   await page.getByRole("button", { name: "展示する" }).click();
   await expect(page.locator(".form-error[role=alert]")).toContainText(
@@ -137,6 +165,7 @@ test("all local collection images decode at their actual aspect ratios", async (
 }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "部屋に入る" }).click();
+  await page.getByRole("button", { name: "気持ちを教える" }).click();
   const results = await page.evaluate(
     async (artworks) =>
       Promise.all(
@@ -173,6 +202,7 @@ test("image failures show an error and leave the empty room usable", async ({
   await page.route("**/artworks/*.jpg", (route) => route.abort());
   await page.goto("/");
   await page.getByRole("button", { name: "部屋に入る" }).click();
+  await page.getByRole("button", { name: "気持ちを教える" }).click();
   await expect(page.locator("canvas")).toBeVisible();
   await page.getByLabel("今の気持ちを教えてください").fill("静かな気持ち");
   await page.getByRole("button", { name: "展示する" }).click();
@@ -190,6 +220,7 @@ test("pending curation can be cancelled without erasing the input", async ({
   await page.route("**/api/exhibition", () => {});
   await page.goto("/");
   await page.getByRole("button", { name: "部屋に入る" }).click();
+  await page.getByRole("button", { name: "気持ちを教える" }).click();
   await expect(page.locator("canvas")).toBeVisible();
   await page.getByLabel("今の気持ちを教えてください").fill("まだ言葉の途中");
   await page.getByRole("button", { name: "展示する" }).click();
@@ -205,6 +236,7 @@ test("the empty room can be explored before entering a feeling", async ({
 }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "部屋に入る" }).click();
+  await page.getByRole("button", { name: "気持ちを教える" }).click();
   await expect(page.getByLabel("今の気持ちを教えてください")).toBeVisible();
   await expect(page.getByRole("button", { name: "展示する" })).toBeDisabled();
   await page.getByRole("button", { name: "部屋を見回す" }).click();
@@ -213,6 +245,6 @@ test("the empty room can be explored before entering a feeling", async ({
     page.locator('[aria-label="白い3D展示室、展示作品0点"]'),
   ).toBeVisible();
   await expect(page.locator(".exhibition-caption")).toHaveCount(0);
-  await page.getByRole("button", { name: "気持ちを入力する" }).click();
+  await page.getByRole("button", { name: "気持ちを教える" }).click();
   await expect(page.getByLabel("今の気持ちを教えてください")).toBeEmpty();
 });

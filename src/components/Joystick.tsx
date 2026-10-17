@@ -48,7 +48,6 @@ export default function Joystick({
         className="joystick-thumb"
         style={{ transform: `translate(${thumb.x}px, ${thumb.y}px)` }}
       />
-      <span className="joystick-label">移動</span>
     </div>
   );
 }

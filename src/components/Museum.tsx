@@ -42,7 +42,7 @@ class CanvasBoundary extends Component<
 }
 export default function Museum() {
   const [entered, setEntered] = useState(false);
-  const [formOpen, setFormOpen] = useState(true),
+  const [formOpen, setFormOpen] = useState(false),
     [text, setText] = useState("");
   const [mode, setMode] = useState<"demo" | "ai">("demo"),
     [aiAvailable, setAIAvailable] = useState(false);
@@ -61,7 +61,7 @@ export default function Museum() {
   const [lowQuality, setLowQuality] = useState(false),
     [reducedMotion, setReducedMotion] = useState(false),
     [webglError, setWebglError] = useState(false);
-  const [position, setPosition] = useState([0, 7.2]);
+  const [roomVisit, setRoomVisit] = useState(0);
   const joystick = useRef<Motion>({ x: 0, y: 0 });
   const abort = useRef<AbortController | null>(null),
     pendingImages = useRef<HTMLImageElement[]>([]);
@@ -98,10 +98,6 @@ export default function Museum() {
     document.exitPointerLock?.();
     setSelected(id);
   }, []);
-  const onPosition = useCallback(
-    (x: number, z: number) => setPosition([x, z]),
-    [],
-  );
   const failWebgl = useCallback(() => setWebglError(true), []);
   const busy = ["selecting", "loading", "fading"].includes(phase);
   const active =
@@ -111,6 +107,20 @@ export default function Museum() {
     setFormOpen(true);
     setText("");
     setError("");
+  }
+  function leaveRoom() {
+    abort.current?.abort();
+    document.exitPointerLock?.();
+    setEntered(false);
+    setFormOpen(false);
+    setText("");
+    setError("");
+    setPhase("idle");
+    setSelected(null);
+    setList(false);
+    setExhibition(null);
+    setExhibits([]);
+    setRoomVisit((visit) => visit + 1);
   }
   async function createExhibition(e: React.FormEvent) {
     e.preventDefault();
@@ -240,7 +250,7 @@ export default function Museum() {
               lowQuality={lowQuality}
               joystick={joystick}
               onSelect={select}
-              onPosition={onPosition}
+              key={roomVisit}
             />
           </CanvasBoundary>
         )}
@@ -258,40 +268,35 @@ export default function Museum() {
           <button className="entrance-button" onClick={() => setEntered(true)}>
             部屋に入る <ArrowRight size={16} />
           </button>
+          <div className="entrance-tools">
+            <button
+              className="icon-button"
+              onClick={() => {
+                document.exitPointerLock?.();
+                setHelp(true);
+              }}
+              aria-label="美術館の楽しみ方"
+            >
+              <CircleHelp size={19} />
+            </button>
+            <button
+              className="icon-button"
+              onClick={() => {
+                document.exitPointerLock?.();
+                setSettings(true);
+              }}
+              aria-label="表示設定"
+            >
+              <SlidersHorizontal size={18} />
+            </button>
+          </div>
         </section>
       )}
       {entered && (
         <>
-          <header className="header">
-            <a href="/" className="brand" aria-label="余白の美術館 トップ">
-              <span className="brand-mark" aria-hidden="true">
-                余
-              </span>
-              <span>余白の美術館</span>
-            </a>
-            <div className="header-right">
-              <button
-                className="icon-button"
-                onClick={() => {
-                  document.exitPointerLock?.();
-                  setHelp(true);
-                }}
-                aria-label="美術館の楽しみ方"
-              >
-                <CircleHelp size={19} />
-              </button>
-              <button
-                className="icon-button"
-                onClick={() => {
-                  document.exitPointerLock?.();
-                  setSettings(true);
-                }}
-                aria-label="表示設定"
-              >
-                <SlidersHorizontal size={18} />
-              </button>
-            </div>
-          </header>
+          <button className="leave-room" onClick={leaveRoom}>
+            部屋から出る
+          </button>
           {formOpen && (
             <section className="feeling-panel" aria-label="気持ちを入力">
               {!busy && (
@@ -334,6 +339,17 @@ export default function Museum() {
                   </button>
                 </div>
               </form>
+              {exhibition && !busy && (
+                <button
+                  className="text-button artwork-list-button"
+                  onClick={() => {
+                    setFormOpen(false);
+                    setList(true);
+                  }}
+                >
+                  作品一覧
+                </button>
+              )}
               {mode === "ai" && (
                 <p className="privacy-note">
                   入力文と候補作品をOpenAIへ送信します。API利用料が発生します。
@@ -385,43 +401,12 @@ export default function Museum() {
           )}
           {!formOpen && (
             <>
-              {exhibition && (
-                <div className="exhibition-caption">
-                  <h1>{exhibition.title}</h1>
-                </div>
-              )}
-              <div className="exhibition-actions">
+              <div className="room-actions">
                 <button className="pill-button" onClick={openForm}>
-                  気持ちを入力する <ArrowRight size={15} />
+                  気持ちを教える
                 </button>
-                {exhibition && (
-                  <button
-                    className="text-button"
-                    onClick={() => {
-                      document.exitPointerLock?.();
-                      setList(true);
-                    }}
-                  >
-                    作品一覧{" "}
-                    <span>{exhibits.length.toString().padStart(2, "0")}</span>
-                  </button>
-                )}
               </div>
-              {active && !webglError && (
-                <>
-                  <div className="crosshair" aria-hidden="true" />
-                  <Joystick motion={joystick} />
-                  <div className="minimap" aria-label="展示室内の現在位置">
-                    <span
-                      style={{
-                        left: `${((position[0] + 10) / 20) * 100}%`,
-                        top: `${((position[1] + 10) / 20) * 100}%`,
-                      }}
-                    />
-                    <small>現在地</small>
-                  </div>
-                </>
-              )}
+              {active && !webglError && <Joystick motion={joystick} />}
               {error && (
                 <div className="toast" role="status">
                   {error}

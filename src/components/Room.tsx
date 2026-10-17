@@ -23,7 +23,6 @@ interface Props {
   lowQuality: boolean;
   joystick: React.RefObject<Motion>;
   onSelect: (id: number) => void;
-  onPosition?: (x: number, z: number) => void;
 }
 function Architecture() {
   return (
@@ -197,7 +196,6 @@ function Controls({
   active,
   joystick,
   onSelect,
-  onPosition,
 }: Omit<
   Props,
   "exhibits" | "reducedMotion" | "lowQuality" | "exhibitionVersion" | "fading"
@@ -208,8 +206,6 @@ function Controls({
   const pitch = useRef(0);
   const activeRef = useRef(active);
   activeRef.current = active;
-  const lastReport = useRef(0);
-  const wasMoving = useRef(false);
   useEffect(() => {
     if (!active) {
       keys.current.clear();
@@ -329,7 +325,6 @@ function Controls({
     };
     const keyup = (e: KeyboardEvent) => {
       keys.current.delete(e.code);
-      onPosition?.(camera.position.x, camera.position.z);
     };
     const clear = () => {
       keys.current.clear();
@@ -360,8 +355,8 @@ function Controls({
       document.removeEventListener("visibilitychange", clear);
       document.removeEventListener("pointerlockchange", lock);
     };
-  }, [camera, gl, scene, onSelect, onPosition, joystick]);
-  useFrame((state, delta) => {
+  }, [camera, gl, scene, onSelect, joystick]);
+  useFrame((_, delta) => {
     if (!active) return;
     const pressed = (codes: string[]) =>
       codes.some((k) => keys.current.has(k)) ? 1 : 0;
@@ -386,14 +381,6 @@ function Controls({
         (-x * Math.sin(yaw.current) + z * Math.cos(yaw.current)) * speed,
     );
     camera.position.set(nextX, ROOM.eye, nextZ);
-    if (
-      state.clock.elapsedTime - lastReport.current > 0.3 ||
-      (wasMoving.current && length === 0)
-    ) {
-      onPosition?.(nextX, nextZ);
-      lastReport.current = state.clock.elapsedTime;
-    }
-    wasMoving.current = length > 0;
   });
   return null;
 }

@@ -2,17 +2,19 @@ import { test, expect } from "@playwright/test";
 test("movement, look, artwork picking and restoration in the 3D room", async ({
   page,
 }, testInfo) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
   await page.getByRole("button", { name: "部屋に入る" }).click();
+  await page.getByRole("button", { name: "気持ちを教える" }).click();
   await expect(page.locator("canvas")).toBeVisible();
   await page.getByLabel("今の気持ちを教えてください").fill("ひとりで寂しい");
   await page.getByRole("button", { name: "展示する" }).click();
-  await expect(page.getByRole("button", { name: /作品一覧/ })).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "気持ちを教える" }),
+  ).toBeVisible();
   await page.waitForTimeout(2500);
-  const marker = page.locator(".minimap > span");
-  const before = await marker.evaluate((el) =>
-    parseFloat((el as HTMLElement).style.top),
-  );
+  const canvas = page.locator("canvas");
+  const before = await canvas.screenshot();
   if (testInfo.project.name === "desktop") {
     await page.keyboard.down("w");
     await page.waitForTimeout(700);
@@ -34,22 +36,16 @@ test("movement, look, artwork picking and restoration in the 3D room", async ({
     });
     await touch.detach();
   }
-  // Forward input still moves forward (toward the front wall), on keyboard and joystick.
-  await expect
-    .poll(() =>
-      marker.evaluate((el) => parseFloat((el as HTMLElement).style.top)),
-    )
-    .toBeLessThan(before);
   await page.waitForTimeout(350);
-  const stopped = await marker.getAttribute("style");
-  await page.getByRole("button", { name: "気持ちを入力する" }).click();
+  const stopped = await canvas.screenshot();
+  expect(before.equals(stopped)).toBe(false);
+  await page.getByRole("button", { name: "気持ちを教える" }).click();
   await page.getByLabel("今の気持ちを教えてください").fill("wasd");
   await page.keyboard.press("w");
   await page.waitForTimeout(450);
   await page.getByRole("button", { name: "展示に戻る" }).click();
-  expect(await marker.getAttribute("style")).toBe(stopped);
-  const canvas = page.locator("canvas"),
-    box = await canvas.boundingBox();
+  expect((await canvas.screenshot()).equals(stopped)).toBe(true);
+  const box = await canvas.boundingBox();
   expect(box).not.toBeNull();
   // The first selected artwork is centered on the front wall and intersects the eye line.
   if (testInfo.project.name === "mobile")
@@ -65,7 +61,7 @@ test("movement, look, artwork picking and restoration in the 3D room", async ({
   await page.keyboard.press("w");
   await page.waitForTimeout(450);
   await page.getByRole("button", { name: "閉じる", exact: true }).click();
-  expect(await marker.getAttribute("style")).toBe(stopped);
+  expect((await canvas.screenshot()).equals(stopped)).toBe(true);
   const start = await page.screenshot();
   if (testInfo.project.name === "desktop") {
     await page.mouse.move(box!.width * 0.6, box!.height * 0.6);
@@ -101,17 +97,4 @@ test("movement, look, artwork picking and restoration in the 3D room", async ({
   await page.waitForTimeout(350);
   const end = await page.screenshot();
   expect(start.equals(end)).toBe(false);
-  // A rightward drag/swipe turns the view left. Forward movement must then
-  // move left in world space; this catches accidental changes to either sign.
-  const leftBefore = await marker.evaluate((el) =>
-    parseFloat((el as HTMLElement).style.left),
-  );
-  await page.keyboard.down("w");
-  await page.waitForTimeout(700);
-  await page.keyboard.up("w");
-  await expect
-    .poll(() =>
-      marker.evaluate((el) => parseFloat((el as HTMLElement).style.left)),
-    )
-    .toBeLessThan(leftBefore);
 });
