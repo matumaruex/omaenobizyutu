@@ -36,6 +36,9 @@ export async function GET(
   const version = new URL(request.url).searchParams.get("v");
   if (version && version !== image.sha256.slice(0, 16))
     return new Response(null, { status: 404 });
+  let upstreamStatus: number | undefined;
+  let stage = "FETCH_FAILED";
+  const started = Date.now();
   try {
     const signal = AbortSignal.any([
       request.signal,
@@ -44,24 +47,33 @@ export async function GET(
     let url = new URL(image.url),
       response: Response | undefined;
     for (let redirect = 0; redirect <= 3; redirect++) {
-      if (!allowed(url)) throw Error("INVALID_IMAGE_HOST");
+      if (!allowed(url)) {
+        stage = "INVALID_IMAGE_HOST";
+        throw Error();
+      }
       response = await fetch(url, {
         redirect: "manual",
         signal,
         cache: "force-cache",
         next: { revalidate: 86400 },
       });
+      upstreamStatus = response.status;
       if (![301, 302, 303, 307, 308].includes(response.status)) break;
       const location = response.headers.get("location");
       await response.body?.cancel();
       if (!location) throw Error("INVALID_REDIRECT");
       url = new URL(location, url);
     }
-    if (!response?.ok || !response.body) throw Error("IMAGE_UNAVAILABLE");
+    if (!response?.ok || !response.body) {
+      stage = "IMAGE_UNAVAILABLE";
+      throw Error();
+    }
+    stage = "BODY_FAILED";
     const limit = 8 * 1024 * 1024;
     if (Number(response.headers.get("content-length")) > limit) {
       await response.body.cancel();
-      throw Error("IMAGE_TOO_LARGE");
+      stage = "IMAGE_TOO_LARGE";
+      throw Error();
     }
     const reader = response.body.getReader(),
       chunks: Uint8Array[] = [];
@@ -72,11 +84,13 @@ export async function GET(
       length += value.byteLength;
       if (length > limit) {
         await reader.cancel();
-        throw Error("IMAGE_TOO_LARGE");
+        stage = "IMAGE_TOO_LARGE";
+        throw Error();
       }
       chunks.push(value);
     }
     const bytes = Buffer.concat(chunks);
+    stage = "IMAGE_MISMATCH";
     if (
       bytes[0] !== 0xff ||
       bytes[1] !== 0xd8 ||
@@ -93,9 +107,24 @@ export async function GET(
       },
     });
   } catch {
+    // Only stable diagnostic fields; never log the request URL, image bytes,
+    // cookies, keys or arbitrary upstream error/response text.
+    console.warn("artwork_fetch_failed", {
+      id,
+      sourceHost: new URL(image.url).hostname,
+      code: stage,
+      upstreamStatus,
+      elapsedMs: Date.now() - started,
+    });
     return new Response(null, {
       status: 502,
-      headers: { "Cache-Control": "no-store" },
+      headers: {
+        "Cache-Control": "no-store",
+        "X-Artwork-Error": stage,
+        ...(upstreamStatus
+          ? { "X-Artwork-Upstream-Status": String(upstreamStatus) }
+          : {}),
+      },
     });
   }
 }

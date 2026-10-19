@@ -1,4 +1,4 @@
-import { it, expect, vi, afterEach } from "vitest";
+import { it, expect, vi, afterEach, beforeEach } from "vitest";
 import { readFileSync } from "node:fs";
 import seed from "../src/data/catalog-seed.json";
 vi.mock("../src/lib/catalog/server", () => ({
@@ -8,7 +8,11 @@ vi.mock("../src/lib/catalog/server", () => ({
   },
 }));
 import { GET } from "../src/app/api/artwork/[id]/route";
-afterEach(() => vi.unstubAllGlobals());
+beforeEach(() => vi.spyOn(console, "warn").mockImplementation(() => {}));
+afterEach(() => {
+  vi.unstubAllGlobals();
+  vi.restoreAllMocks();
+});
 const url = `http://localhost/api/artwork/aic-27992?revision=${seed.commit}&v=${seed.images.find((a) => a.id === "aic-27992")!.sha256.slice(0, 16)}`;
 it("serves only the DB hash-matched JPEG, with immutable versioned caching", async () => {
   const bytes = readFileSync("tests/fixtures/aic-27992.jpg");
@@ -62,4 +66,24 @@ it("refuses redirects outside allowed image hosts", async () => {
     ).status,
   ).toBe(502);
   expect(mock).toHaveBeenCalledTimes(1);
+});
+
+it("exposes safe upstream diagnostics without response text or URLs", async () => {
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async () => new Response("private provider text", { status: 403 })),
+  );
+  const r = await GET(new Request(url), {
+    params: Promise.resolve({ id: "aic-27992" }),
+  });
+  expect(r.status).toBe(502);
+  expect(r.headers.get("X-Artwork-Error")).toBe("IMAGE_UNAVAILABLE");
+  expect(r.headers.get("X-Artwork-Upstream-Status")).toBe("403");
+  expect(console.warn).toHaveBeenCalledWith(
+    "artwork_fetch_failed",
+    expect.objectContaining({ id: "aic-27992", upstreamStatus: 403 }),
+  );
+  expect(JSON.stringify(vi.mocked(console.warn).mock.calls)).not.toContain(
+    "private provider text",
+  );
 });

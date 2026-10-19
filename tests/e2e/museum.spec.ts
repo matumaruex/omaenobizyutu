@@ -131,3 +131,31 @@ test("pending selection can be cancelled with the input retained", async ({
   );
   await expect(page.getByRole("button", { name: "展示する" })).toBeEnabled();
 });
+
+test("an image taking longer than 15 seconds is kept without another selection", async ({
+  page,
+}) => {
+  test.setTimeout(60000);
+  await setup(page);
+  let calls = 0;
+  page.on("request", (r) => {
+    if (r.url().endsWith("/api/exhibition")) calls++;
+  });
+  await page.route("**/api/artwork/aic-28560**", async (route) => {
+    await new Promise((resolve) => setTimeout(resolve, 16000));
+    await route.fulfill({
+      path: "tests/fixtures/aic-28560.jpg",
+      contentType: "image/jpeg",
+    });
+  });
+  await page.goto("/");
+  await page.getByRole("button", { name: "部屋に入る" }).click();
+  await page.getByRole("button", { name: "気持ちを教える" }).click();
+  await page.getByLabel("今の気持ちを教えてください").fill("ゆっくり見たい");
+  await page.getByRole("button", { name: "展示する" }).click();
+  await expect(
+    page.locator('[aria-label="中央から見回す白い展示室、展示作品4点"]'),
+  ).toBeVisible({ timeout: 30000 });
+  expect(calls).toBe(1);
+  await expect(page.locator(".form-error[role=alert]")).toHaveCount(0);
+});

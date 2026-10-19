@@ -202,7 +202,7 @@ export default function Museum() {
             const timer = setTimeout(() => {
               finish(false);
               img.src = "";
-            }, 15000);
+            }, 35000);
             controller.signal.addEventListener("abort", cancel, { once: true });
             img.onload = () => {
               img
