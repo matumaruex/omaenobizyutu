@@ -83,23 +83,6 @@ function Architecture({ textures }: { textures: RoomTextures }) {
         <planeGeometry args={[span, ROOM.halfDepth * 2]} />
         <meshBasicMaterial color="#e6e4dc" toneMapped={false} />
       </mesh>
-      {/* Recessed daylight strips belong to the ceiling, leaving the walls quiet. */}
-      {[-3.9, 3.9].map((x) => (
-        <group
-          key={x}
-          position={[x, ROOM.height - 0.008, 0]}
-          rotation={[Math.PI / 2, 0, 0]}
-        >
-          <mesh>
-            <planeGeometry args={[0.64, 9.2]} />
-            <meshBasicMaterial color="#d2cfc5" toneMapped={false} />
-          </mesh>
-          <mesh position={[0, 0, 0.002]}>
-            <planeGeometry args={[0.54, 9.08]} />
-            <meshBasicMaterial color="#fcfaf1" toneMapped={false} />
-          </mesh>
-        </group>
-      ))}
     </group>
   );
 }
