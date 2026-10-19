@@ -1,8 +1,9 @@
 "use client";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { exhibitionSlots, paintingSize, ROOM } from "@/lib/layout";
+import { createRoomTextures } from "@/lib/room-materials";
 import type { Exhibit } from "@/lib/types";
 
 interface Props {
@@ -14,78 +15,90 @@ interface Props {
   lowQuality: boolean;
   onSelect: (id: number) => void;
 }
-function Architecture() {
+type RoomTextures = ReturnType<typeof createRoomTextures>;
+const wallSurfaces = [
+  {
+    position: [0, ROOM.height / 2, -ROOM.halfDepth],
+    rotation: [0, 0, 0],
+    tint: "#ffffff",
+  },
+  {
+    position: [ROOM.halfWidth, ROOM.height / 2, 0],
+    rotation: [0, -Math.PI / 2, 0],
+    tint: "#f9f9f7",
+  },
+  {
+    position: [0, ROOM.height / 2, ROOM.halfDepth],
+    rotation: [0, Math.PI, 0],
+    tint: "#fbfaf7",
+  },
+  {
+    position: [-ROOM.halfWidth, ROOM.height / 2, 0],
+    rotation: [0, Math.PI / 2, 0],
+    tint: "#ffffff",
+  },
+] as const;
+function Architecture({ textures }: { textures: RoomTextures }) {
+  const span = ROOM.halfWidth * 2;
   return (
     <group>
-      <ambientLight intensity={1.5} />
-      <hemisphereLight args={["#ffffff", "#d0cec8", 1.7]} />
-      <directionalLight position={[-6, 7, 5]} intensity={2.4} />
-      <mesh position={[0, -0.1, 0]} receiveShadow>
-        <boxGeometry args={[20.4, 0.2, 20.4]} />
-        <meshStandardMaterial color="#e9e8e3" roughness={0.88} />
+      <ambientLight intensity={0.75} />
+      <hemisphereLight args={["#fff9ed", "#b4afa3", 1.1]} />
+      <directionalLight position={[-3, 6, 2]} intensity={1.5} color="#fffcf4" />
+      <mesh rotation={[-Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[span, ROOM.halfDepth * 2]} />
+        <meshBasicMaterial map={textures.floor} toneMapped={false} />
       </mesh>
-      <mesh position={[0, ROOM.height / 2, -10]}>
-        <boxGeometry args={[20.4, ROOM.height, 0.2]} />
-        <meshStandardMaterial color="#fdfdfb" />
-      </mesh>
-      <mesh position={[0, ROOM.height / 2, 10]}>
-        <boxGeometry args={[20.4, ROOM.height, 0.2]} />
-        <meshStandardMaterial color="#fdfdfb" />
-      </mesh>
-      <mesh position={[-10, ROOM.height / 2, 0]}>
-        <boxGeometry args={[0.2, ROOM.height, 20]} />
-        <meshStandardMaterial color="#f5f5f2" />
-      </mesh>
-      <mesh position={[10, ROOM.height / 2, 0]}>
-        <boxGeometry args={[0.2, ROOM.height, 20]} />
-        <meshStandardMaterial color="#f5f5f2" />
-      </mesh>
-      <mesh position={[0, ROOM.height, 0]}>
-        <boxGeometry args={[20.4, 0.15, 20.4]} />
-        <meshStandardMaterial color="#fafaf7" />
-      </mesh>
-      {/* Shallow reveals make the pure white architecture legible. */}
-      {[-9.87, 9.87].map((z) => (
-        <mesh key={z} position={[0, 0.05, z]}>
-          <boxGeometry args={[20, 0.09, 0.025]} />
-          <meshStandardMaterial color="#deded8" />
-        </mesh>
-      ))}
-      {[-9.87, 9.87].map((x) => (
-        <mesh key={x} position={[x, 0.05, 0]}>
-          <boxGeometry args={[0.025, 0.09, 20]} />
-          <meshStandardMaterial color="#deded8" />
-        </mesh>
-      ))}
-      {[-5, 5].map((x) => (
-        <group key={x}>
-          <mesh position={[x, 5.65, 0]}>
-            <boxGeometry args={[0.045, 0.035, 17]} />
-            <meshStandardMaterial color="#b7b8b2" />
+      {wallSurfaces.map((wall, index) => (
+        <group
+          key={index}
+          position={[...wall.position]}
+          rotation={[...wall.rotation]}
+        >
+          <mesh>
+            <planeGeometry args={[span, ROOM.height]} />
+            <meshBasicMaterial
+              map={textures.wall}
+              color={wall.tint}
+              toneMapped={false}
+            />
           </mesh>
-          {[-6, 0, 6].map((z) => (
-            <mesh key={z} position={[x, 5.56, z]} rotation={[0.25, 0, 0]}>
-              <cylinderGeometry args={[0.065, 0.065, 0.19, 12]} />
-              <meshStandardMaterial color="#d4d4ce" />
-            </mesh>
-          ))}
+          {/* A fine recessed joint grounds the wall without a dark skirting board. */}
+          <mesh position={[0, -ROOM.height / 2 + 0.018, 0.004]}>
+            <planeGeometry args={[span, 0.022]} />
+            <meshBasicMaterial
+              color="#aca697"
+              transparent
+              opacity={0.36}
+              toneMapped={false}
+            />
+          </mesh>
+          <mesh position={[0, -ROOM.height / 2 + 0.05, 0.008]}>
+            <planeGeometry args={[span, 0.038]} />
+            <meshBasicMaterial color="#eeece3" toneMapped={false} />
+          </mesh>
         </group>
       ))}
-      <mesh position={[0, 5.7, -1]} rotation={[Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[3.6, 13]} />
-        <meshBasicMaterial color="#ffffff" side={THREE.DoubleSide} />
+      <mesh position={[0, ROOM.height, 0]} rotation={[Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[span, ROOM.halfDepth * 2]} />
+        <meshBasicMaterial color="#e6e4dc" toneMapped={false} />
       </mesh>
-      {[-6.65, -3.33, 0, 3.33, 6.65].map((x) => (
-        <mesh key={x} position={[x, 0.006, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-          <planeGeometry args={[0.008, 20]} />
-          <meshStandardMaterial color="#deddd7" />
-        </mesh>
-      ))}
-      {[-6.65, -3.33, 0, 3.33, 6.65].map((z) => (
-        <mesh key={z} position={[0, 0.006, z]} rotation={[-Math.PI / 2, 0, 0]}>
-          <planeGeometry args={[20, 0.008]} />
-          <meshStandardMaterial color="#deddd7" />
-        </mesh>
+      {/* Recessed daylight strips belong to the ceiling, leaving the walls quiet. */}
+      {[-3.9, 3.9].map((x) => (
+        <group
+          key={x}
+          position={[x, ROOM.height - 0.008, 0]}
+          rotation={[Math.PI / 2, 0, 0]}
+        >
+          <mesh>
+            <planeGeometry args={[0.64, 9.2]} />
+            <meshBasicMaterial color="#d2cfc5" toneMapped={false} />
+          </mesh>
+          <mesh position={[0, 0, 0.002]}>
+            <planeGeometry args={[0.54, 9.08]} />
+            <meshBasicMaterial color="#fcfaf1" toneMapped={false} />
+          </mesh>
+        </group>
       ))}
     </group>
   );
@@ -95,7 +108,9 @@ function Painting({
   index,
   reducedMotion,
   fading,
+  shadow,
 }: {
+  shadow: THREE.Texture;
   exhibit: Exhibit;
   index: number;
   reducedMotion: boolean;
@@ -105,7 +120,14 @@ function Painting({
   const texture = useRef<THREE.Texture | null>(null);
   const [loaded, setLoaded] = useState(false);
   const elapsed = useRef(0);
-  const { width, height } = paintingSize(exhibit.artwork);
+  const size = paintingSize(exhibit.artwork);
+  const scale = index < 4 ? 1 : 0.84;
+  const width = size.width * scale,
+    height = size.height * scale;
+  const mat = 0.075;
+  const rail = 0.026;
+  const outerWidth = width + (mat + rail) * 2;
+  const outerHeight = height + (mat + rail) * 2;
   const slot = exhibitionSlots(12)[index];
   useEffect(() => {
     // Reuse the already decoded image from the bounded preload queue.
@@ -128,9 +150,10 @@ function Painting({
       ? 1
       : THREE.MathUtils.smoothstep(elapsed.current - index * 0.22, 0, 1.9);
     materials.current.forEach((material) => {
+      const target = material.userData.contactShadow ? opacity * 0.2 : opacity;
       material.opacity = fading
         ? Math.max(0, material.opacity - delta / 0.6)
-        : opacity;
+        : target;
       material.depthWrite = material.opacity > 0.98;
     });
   });
@@ -141,23 +164,46 @@ function Painting({
   };
   return (
     <group position={slot.position} rotation={slot.rotation}>
-      <mesh position={[0.018, -0.03, -0.035]}>
-        <boxGeometry args={[width + 0.14, height + 0.14, 0.025]} />
+      <mesh position={[0.02, -0.026, -0.069]}>
+        <planeGeometry args={[outerWidth * 1.34, outerHeight * 1.34]} />
         <meshBasicMaterial
           ref={remember}
-          color="#cecec8"
+          userData={{ contactShadow: true }}
+          map={shadow}
+          color="#6e6253"
+          transparent
+          opacity={0}
+          toneMapped={false}
+        />
+      </mesh>
+      <mesh position={[0, 0, -0.012]}>
+        <boxGeometry args={[outerWidth, outerHeight, 0.085]} />
+        <meshStandardMaterial
+          ref={remember}
+          color="#9a8b75"
+          roughness={0.85}
           transparent
           opacity={0}
         />
       </mesh>
-      <mesh>
-        <boxGeometry args={[width + 0.09, height + 0.09, 0.075]} />
-        <meshStandardMaterial
+      <mesh position={[0, 0, 0.032]}>
+        <planeGeometry args={[width + mat * 2, height + mat * 2]} />
+        <meshBasicMaterial
           ref={remember}
-          color="#bbb9b1"
-          roughness={0.7}
+          color="#f7f4eb"
           transparent
           opacity={0}
+          toneMapped={false}
+        />
+      </mesh>
+      <mesh position={[0.002, -0.003, 0.034]}>
+        <planeGeometry args={[width + 0.015, height + 0.015]} />
+        <meshBasicMaterial
+          ref={remember}
+          color="#b8b0a0"
+          transparent
+          opacity={0}
+          toneMapped={false}
         />
       </mesh>
       <mesh position={[0, 0, 0.041]} userData={{ artworkId: exhibit.id }}>
@@ -352,6 +398,11 @@ function Controls({
   return null;
 }
 export default function Room(props: Props) {
+  const textures = useMemo(createRoomTextures, []);
+  useEffect(
+    () => () => Object.values(textures).forEach((t) => t.dispose()),
+    [textures],
+  );
   return (
     <Canvas
       className="room-canvas"
@@ -366,10 +417,10 @@ export default function Room(props: Props) {
       dpr={props.lowQuality ? [1, 1.5] : [1, 1.7]}
       gl={{ antialias: true, powerPreference: "high-performance" }}
       onCreated={({ gl }) => {
-        gl.setClearColor("#f6f6f2");
+        gl.setClearColor("#f4f1e9");
       }}
     >
-      <Architecture />
+      <Architecture textures={textures} />
       <Controls active={props.active} onSelect={props.onSelect} />
       {props.exhibits.map((exhibit, index) => (
         <Painting
@@ -378,6 +429,7 @@ export default function Room(props: Props) {
           index={index}
           reducedMotion={props.reducedMotion}
           fading={props.fading}
+          shadow={textures.shadow}
         />
       ))}
     </Canvas>

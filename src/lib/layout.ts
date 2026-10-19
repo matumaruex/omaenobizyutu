@@ -1,10 +1,10 @@
 import type { Artwork, Slot } from "./types";
 export const ROOM = {
-  halfWidth: 10,
-  halfDepth: 10,
-  height: 5.8,
+  halfWidth: 6.2,
+  halfDepth: 6.2,
+  height: 4.1,
   eye: 1.65,
-  fov: 72,
+  fov: 58,
   lookLimit: 1.2,
 };
 // Fill all four walls before adding a second work to any wall. From the fixed
@@ -13,18 +13,21 @@ export function exhibitionSlots(count: number): Slot[] {
   if (!Number.isInteger(count) || count < 0 || count > 12)
     throw new Error("展示数は0〜12です");
   const slots: Slot[] = [];
-  for (const offset of [0, -5.5, 5.5]) {
-    slots.push({ position: [offset, ROOM.eye, -9.85], rotation: [0, 0, 0] });
+  for (const offset of [0, -3.8, 3.8]) {
     slots.push({
-      position: [9.85, ROOM.eye, offset],
+      position: [offset, ROOM.eye, -ROOM.halfDepth + 0.08],
+      rotation: [0, 0, 0],
+    });
+    slots.push({
+      position: [ROOM.halfWidth - 0.08, ROOM.eye, offset],
       rotation: [0, -Math.PI / 2, 0],
     });
     slots.push({
-      position: [-offset, ROOM.eye, 9.85],
+      position: [-offset, ROOM.eye, ROOM.halfDepth - 0.08],
       rotation: [0, Math.PI, 0],
     });
     slots.push({
-      position: [-9.85, ROOM.eye, -offset],
+      position: [-ROOM.halfWidth + 0.08, ROOM.eye, -offset],
       rotation: [0, Math.PI / 2, 0],
     });
   }

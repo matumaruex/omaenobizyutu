@@ -234,7 +234,9 @@ export default function Museum() {
   }
   const viewed = exhibits.find((e) => e.id === selected);
   return (
-    <main className={`museum ${reducedMotion ? "reduce-motion" : ""}`}>
+    <main
+      className={`museum ${entered ? "is-entered" : ""} ${reducedMotion ? "reduce-motion" : ""}`}
+    >
       <div className="room-layer">
         {!webglError && (
           <CanvasBoundary onError={failWebgl}>

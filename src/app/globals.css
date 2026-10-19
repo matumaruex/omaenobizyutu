@@ -1,9 +1,9 @@
 :root {
-  --ink: #343a36;
-  --muted: #7b817a;
-  --line: #dcded6;
-  --paper: #fafbf7;
-  --accent: #536854;
+  --ink: #443f36;
+  --muted: #857e71;
+  --line: #dfd9ce;
+  --paper: #fbf9f4;
+  --accent: #75664f;
   --serif: "Yu Mincho", "Hiragino Mincho ProN", "Noto Serif JP", Georgia, serif;
   --sans: "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
 }
@@ -14,7 +14,7 @@ html,
 body {
   margin: 0;
   min-height: 100%;
-  background: #f7f8f3;
+  background: #f5f2eb;
   color: var(--ink);
   font-family: var(--sans);
   font-size: 13px;
@@ -52,7 +52,7 @@ button:focus-visible,
 a:focus-visible,
 textarea:focus-visible,
 input:focus-visible {
-  outline: 2px solid #65836a;
+  outline: 2px solid #968365;
   outline-offset: 5px;
 }
 button {
@@ -63,14 +63,14 @@ svg {
   flex-shrink: 0;
 }
 ::selection {
-  background: #dbe4d6;
+  background: #e7dfce;
 }
 .museum {
   position: relative;
   min-height: 320px;
   height: 100svh;
   overflow: hidden;
-  background: #f3f3ee;
+  background: #f3f0e8;
 }
 .room-layer {
   position: absolute;
@@ -98,7 +98,7 @@ svg {
   gap: 20px;
   font-size: 12px;
   color: var(--muted);
-  background: linear-gradient(#f8f8f5 65%, #eeeee9);
+  background: linear-gradient(#f8f6f0 65%, #e9e4d9);
 }
 .icon-button {
   width: 36px;
@@ -107,11 +107,11 @@ svg {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  color: #6e776a;
+  color: #81796b;
   transition: background 0.2s;
 }
 .icon-button:hover {
-  background: #e7eae2;
+  background: #eee9df;
 }
 .eyebrow {
   font-family: Georgia, serif;
@@ -120,7 +120,7 @@ svg {
   display: flex;
   align-items: center;
   gap: 12px;
-  color: #7c8975;
+  color: #958975;
 }
 .feeling-form {
   border: 1px solid #d5dbcf;
@@ -133,7 +133,7 @@ svg {
 .feeling-form label {
   display: block;
   font-size: 11px;
-  color: #68735f;
+  color: #766d5e;
   letter-spacing: 0.06em;
 }
 .feeling-form textarea {
@@ -147,11 +147,11 @@ svg {
   outline: none;
   background: none;
   font-size: 12px;
-  color: #414c3d;
+  color: #484136;
   line-height: 1.9;
 }
 .feeling-form textarea::placeholder {
-  color: #a2a99c;
+  color: #a39a8c;
   font-size: 11px;
 }
 .form-bottom {
@@ -162,14 +162,14 @@ svg {
 }
 .form-bottom > span {
   font-size: 9px;
-  color: #a2aa9a;
+  color: #a49b8d;
   letter-spacing: 0.03em;
 }
 .create-button {
   display: flex;
   align-items: center;
   gap: 25px;
-  background: #52634e;
+  background: #71634f;
   color: #fff;
   padding: 13px 17px;
   border-radius: 2px;
@@ -178,7 +178,7 @@ svg {
   transition: background 0.2s;
 }
 .create-button:hover:not(:disabled) {
-  background: #394e37;
+  background: #574a39;
 }
 .mode-row {
   display: flex;
@@ -187,7 +187,7 @@ svg {
 }
 .mode {
   font-size: 9px;
-  color: #9aa18f;
+  color: #a49a89;
   display: flex;
   gap: 5px;
   align-items: center;
@@ -196,13 +196,13 @@ svg {
   border-radius: 2px;
 }
 .mode.active {
-  color: #62745a;
-  border-color: #c9d2bf;
-  background: #eef2e7b3;
+  color: #786b55;
+  border-color: #d6cbb8;
+  background: #f1ece1b3;
 }
 .privacy-note {
   font-size: 9px;
-  color: #929a88;
+  color: #978e7e;
   line-height: 1.9;
   margin: 11px 0;
 }
@@ -211,7 +211,7 @@ svg {
   align-items: center;
   gap: 9px;
   font-size: 10px;
-  color: #7b8871;
+  color: #887a64;
   padding: 5px 0;
 }
 .text-button:hover {
@@ -235,14 +235,14 @@ svg {
   gap: 12px;
   align-items: center;
   font-size: 10px;
-  color: #77876d;
+  color: #8b7e68;
   flex-wrap: wrap;
   margin-top: 18px;
 }
 .loading-line {
   height: 1px;
   width: 40px;
-  background: #a6b199;
+  background: #c4b79e;
   position: relative;
   display: block;
   overflow: hidden;
@@ -250,7 +250,7 @@ svg {
 .loading-line:after {
   content: "";
   position: absolute;
-  background: #566a4a;
+  background: #8f7956;
   width: 20px;
   inset: 0;
   animation: progress 1.4s infinite ease-in-out;
@@ -290,24 +290,24 @@ svg {
   gap: 8px;
   max-width: 85%;
   background: #fffffff0;
-  border: 1px solid #d9dece;
+  border: 1px solid #e4dccd;
   padding: 7px 14px;
-  color: #7a816f;
+  color: #8a7e6b;
   font-size: 10px;
 }
 .dialog {
   padding: 0;
-  border: 1px solid #e5e7dd;
-  background: #fbfcf8;
+  border: 1px solid #e5dfd3;
+  background: #fbf9f4;
   color: var(--ink);
-  border-radius: 3px;
+  border-radius: 4px;
   width: min(540px, calc(100% - 30px));
   max-height: 90svh;
-  box-shadow: 0 30px 150px #3c48231c;
+  box-shadow: 0 28px 100px #463b2420;
   overscroll-behavior: contain;
 }
 .dialog::backdrop {
-  background: #e9ede3c7;
+  background: #e8e3d8b8;
   backdrop-filter: blur(12px);
 }
 .dialog-inner {
@@ -348,13 +348,13 @@ svg {
 }
 .guide-step p {
   font-size: 11px;
-  color: #87917b;
+  color: #948a79;
   line-height: 2;
   margin: 6px 0;
 }
 .license-note {
   font-size: 9px;
-  color: #929c87;
+  color: #a09583;
   line-height: 2;
   margin: 20px 0 0;
 }
@@ -363,23 +363,23 @@ svg {
   justify-content: space-between;
   align-items: center;
   padding: 23px 0;
-  border-bottom: 1px solid #e1e6d8;
+  border-bottom: 1px solid #e6dfd2;
   font-size: 12px;
 }
 .setting-row small {
   display: block;
   font-size: 10px;
-  color: #9aa48f;
+  color: #a09583;
   margin-top: 9px;
 }
 .setting-row input {
-  accent-color: #607752;
+  accent-color: #8d7958;
   width: 17px;
   height: 17px;
 }
 .artwork-dialog {
   width: min(1100px, calc(100% - 32px));
-  background: #fcfcf9;
+  background: #fbf9f4;
 }
 .artwork-dialog .dialog-inner {
   padding: 45px 45px 30px;
@@ -396,7 +396,7 @@ svg {
   max-height: 100%;
   max-width: 100%;
   object-fit: contain;
-  box-shadow: 0 7px 25px #00000010;
+  box-shadow: 0 10px 32px #44382116;
 }
 .artwork-toolbar {
   display: flex;
@@ -407,7 +407,7 @@ svg {
 }
 .artwork-toolbar p {
   font-family: var(--serif);
-  color: #a0a890;
+  color: #a09583;
   font-size: 11px;
   letter-spacing: 0.1em;
 }
@@ -420,13 +420,13 @@ svg {
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  border-top: 1px solid #dde3d2;
+  border-top: 1px solid #e3dbcd;
   padding: 19px 0;
   font-size: 11px;
   letter-spacing: 0.05em;
 }
 .disclosure svg {
-  color: #8c9c7e;
+  color: #a18b68;
   transition: transform 0.2s;
 }
 .rotated {
@@ -442,7 +442,7 @@ svg {
 .original-title {
   font-family: Georgia, serif;
   font-style: italic;
-  color: #9aa58c;
+  color: #a09583;
   font-size: 13px;
   margin: 0 0 17px;
 }
@@ -451,11 +451,11 @@ svg {
 }
 .disclosure-content > p:not(.license-note):not(.original-title) {
   font-size: 11px;
-  color: #7a886e;
+  color: #8b806d;
 }
 .small {
   font-size: 10px;
-  color: #929e85;
+  color: #a09583;
   line-height: 2;
 }
 .art-facts {
@@ -463,22 +463,22 @@ svg {
 }
 .source-link {
   font-size: 10px;
-  color: #768b68;
+  color: #8d7958;
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  border-bottom: 1px solid #c8d3bc;
+  border-bottom: 1px solid #d8cbb5;
   padding-bottom: 5px;
 }
 .interpretation-label {
   font-size: 9px;
-  color: #8b9e7d;
+  color: #9c8a6f;
 }
 .reason-text {
   font-family: var(--serif);
   font-size: 14px !important;
   line-height: 2.3 !important;
-  color: #78896a;
+  color: #897960;
 }
 .subtle-message {
   font-size: 10px;
@@ -509,7 +509,7 @@ svg {
   max-width: 100%;
   width: 100%;
   object-fit: contain;
-  background: #f1f3eb;
+  background: #f0ece3;
   padding: 10px;
 }
 .artwork-grid button > span {
@@ -520,7 +520,7 @@ svg {
 }
 .artwork-grid small {
   display: block;
-  color: #9aa58e;
+  color: #a09583;
   font-size: 9px;
   line-height: 1.7;
 }
@@ -654,7 +654,7 @@ svg {
   gap: 7px;
   margin-top: 15px;
   font-size: 9px;
-  color: #879979;
+  color: #948368;
   text-decoration: underline;
   text-underline-offset: 4px;
 }
@@ -667,22 +667,26 @@ svg {
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  gap: 38px;
-  background: #fafbf8f5;
+  gap: 46px;
+  background:
+    radial-gradient(ellipse at 70% 12%, #ffffff 0, #ffffff00 58%),
+    linear-gradient(145deg, #f9f7f1, #eee9de);
+  color: #554c3d;
 }
 .entrance h1 {
   font-family: var(--serif);
-  font-size: clamp(24px, 4vw, 32px);
+  font-size: clamp(25px, 4vw, 34px);
   font-weight: 400;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.26em;
+  padding-left: 0.26em;
   margin: 0;
 }
 .entrance-button {
   display: flex;
   align-items: center;
   gap: 26px;
-  border-bottom: 1px solid #adb7a4;
-  padding: 12px 5px;
+  border-bottom: 1px solid #c7baa3;
+  padding: 15px 5px;
   font-size: 12px;
   letter-spacing: 0.12em;
 }
@@ -693,18 +697,20 @@ svg {
 .feeling-panel {
   position: absolute;
   left: 50%;
-  bottom: max(32px, env(safe-area-inset-bottom));
+  bottom: max(40px, calc(env(safe-area-inset-bottom) + 16px));
   transform: translateX(-50%);
-  width: 420px;
+  width: 448px;
   max-width: calc(100% - 40px);
   max-height: calc(100% - 112px);
   overflow-y: auto;
-  border: 1px solid #d5dbcf;
+  border: 1px solid #e2dacbe6;
   border-radius: 4px;
-  padding: 24px;
-  background: #fffffff0;
-  box-shadow: 0 8px 40px #4e5b4109;
-  backdrop-filter: blur(8px);
+  padding: 32px;
+  background: #fbf9f3f2;
+  box-shadow:
+    0 16px 64px #4d402312,
+    0 1px 3px #4d402308;
+  backdrop-filter: blur(18px);
 }
 .feeling-form {
   padding: 0;
@@ -715,14 +721,21 @@ svg {
 }
 .feeling-form label {
   padding-right: 20px;
-  font-size: 13px;
-  letter-spacing: 0.04em;
+  font-family: var(--serif);
+  font-size: 15px;
+  letter-spacing: 0.08em;
 }
 .feeling-form textarea {
   resize: none;
-  min-height: 76px;
-  margin: 10px 0 14px;
-  border-bottom: 1px solid #e4e8df;
+  min-height: 104px;
+  margin: 12px 0 20px;
+  border-bottom: 1px solid #e4ddcf;
+  font-size: 15px;
+  line-height: 2;
+}
+.feeling-form textarea:focus-visible {
+  outline: none;
+  border-bottom-color: #a69270;
 }
 .create-button {
   gap: 16px;
@@ -734,12 +747,12 @@ svg {
 }
 @media (max-width: 760px) {
   .feeling-panel {
-    bottom: max(24px, env(safe-area-inset-bottom));
-    padding: 22px 20px 18px;
+    bottom: max(24px, calc(env(safe-area-inset-bottom) + 12px));
+    padding: 30px 24px 22px;
   }
   .feeling-form textarea {
     font-size: 16px;
-    min-height: 70px;
+    min-height: 100px;
   }
 }
 
@@ -751,11 +764,13 @@ svg {
 }
 .leave-room {
   position: absolute;
-  top: max(24px, env(safe-area-inset-top));
-  right: 28px;
-  padding: 10px;
+  top: max(20px, env(safe-area-inset-top));
+  right: clamp(14px, 3vw, 36px);
+  min-height: 44px;
+  padding: 12px;
   font-size: 10px;
-  color: #7b817a;
+  letter-spacing: 0.08em;
+  color: #726a5e;
 }
 .leave-room:hover {
   color: var(--ink);
@@ -764,11 +779,40 @@ svg {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  bottom: max(32px, env(safe-area-inset-bottom));
+  bottom: max(40px, calc(env(safe-area-inset-bottom) + 16px));
 }
 .room-actions .pill-button {
-  padding: 13px 20px;
-  font-size: 11px;
+  justify-content: center;
+  min-height: 48px;
+  padding: 15px 30px;
+  border: 1px solid #d5cbbad9;
+  border-radius: 3px;
+  background: #fbf9f2e8;
+  box-shadow: 0 3px 18px #53452b08;
+  color: #75664f;
+  font-family: var(--serif);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  white-space: nowrap;
+  backdrop-filter: blur(16px);
+  transition:
+    background 0.25s,
+    border-color 0.25s;
+}
+.room-actions .pill-button:hover {
+  background: #fffdf7;
+  border-color: #b4a58a;
+}
+.is-entered .room-layer {
+  animation: enter-room 0.8s ease-out both;
+}
+@keyframes enter-room {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 .artwork-list-button {
   margin-top: 14px;
