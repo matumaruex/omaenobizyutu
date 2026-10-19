@@ -13,6 +13,8 @@ import type { Exhibit, Exhibition, SelectionReview } from "@/lib/types";
 import ArtworkView from "./ArtworkView";
 import Dialog from "./Dialog";
 import SelectionReviewView from "./SelectionReviewView";
+import UsageView, { UsageDetail } from "./UsageView";
+import type { UsageRecord } from "@/lib/usage/types";
 const Room = dynamic(() => import("./Room"), {
   ssr: false,
   loading: () => (
@@ -45,6 +47,12 @@ export default function Museum() {
   const [reviewEnabled, setReviewEnabled] = useState(false);
   const [review, setReview] = useState<SelectionReview | null>(null);
   const [reviewOpen, setReviewOpen] = useState(false);
+  const [usageOpen, setUsageOpen] = useState<"settings" | "form" | null>(null);
+  const submitting = useRef(false);
+  const [lastAccounting, setLastAccounting] = useState<{
+    record: UsageRecord;
+    persisted: boolean;
+  } | null>(null);
   const [exhibitionVersion, setExhibitionVersion] = useState(0);
   const [exhibition, setExhibition] = useState<Exhibition | null>(null),
     [exhibits, setExhibits] = useState<Exhibit[]>([]);
@@ -106,6 +114,7 @@ export default function Museum() {
     !settings &&
     !list &&
     !reviewOpen &&
+    !usageOpen &&
     !busy;
   function openForm() {
     document.exitPointerLock?.();
@@ -114,6 +123,9 @@ export default function Museum() {
     setError("");
   }
   function leaveRoom() {
+    submitting.current = false;
+    setUsageOpen(null);
+    setLastAccounting(null);
     abort.current?.abort();
     document.exitPointerLock?.();
     setEntered(false);
@@ -131,7 +143,8 @@ export default function Museum() {
   }
   async function createExhibition(e: React.FormEvent) {
     e.preventDefault();
-    if (!text.trim() || busy) return;
+    if (!text.trim() || busy || submitting.current) return;
+    submitting.current = true;
     abort.current?.abort();
     const inputText = text.trim();
     const controller = new AbortController();
@@ -141,11 +154,17 @@ export default function Museum() {
     try {
       const response = await fetch("/api/exhibition", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Idempotency-Key": crypto.randomUUID(),
+        },
         body: JSON.stringify({ text: inputText }),
         signal: controller.signal,
       });
       const data = await response.json();
+      if (controller.signal.aborted || !mounted.current) return;
+      const accounting = data.verification?.accounting || data.accounting;
+      if (accounting) setLastAccounting(accounting);
       if (!response.ok)
         throw new Error(data.error || "選定に接続できませんでした。");
       const result = data as Exhibition;
@@ -256,6 +275,8 @@ export default function Museum() {
           : "展示を作れませんでした。もう一度お試しください。",
       );
       setPhase("idle");
+    } finally {
+      if (abort.current === controller) submitting.current = false;
     }
   }
   const viewed = exhibits.find((e) => e.id === selected);
@@ -390,6 +411,28 @@ export default function Museum() {
                   選定結果を確認（試験用）
                 </button>
               )}
+              {reviewEnabled && !busy && (
+                <button
+                  className="text-button"
+                  onClick={() => {
+                    setFormOpen(false);
+                    setUsageOpen("form");
+                  }}
+                >
+                  API使用量・料金（試験用）
+                </button>
+              )}
+              {reviewEnabled && lastAccounting && !busy && (
+                <section aria-label="直近のAPI使用量">
+                  <h3>直近のAPI使用量</h3>
+                  <UsageDetail record={lastAccounting.record} />
+                  {!lastAccounting.persisted && (
+                    <p role="alert">
+                      使用量を保存できませんでした。累計に反映されていない可能性があります。自動再送はしません。
+                    </p>
+                  )}
+                </section>
+              )}
               <p className="privacy-note">
                 入力文と候補作品の資料をXiaomi
                 MiMoへ送信します。API利用料が発生します。
@@ -416,6 +459,7 @@ export default function Museum() {
                     className="text-button"
                     onClick={() => {
                       abort.current?.abort();
+                      submitting.current = false;
                       setPhase("idle");
                     }}
                   >
@@ -529,10 +573,30 @@ export default function Museum() {
               onChange={(e) => setReviewEnabled(e.target.checked)}
             />
           </label>
+          {reviewEnabled && (
+            <button
+              className="text-button"
+              onClick={() => {
+                setSettings(false);
+                setUsageOpen("settings");
+              }}
+            >
+              API使用量・料金（試験用）
+            </button>
+          )}
           <p className="license-note">
-            作品はGitHubの絵画DBから、MiMoが選定します。入力と試験結果は、このページを開いている間だけ保持し、退出すると消去します。
+            作品はGitHubの絵画DBから、MiMoが選定します。入力と選定結果は退出すると消去します。使用トークン数・推定料金・日時は試験記録として保存します。入力文は保存しません。
           </p>
         </Dialog>
+      )}
+      {usageOpen && (
+        <UsageView
+          onClose={() => {
+            if (usageOpen === "settings") setSettings(true);
+            else setFormOpen(true);
+            setUsageOpen(null);
+          }}
+        />
       )}
       {reviewOpen && review && (
         <SelectionReviewView

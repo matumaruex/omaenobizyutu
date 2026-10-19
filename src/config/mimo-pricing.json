@@ -1,0 +1,9 @@
+{
+  "version": "公式海外単価2026-10-08・仮定為替150円",
+  "inputUsdPerMillion": 0.14,
+  "cachedInputUsdPerMillion": 0.0028,
+  "outputUsdPerMillion": 0.28,
+  "usdJpy": 150,
+  "source": "https://mimo.mi.com/docs/en-US/pricing",
+  "checkedOn": "2026-10-20"
+}

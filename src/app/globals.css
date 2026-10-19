@@ -855,3 +855,36 @@ svg {
   font-size: 11px;
   color: var(--muted);
 }
+
+.usage-summary {
+  margin: 1.2rem 0;
+  padding: 1rem;
+  background: var(--paper, #f5f3ef);
+  border-radius: 10px;
+}
+.usage-tokens {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem 1rem;
+  margin: 0.8rem 0;
+  font-size: 0.78rem;
+}
+.usage-tokens div {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.usage-tokens dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+.usage-rates {
+  margin: 1rem 0;
+  font-size: 0.8rem;
+}
+.usage-rates summary {
+  cursor: pointer;
+}
+.usage-records {
+  padding-left: 1.5rem;
+}

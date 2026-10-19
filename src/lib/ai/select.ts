@@ -5,6 +5,8 @@ import { selectCandidates } from "./candidates";
 import { validateSelections } from "../curation";
 import { getCatalog } from "../catalog/server";
 import type { Exhibition } from "../types";
+import { readUsage, unknownUsage } from "../usage/pricing";
+import type { TokenUsage } from "../usage/types";
 export const MIMO_MODEL = "mimo-v2.6-flash";
 const endpoint = "https://api.xiaomimimo.com/v1";
 const schema = z.object({
@@ -27,10 +29,15 @@ export function aiConfigured() {
 export async function selectWithAI(
   text: string,
   signal?: AbortSignal,
+  accounting?: {
+    beforeRequest: () => Promise<void>;
+    onUsage: (usage: TokenUsage) => Promise<void>;
+  },
 ): Promise<Exhibition> {
   if (!aiConfigured()) throw Error("AI_NOT_CONFIGURED");
   const catalog = await getCatalog();
   const candidates = selectCandidates(text, catalog.selection);
+  let usage = unknownUsage();
   const mimo = createOpenAI({
     apiKey: process.env.MIMO_API_KEY,
     baseURL: endpoint,
@@ -42,7 +49,21 @@ export async function selectWithAI(
       body.thinking = { type: "disabled" };
       body.max_completion_tokens = body.max_tokens;
       delete body.max_tokens;
-      return fetch(input, { ...init, body: JSON.stringify(body) });
+      // Reserve a durable call slot immediately before the actual provider fetch.
+      // The same gate covers invalid model output and transport failures.
+      await accounting?.beforeRequest();
+      const response = await fetch(input, {
+        ...init,
+        body: JSON.stringify(body),
+      });
+      try {
+        const raw = await response.clone().json();
+        usage = readUsage(raw?.usage);
+      } catch {
+        /* No usage body: leave counts unknown, never assume zero. */
+      }
+      await accounting?.onUsage(usage);
+      return response;
     },
   });
   const result = await generateText({
@@ -64,13 +85,11 @@ export async function selectWithAI(
         primary: a.primary,
         secondary: a.secondary,
         summary: a.summary.slice(0, 240),
-        fitting: a.fitting
-          .slice(0, 2)
-          .map((f) => ({
-            situation: f.situation.slice(0, 180),
-            reason: f.reason.slice(0, 180),
-            strength: f.strength,
-          })),
+        fitting: a.fitting.slice(0, 2).map((f) => ({
+          situation: f.situation.slice(0, 180),
+          reason: f.reason.slice(0, 180),
+          strength: f.strength,
+        })),
         cautions: a.cautions.slice(0, 3).map((c) => c.slice(0, 160)),
         meaning: {
           author_intent: {
@@ -105,8 +124,9 @@ export async function selectWithAI(
       catalogCommit: catalog.commit,
       catalogCount: catalog.artworks.length,
       candidateCount: candidates.length,
-      inputTokens: result.usage.inputTokens ?? 0,
-      outputTokens: result.usage.outputTokens ?? 0,
+      inputTokens: usage.inputTokens,
+      outputTokens: usage.outputTokens,
+      usage,
     },
   };
 }

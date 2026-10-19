@@ -1,7 +1,11 @@
 import { z } from "zod";
 import { aiConfigured, selectWithAI } from "@/lib/ai/select";
+import { UsageLedger, UsageGateError } from "@/lib/usage/ledger";
+import { unknownUsage, estimateCost } from "@/lib/usage/pricing";
+import type { UsageRecord } from "@/lib/usage/types";
 export const runtime = "nodejs";
-export const maxDuration = 45;
+// Leave time for durable accounting around the 35-second provider timeout.
+export const maxDuration = 60;
 const inputSchema = z
   .object({
     text: z.string().trim().min(1).max(800),
@@ -80,12 +84,89 @@ export async function POST(request: Request) {
       },
       { status: 429, headers },
     );
+  const requestId = request.headers.get("idempotency-key");
+  if (!requestId || !z.uuid().safeParse(requestId).success)
+    return Response.json(
+      { error: "画面を更新して、もう一度お試しください。" },
+      { status: 400, headers },
+    );
   inFlight++;
+  let record: UsageRecord | undefined;
+  let gateError: UsageGateError | undefined;
+  let observed = unknownUsage();
+  let persisted = true;
+  let ledger: UsageLedger | undefined;
+  const finish = async (status: "succeeded" | "failed") => {
+    if (!record || !ledger) return;
+    record = {
+      ...record,
+      status,
+      usage: observed,
+      estimate: estimateCost(observed, record.pricing),
+    };
+    try {
+      await ledger.update(record, observed, status);
+      persisted = true;
+    } catch {
+      persisted = false;
+    }
+  };
   try {
-    return Response.json(await selectWithAI(input.text, request.signal), {
-      headers,
+    ledger = new UsageLedger();
+    const result = await selectWithAI(input.text, request.signal, {
+      beforeRequest: async () => {
+        if (request.signal.aborted) throw Error("ABORTED");
+        try {
+          record = await ledger!.reserve(
+            requestId,
+            input.text,
+            "mimo-v2.6-flash",
+          );
+        } catch (error) {
+          gateError =
+            error instanceof UsageGateError
+              ? error
+              : new UsageGateError("UNAVAILABLE");
+          throw gateError;
+        }
+      },
+      onUsage: async (usage) => {
+        observed = usage;
+        if (!record) return;
+        try {
+          record = await ledger!.update(record, usage, "pending");
+        } catch {
+          persisted = false;
+        }
+      },
     });
+    await finish("succeeded");
+    if (record) result.verification.accounting = { record, persisted };
+    return Response.json(result, { headers });
   } catch (error) {
+    await finish("failed");
+    const blocked =
+      gateError || (error instanceof UsageGateError ? error : undefined);
+    if (blocked) {
+      const message =
+        blocked.code === "DUPLICATE"
+          ? "同じ展示の連続送信を防止しました。同じ文章での再選定は1分ほど待ってください。"
+          : blocked.code === "LIMIT"
+            ? "試験用のAPI呼び出し上限に達しました。使用量画面で確認してください。"
+            : "使用量の保存先に接続できないため、API呼び出しを停止しました。接続設定を確認してください。";
+      return Response.json(
+        { error: message, code: blocked.code },
+        {
+          status:
+            blocked.code === "DUPLICATE"
+              ? 409
+              : blocked.code === "LIMIT"
+                ? 429
+                : 503,
+          headers,
+        },
+      );
+    }
     // Never log request text, SDK errors or provider response bodies.
     const status =
       typeof error === "object" && error !== null && "statusCode" in error
@@ -101,6 +182,7 @@ export async function POST(request: Request) {
       {
         error: message,
         code: "AI_FAILED",
+        ...(record ? { accounting: { record, persisted } } : {}),
       },
       { status: 502, headers },
     );

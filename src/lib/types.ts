@@ -1,3 +1,4 @@
+import type { TokenUsage, UsageRecord } from "./usage/types";
 export type Role = "共鳴" | "別のまなざし" | "偶然の出会い" | "余韻";
 export interface Artwork {
   id: string;
@@ -32,8 +33,10 @@ export interface Exhibition {
     catalogCommit: string;
     candidateCount: number;
     catalogCount: number;
-    inputTokens: number;
-    outputTokens: number;
+    inputTokens: number | null;
+    outputTokens: number | null;
+    usage: TokenUsage;
+    accounting?: { record: UsageRecord; persisted: boolean };
   };
 }
 export interface SelectionReview {

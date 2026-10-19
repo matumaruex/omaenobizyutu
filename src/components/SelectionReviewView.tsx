@@ -1,6 +1,7 @@
 "use client";
 import type { SelectionReview } from "@/lib/types";
 import Dialog from "./Dialog";
+import { UsageDetail } from "./UsageView";
 export default function SelectionReviewView({
   review,
   onClose,
@@ -36,13 +37,24 @@ export default function SelectionReviewView({
           </li>
         ))}
       </ol>
+      {result.verification.accounting && (
+        <section aria-label="今回のAPI使用量">
+          <h3>今回のAPI使用量</h3>
+          <UsageDetail record={result.verification.accounting.record} />
+          {!result.verification.accounting.persisted && (
+            <p role="alert">
+              この使用量を保存できませんでした。累計に反映されていない可能性があります。自動再送はしません。
+            </p>
+          )}
+        </section>
+      )}
       <p className="small">
         {result.verification.model} · 候補 {result.verification.candidateCount}{" "}
         / DB {result.verification.catalogCount}作品
         <br />
         DB版 {result.verification.catalogCommit.slice(0, 12)} · 入力{" "}
-        {result.verification.inputTokens} / 出力{" "}
-        {result.verification.outputTokens} tokens
+        {result.verification.inputTokens ?? "未取得"} / 出力{" "}
+        {result.verification.outputTokens ?? "未取得"} トークン
       </p>
     </Dialog>
   );

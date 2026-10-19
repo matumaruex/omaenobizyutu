@@ -20,6 +20,12 @@ export function exhibition(reverse = false) {
       catalogCount: 200,
       inputTokens: 6000,
       outputTokens: 700,
+      usage: {
+        inputTokens: 6000,
+        outputTokens: 700,
+        reasoningTokens: 0,
+        cachedInputTokens: 2000,
+      },
     },
   };
 }
@@ -30,6 +36,42 @@ export async function setup(page: Page) {
         aiAvailable: true,
         catalogCount: 200,
         catalogCommit: seed.commit,
+      },
+    }),
+  );
+  await page.route("**/api/usage", (r) =>
+    r.fulfill({
+      json: {
+        calls: 2,
+        limit: 50,
+        totalNanoJpy: 147840000,
+        unpricedCalls: 1,
+        pendingCalls: 0,
+        pricing: {
+          version: "試験単価",
+          inputUsdPerMillion: 0.14,
+          cachedInputUsdPerMillion: 0.0028,
+          outputUsdPerMillion: 0.28,
+          usdJpy: 150,
+          source: "https://mimo.mi.com/docs/en-US/pricing",
+          checkedOn: "2026-10-20",
+        },
+        records: [
+          {
+            id: "fixture",
+            model: "mimo-v2.6-flash",
+            createdAt: "2026-10-19T00:00:00Z",
+            status: "succeeded",
+            usage: {
+              inputTokens: 6000,
+              outputTokens: 700,
+              reasoningTokens: 0,
+              cachedInputTokens: 2000,
+            },
+            estimate: { nanoJpy: 114240000, cacheAssumedMiss: false },
+            pricing: { version: "試験単価", usdJpy: 150 },
+          },
+        ],
       },
     }),
   );
