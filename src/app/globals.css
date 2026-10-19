@@ -888,3 +888,35 @@ svg {
 .usage-records {
   padding-left: 1.5rem;
 }
+
+.history-entry {
+  margin: 1rem 0;
+  padding: 1rem 0;
+  border-top: 1px solid #ded8cd;
+  overflow-wrap: anywhere;
+}
+.history-entry > summary {
+  cursor: pointer;
+  line-height: 1.8;
+}
+.history-entry > summary small {
+  color: #80776b;
+}
+.history-pagination {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.4rem;
+}
+.search-trace {
+  margin: 1.4rem 0;
+  font-size: 0.82rem;
+  overflow-wrap: anywhere;
+}
+.search-trace > summary {
+  cursor: pointer;
+}
+.search-trace > ol {
+  padding-left: 1.4rem;
+  line-height: 1.9;
+}

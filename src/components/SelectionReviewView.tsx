@@ -1,6 +1,7 @@
 "use client";
 import type { SelectionReview } from "@/lib/types";
 import Dialog from "./Dialog";
+import SearchTraceView from "./SearchTraceView";
 import { UsageDetail } from "./UsageView";
 export default function SelectionReviewView({
   review,
@@ -16,7 +17,7 @@ export default function SelectionReviewView({
       onClose={onClose}
       className="review-dialog"
     >
-      <span className="eyebrow">SELECTION REVIEW</span>
+      <span className="eyebrow">試験用の選定記録</span>
       <h2>選定結果</h2>
       <h3>入力した文章</h3>
       <p className="review-input">{review.input}</p>
@@ -37,13 +38,19 @@ export default function SelectionReviewView({
           </li>
         ))}
       </ol>
+      {result.verification.search && (
+        <SearchTraceView
+          search={result.verification.search}
+          selectedIds={result.selections.map((s) => s.id)}
+        />
+      )}
       {result.verification.accounting && (
         <section aria-label="今回のAPI使用量">
           <h3>今回のAPI使用量</h3>
           <UsageDetail record={result.verification.accounting.record} />
           {!result.verification.accounting.persisted && (
             <p role="alert">
-              この使用量を保存できませんでした。累計に反映されていない可能性があります。自動再送はしません。
+              選定結果・使用量を保存できませんでした。履歴や累計に反映されていない可能性があります。自動再送はしません。
             </p>
           )}
         </section>

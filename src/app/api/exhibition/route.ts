@@ -1,3 +1,4 @@
+import type { SavedSelection } from "@/lib/history/types";
 import { z } from "zod";
 import { aiConfigured, selectWithAI } from "@/lib/ai/select";
 import { UsageLedger, UsageGateError } from "@/lib/usage/ledger";
@@ -96,6 +97,7 @@ export async function POST(request: Request) {
   let observed = unknownUsage();
   let persisted = true;
   let ledger: UsageLedger | undefined;
+  let selection: SavedSelection | undefined;
   const finish = async (status: "succeeded" | "failed") => {
     if (!record || !ledger) return;
     record = {
@@ -105,7 +107,7 @@ export async function POST(request: Request) {
       estimate: estimateCost(observed, record.pricing),
     };
     try {
-      await ledger.update(record, observed, status);
+      await ledger.update(record, observed, status, selection);
       persisted = true;
     } catch {
       persisted = false;
@@ -114,13 +116,14 @@ export async function POST(request: Request) {
   try {
     ledger = new UsageLedger();
     const result = await selectWithAI(input.text, request.signal, {
-      beforeRequest: async () => {
+      beforeRequest: async (search) => {
         if (request.signal.aborted) throw Error("ABORTED");
         try {
           record = await ledger!.reserve(
             requestId,
             input.text,
             "mimo-v2.6-flash",
+            search,
           );
         } catch (error) {
           gateError =
@@ -140,6 +143,18 @@ export async function POST(request: Request) {
         }
       },
     });
+    selection = {
+      title: result.title,
+      atmosphere: result.atmosphere,
+      works: result.selections.map((s) => ({
+        id: s.id,
+        role: s.role,
+        reason: s.reason,
+        title: s.artwork!.title,
+        titleJa: s.artwork!.titleJa,
+        artist: s.artwork!.artist,
+      })),
+    };
     await finish("succeeded");
     if (record) result.verification.accounting = { record, persisted };
     return Response.json(result, { headers });

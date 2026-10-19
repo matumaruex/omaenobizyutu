@@ -1,3 +1,4 @@
+import type { SearchTrace } from "./history/types";
 import type { TokenUsage, UsageRecord } from "./usage/types";
 export type Role = "共鳴" | "別のまなざし" | "偶然の出会い" | "余韻";
 export interface Artwork {
@@ -36,6 +37,7 @@ export interface Exhibition {
     inputTokens: number | null;
     outputTokens: number | null;
     usage: TokenUsage;
+    search?: SearchTrace;
     accounting?: { record: UsageRecord; persisted: boolean };
   };
 }

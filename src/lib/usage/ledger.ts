@@ -1,3 +1,9 @@
+import type {
+  SearchTrace,
+  SavedSelection,
+  SelectionHistory,
+  HistoryReport,
+} from "../history/types";
 import { createHmac } from "node:crypto";
 import { callLimit, getPricing, estimateCost, unknownUsage } from "./pricing";
 import type { UsageRecord, UsageReport, TokenUsage } from "./types";
@@ -12,6 +18,7 @@ export const RESERVE_SCRIPT = `
 if redis.call('HEXISTS', KEYS[1], ARGV[1]) == 1 or redis.call('EXISTS', KEYS[4]) == 1 then return 'DUPLICATE' end
 if tonumber(redis.call('GET', KEYS[3]) or '0') >= tonumber(ARGV[3]) then return 'LIMIT' end
 redis.call('HSET', KEYS[1], ARGV[1], ARGV[2])
+redis.call('HSET', KEYS[5], ARGV[1], ARGV[4])
 redis.call('LPUSH', KEYS[2], ARGV[1])
 redis.call('INCR', KEYS[3])
 redis.call('SET', KEYS[4], ARGV[1], 'EX', 60)
@@ -19,8 +26,27 @@ return 'OK'`;
 export const UPDATE_SCRIPT = `
 if redis.call('HEXISTS', KEYS[1], ARGV[1]) == 0 then return 'MISSING' end
 redis.call('HSET', KEYS[1], ARGV[1], ARGV[2])
+if ARGV[3] ~= '' then redis.call('HSET', KEYS[2], ARGV[1], ARGV[3]) end
 return 'OK'`;
 export const REPORT_SCRIPT = `return {redis.call('GET', KEYS[1]) or '0', redis.call('HVALS', KEYS[2])}`;
+export const HISTORY_SCRIPT = `
+local ids = redis.call('LRANGE', KEYS[2], tonumber(ARGV[1]), tonumber(ARGV[1]) + tonumber(ARGV[2]) - 1)
+local rows = {}
+for _, id in ipairs(ids) do
+  table.insert(rows, {redis.call('HGET', KEYS[1], id) or '', redis.call('HGET', KEYS[3], id) or '',
+    redis.call('HGET', KEYS[4], id) or '', redis.call('HGET', KEYS[5], id) or ''})
+end
+return {redis.call('GET', KEYS[6]) or '0', rows}`;
+export const DISPLAY_SCRIPT = `
+local stored = redis.call('HGET', KEYS[1], ARGV[1])
+if not stored then return 'MISSING' end
+local selection = cjson.decode(stored)
+local display = cjson.decode(ARGV[2])
+local allowed = {}
+for _, work in ipairs(selection.works) do allowed[work.id] = true end
+for _, id in ipairs(display.displayedIds) do if not allowed[id] then return 'INVALID' end end
+redis.call('HSET', KEYS[2], ARGV[1], ARGV[2])
+return 'OK'`;
 type Command = (args: (string | number)[]) => Promise<unknown>;
 function connection() {
   const url = process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL;
@@ -84,7 +110,12 @@ export class UsageLedger {
     private send: Command = command,
     private ns = namespace(),
   ) {}
-  async reserve(id: string, text: string, model: string): Promise<UsageRecord> {
+  async reserve(
+    id: string,
+    text: string,
+    model: string,
+    search?: SearchTrace,
+  ): Promise<UsageRecord> {
     const pricing = getPricing();
     const record: UsageRecord = {
       id,
@@ -95,21 +126,26 @@ export class UsageLedger {
       estimate: null,
       pricing,
     };
-    // HMAC keeps the visitor's text out of storage, including guessable hashes.
+    // The dedupe key is HMAC; authorized trial history stores input separately.
     const fingerprint = createHmac("sha256", process.env.MIMO_API_KEY || "")
       .update(text.trim())
       .digest("hex");
     const result = await this.send([
       "EVAL",
       RESERVE_SCRIPT,
-      4,
+      5,
       `${this.ns}:records`,
       `${this.ns}:order`,
       `${this.ns}:calls`,
       `${this.ns}:dedupe:${fingerprint}`,
+      `${this.ns}:history`,
       id,
       JSON.stringify(record),
       callLimit(),
+      JSON.stringify({
+        input: text,
+        ...(search ? { search } : {}),
+      } satisfies SelectionHistory),
     ]);
     if (result === "DUPLICATE" || result === "LIMIT")
       throw new UsageGateError(result);
@@ -120,6 +156,7 @@ export class UsageLedger {
     record: UsageRecord,
     usage: TokenUsage,
     status: UsageRecord["status"],
+    selection?: SavedSelection,
   ) {
     const next: UsageRecord = {
       ...record,
@@ -130,13 +167,58 @@ export class UsageLedger {
     const result = await this.send([
       "EVAL",
       UPDATE_SCRIPT,
-      1,
+      2,
       `${this.ns}:records`,
+      `${this.ns}:selections`,
       record.id,
       JSON.stringify(next),
+      selection ? JSON.stringify(selection) : "",
     ]);
     if (result !== "OK") throw new UsageGateError("UNAVAILABLE");
     return next;
+  }
+  async history(offset = 0, limit = 20): Promise<HistoryReport> {
+    const result = (await this.send([
+      "EVAL",
+      HISTORY_SCRIPT,
+      6,
+      `${this.ns}:records`,
+      `${this.ns}:order`,
+      `${this.ns}:history`,
+      `${this.ns}:selections`,
+      `${this.ns}:displays`,
+      `${this.ns}:calls`,
+      offset,
+      limit,
+    ])) as [string, [string, string, string, string][]];
+    return {
+      calls: Number(result[0]),
+      offset,
+      limit,
+      entries: result[1]
+        .filter((row) => row[0])
+        .map(([accounting, history, selection, display]) => ({
+          accounting: JSON.parse(accounting) as UsageRecord,
+          history: history
+            ? {
+                ...(JSON.parse(history) as SelectionHistory),
+                ...(selection ? { selection: JSON.parse(selection) } : {}),
+                ...(display ? { display: JSON.parse(display) } : {}),
+              }
+            : null,
+        })),
+    };
+  }
+  async reportDisplay(id: string, displayedIds: string[]) {
+    return this.send([
+      "EVAL",
+      DISPLAY_SCRIPT,
+      2,
+      `${this.ns}:selections`,
+      `${this.ns}:displays`,
+      id,
+      JSON.stringify({ displayedIds, reportedAt: new Date().toISOString() }),
+    ]);
   }
   async report(): Promise<UsageReport> {
     const result = (await this.send([

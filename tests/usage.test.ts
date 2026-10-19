@@ -106,7 +106,10 @@ describe("actual usage and historical price estimates", () => {
     expect(fetch).toHaveBeenCalledTimes(1);
     const [, init] = fetch.mock.calls[0] as unknown as [string, RequestInit];
     expect(init.redirect).toBe("error");
-    expect(init.body).not.toContain("sensitive feeling");
+    // Input is now explicitly authorized for the private trial history.
+    expect(JSON.parse(JSON.parse(String(init.body)).at(-1)).input).toBe(
+      "sensitive feeling",
+    );
     expect(init.body).not.toContain("mimo-test-secret");
   });
 });

@@ -1,3 +1,5 @@
+import { GET as historyGET } from "../src/app/api/history/route";
+import { searchCandidates } from "../src/lib/ai/candidates";
 import seed from "../src/data/catalog-seed.json";
 vi.mock("../src/lib/catalog/server", () => ({ getCatalog: async () => seed }));
 import { POST } from "../src/app/api/exhibition/route";
@@ -136,6 +138,92 @@ describe.skipIf(!bin)("durable atomic ledger on a real Redis server", () => {
     expect(report.records.find((v) => v.id === r.id)?.pricing.usdJpy).toBe(150);
     expect(JSON.stringify(report)).not.toContain("private text");
   });
+  it("retains input, search, selections, image results and fees across instances without altering usage totals", async () => {
+    const ns = crypto.randomUUID(),
+      l = ledger(ns),
+      id = crypto.randomUUID();
+    const { chosen, ...retrieval } = searchCandidates("quartz", seed.selection);
+    const search = {
+      ...retrieval,
+      catalogCommit: seed.commit,
+      catalogCount: 200,
+    };
+    const record = await l.reserve(
+      id,
+      "quartz <test>",
+      "mimo-v2.6-flash",
+      search,
+    );
+    const selection = {
+      title: "保存する展示",
+      atmosphere: "選定の意図。",
+      works: chosen
+        .slice(0, 4)
+        .map((a) => ({
+          id: a.id,
+          title: a.title,
+          titleJa: "保存時の題名",
+          artist: a.artist,
+          role: "共鳴" as const,
+          reason: "保存する理由。",
+        })),
+    };
+    await l.update(
+      record,
+      {
+        inputTokens: 1000,
+        outputTokens: 100,
+        reasoningTokens: 0,
+        cachedInputTokens: 0,
+      },
+      "succeeded",
+      selection,
+    );
+    const next = ledger(ns);
+    expect(await next.reportDisplay(id, [])).toBe("OK");
+    let entry = (await next.history()).entries[0];
+    expect(entry.history?.input).toBe("quartz <test>");
+    expect(entry.history?.selection).toEqual(selection);
+    expect(entry.history?.search?.detectedCategories).toEqual([]);
+    expect(entry.history?.search?.candidates[0].matchedTags).toEqual([]);
+    expect(entry.history?.display?.displayedIds).toEqual([]);
+    expect(await next.reportDisplay(id, [selection.works[0].id])).toBe("OK");
+    expect(await next.reportDisplay(id, ["met-9999999"])).toBe("INVALID");
+    entry = (await ledger(ns).history()).entries[0];
+    expect(entry.history?.display?.displayedIds).toEqual([
+      selection.works[0].id,
+    ]);
+    expect(entry.accounting.estimate?.nanoJpy).toBe(25_200_000);
+    expect((await next.report()).calls).toBe(1);
+    expect(JSON.stringify(await next.report())).not.toContain("quartz");
+  });
+  it("pages all recorded calls and leaves pre-feature selections unavailable", async () => {
+    const ns = crypto.randomUUID(),
+      l = ledger(ns);
+    const old = await l.reserve(
+      crypto.randomUUID(),
+      "old input",
+      "mimo-v2.6-flash",
+    );
+    await command(["HDEL", `{${ns}}:history`, old.id]);
+    const a = await l.reserve(
+      crypto.randomUUID(),
+      "new first",
+      "mimo-v2.6-flash",
+    );
+    const b = await l.reserve(
+      crypto.randomUUID(),
+      "new second",
+      "mimo-v2.6-flash",
+    );
+    expect((await l.history(0, 2)).entries.map((e) => e.accounting.id)).toEqual(
+      [b.id, a.id],
+    );
+    const previous = await l.history(2, 2);
+    expect(previous.calls).toBe(3);
+    expect(previous.entries[0].history).toBeNull();
+    expect(previous.entries[0].accounting.id).toBe(old.id);
+  });
   it("completes API → SDK → raw usage → real Redis → reporting, then blocks a replay", async () => {
     vi.stubEnv("MIMO_API_KEY", "test-not-real");
     vi.stubEnv("UPSTASH_REDIS_REST_URL", "https://test.upstash.io");
@@ -168,6 +256,7 @@ describe.skipIf(!bin)("durable atomic ledger on a real Redis server", () => {
               index: 0,
               message: {
                 role: "assistant",
+                reasoning_content: "internal private trace",
                 content: JSON.stringify({
                   title: "余白",
                   atmosphere: "作品の主題に触れる構成。",
@@ -201,6 +290,15 @@ describe.skipIf(!bin)("durable atomic ledger on a real Redis server", () => {
     expect(report.calls).toBe(1);
     expect(report.records[0].usage.reasoningTokens).toBe(10);
     expect(report.totalNanoJpy).toBe(14_910_000);
+    const history = await (
+      await historyGET(new Request("http://localhost/api/history"))
+    ).json();
+    expect(history.entries[0].history.input).toBe(input);
+    expect(history.entries[0].history.selection.works).toHaveLength(6);
+    expect(history.entries[0].history.search.candidates).toHaveLength(24);
+    expect(history.entries[0].accounting.id).toBe(id);
+    expect(JSON.stringify(history)).not.toContain("internal private trace");
+    expect(JSON.stringify(history)).not.toContain("test-not-real");
     expect(paidCalls).toBe(1);
   });
 });

@@ -1,11 +1,12 @@
 import { generateText, Output } from "ai";
 import { createOpenAI } from "@ai-sdk/openai";
 import { z } from "zod";
-import { selectCandidates } from "./candidates";
+import { searchCandidates } from "./candidates";
 import { validateSelections } from "../curation";
 import { getCatalog } from "../catalog/server";
 import type { Exhibition } from "../types";
 import { readUsage, unknownUsage } from "../usage/pricing";
+import type { SearchTrace } from "../history/types";
 import type { TokenUsage } from "../usage/types";
 export const MIMO_MODEL = "mimo-v2.6-flash";
 const endpoint = "https://api.xiaomimimo.com/v1";
@@ -30,13 +31,21 @@ export async function selectWithAI(
   text: string,
   signal?: AbortSignal,
   accounting?: {
-    beforeRequest: () => Promise<void>;
+    beforeRequest: (search: SearchTrace) => Promise<void>;
     onUsage: (usage: TokenUsage) => Promise<void>;
   },
 ): Promise<Exhibition> {
   if (!aiConfigured()) throw Error("AI_NOT_CONFIGURED");
   const catalog = await getCatalog();
-  const candidates = selectCandidates(text, catalog.selection);
+  const { chosen: candidates, ...retrieval } = searchCandidates(
+    text,
+    catalog.selection,
+  );
+  const search: SearchTrace = {
+    ...retrieval,
+    catalogCommit: catalog.commit,
+    catalogCount: catalog.artworks.length,
+  };
   let usage = unknownUsage();
   const mimo = createOpenAI({
     apiKey: process.env.MIMO_API_KEY,
@@ -51,7 +60,7 @@ export async function selectWithAI(
       delete body.max_tokens;
       // Reserve a durable call slot immediately before the actual provider fetch.
       // The same gate covers invalid model output and transport failures.
-      await accounting?.beforeRequest();
+      await accounting?.beforeRequest(search);
       const response = await fetch(input, {
         ...init,
         body: JSON.stringify(body),
@@ -127,6 +136,7 @@ export async function selectWithAI(
       inputTokens: usage.inputTokens,
       outputTokens: usage.outputTokens,
       usage,
+      search,
     },
   };
 }

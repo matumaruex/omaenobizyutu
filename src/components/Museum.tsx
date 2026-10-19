@@ -13,6 +13,7 @@ import type { Exhibit, Exhibition, SelectionReview } from "@/lib/types";
 import ArtworkView from "./ArtworkView";
 import Dialog from "./Dialog";
 import SelectionReviewView from "./SelectionReviewView";
+import HistoryView from "./HistoryView";
 import UsageView, { UsageDetail } from "./UsageView";
 import type { UsageRecord } from "@/lib/usage/types";
 const Room = dynamic(() => import("./Room"), {
@@ -48,6 +49,9 @@ export default function Museum() {
   const [review, setReview] = useState<SelectionReview | null>(null);
   const [reviewOpen, setReviewOpen] = useState(false);
   const [usageOpen, setUsageOpen] = useState<"settings" | "form" | null>(null);
+  const [historyOpen, setHistoryOpen] = useState<"settings" | "form" | null>(
+    null,
+  );
   const submitting = useRef(false);
   const [lastAccounting, setLastAccounting] = useState<{
     record: UsageRecord;
@@ -115,6 +119,7 @@ export default function Museum() {
     !list &&
     !reviewOpen &&
     !usageOpen &&
+    !historyOpen &&
     !busy;
   function openForm() {
     document.exitPointerLock?.();
@@ -125,6 +130,7 @@ export default function Museum() {
   function leaveRoom() {
     submitting.current = false;
     setUsageOpen(null);
+    setHistoryOpen(null);
     setLastAccounting(null);
     abort.current?.abort();
     document.exitPointerLock?.();
@@ -241,6 +247,21 @@ export default function Museum() {
         exhibition: result,
         displayedIds: loaded.map((a) => a.id),
       });
+      const recordId = result.verification.accounting?.record.id;
+      if (recordId) {
+        const reportController = new AbortController();
+        const reportTimer = setTimeout(() => reportController.abort(), 5000);
+        // One small, free report. Do not delay the exhibition or call MiMo again.
+        void fetch(`/api/history/${recordId}/display`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ displayedIds: loaded.map((a) => a.id) }),
+          signal: reportController.signal,
+          keepalive: true,
+        })
+          .catch(() => {})
+          .finally(() => clearTimeout(reportTimer));
+      }
       if (loaded.length < 4)
         throw new Error(
           "作品画像を十分に読み込めませんでした。通信を確認して、もう一度お試しください。",
@@ -428,15 +449,26 @@ export default function Museum() {
                   <UsageDetail record={lastAccounting.record} />
                   {!lastAccounting.persisted && (
                     <p role="alert">
-                      使用量を保存できませんでした。累計に反映されていない可能性があります。自動再送はしません。
+                      選定結果・使用量を保存できませんでした。履歴や累計に反映されていない可能性があります。自動再送はしません。
                     </p>
                   )}
                 </section>
               )}
+              {reviewEnabled && !busy && (
+                <button
+                  className="text-button"
+                  onClick={() => {
+                    setFormOpen(false);
+                    setHistoryOpen("form");
+                  }}
+                >
+                  選定・料金の履歴（試験用）
+                </button>
+              )}
               <p className="privacy-note">
                 入力文と候補作品の資料をXiaomi
                 MiMoへ送信します。API利用料が発生します。
-                入力した言葉は、この美術館に保存されません。
+                入力文・選定結果・使用量と推定料金を、試験記録として保存します。
               </p>
               {error && (
                 <div className="form-error" role="alert">
@@ -534,8 +566,7 @@ export default function Museum() {
             </div>
           </div>
           <p className="license-note">
-            会員登録・履歴保存はありません。展示の作成時に入力文と候補作品の資料をXiaomi
-            MiMoに送信します。
+            展示の作成時に入力文と候補作品の資料をXiaomi MiMoに送信します。
           </p>
         </Dialog>
       )}
@@ -584,10 +615,28 @@ export default function Museum() {
               API使用量・料金（試験用）
             </button>
           )}
+          <button
+            className="text-button"
+            onClick={() => {
+              setSettings(false);
+              setHistoryOpen("settings");
+            }}
+          >
+            選定・料金の履歴（試験用）
+          </button>
           <p className="license-note">
-            作品はGitHubの絵画DBから、MiMoが選定します。入力と選定結果は退出すると消去します。使用トークン数・推定料金・日時は試験記録として保存します。入力文は保存しません。
+            作品はGitHubの絵画DBから、MiMoが選定します。入力文・検索候補・選定結果・使用量・推定料金・日時を試験記録として保存します。部屋から出ても履歴は残ります。
           </p>
         </Dialog>
+      )}
+      {historyOpen && (
+        <HistoryView
+          onClose={() => {
+            if (historyOpen === "settings") setSettings(true);
+            else setFormOpen(true);
+            setHistoryOpen(null);
+          }}
+        />
       )}
       {usageOpen && (
         <UsageView

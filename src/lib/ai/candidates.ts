@@ -16,7 +16,7 @@ const vocabulary: Record<string, string[]> = {
   畏敬: ["畏敬", "圧倒", "壮大", "神秘", "畏れ"],
   慈しみ: ["慈し", "大切", "愛", "家族", "守りたい", "いたわ", "温もり"],
 };
-export function selectCandidates(text: string, catalog: CatalogMaterial[]) {
+export function searchCandidates(text: string, catalog: CatalogMaterial[]) {
   const profile = Object.fromEntries(
     Object.entries(vocabulary).map(([emotion, terms]) => [
       emotion,
@@ -48,5 +48,25 @@ export function selectCandidates(text: string, catalog: CatalogMaterial[]) {
     chosen.push(art);
     if (chosen.length === 24) break;
   }
-  return chosen;
+  return {
+    chosen,
+    taggedCount: ranked.length,
+    matchingCount: ranked.filter((a) => a.score > 0).length,
+    detectedCategories: Object.keys(profile).filter((e) => profile[e] > 0),
+    candidates: chosen.map((art) => ({
+      id: art.id,
+      title: art.title,
+      artist: art.artist,
+      primary: art.primary,
+      secondary: art.secondary,
+      matchedTags: [...new Set([...art.primary, ...art.secondary])].filter(
+        (e) => profile[e] > 0,
+      ),
+      score: ranked.find((a) => a.art.id === art.id)!.score,
+    })),
+  };
+}
+
+export function selectCandidates(text: string, catalog: CatalogMaterial[]) {
+  return searchCandidates(text, catalog).chosen;
 }
