@@ -13,7 +13,7 @@ interface Props {
   active: boolean;
   reducedMotion: boolean;
   lowQuality: boolean;
-  onSelect: (id: number) => void;
+  onSelect: (id: string) => void;
 }
 type RoomTextures = ReturnType<typeof createRoomTextures>;
 const wallSurfaces = [

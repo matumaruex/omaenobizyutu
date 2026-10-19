@@ -817,3 +817,41 @@ svg {
 .artwork-list-button {
   margin-top: 14px;
 }
+
+.review-dialog {
+  width: min(720px, calc(100% - 30px));
+}
+.review-dialog h3 {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--muted);
+  margin-top: 28px;
+}
+.review-dialog p {
+  font-size: 13px;
+  line-height: 2;
+}
+.review-input {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  padding: 16px;
+  background: #f0ece3;
+}
+.review-works {
+  padding-left: 24px;
+}
+.review-works li {
+  padding: 20px 0 10px 8px;
+  border-top: 1px solid var(--line);
+}
+.review-works strong {
+  font-family: var(--serif);
+  font-size: 16px;
+  font-weight: 400;
+}
+.review-works small {
+  display: block;
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--muted);
+}

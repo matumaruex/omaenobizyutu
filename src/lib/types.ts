@@ -1,50 +1,45 @@
-export const emotions = [
-  "solitude",
-  "loss",
-  "hope",
-  "joy",
-  "nostalgia",
-  "calm",
-  "love",
-  "conflict",
-] as const;
-export type Emotion = (typeof emotions)[number];
 export type Role = "共鳴" | "別のまなざし" | "偶然の出会い" | "余韻";
 export interface Artwork {
-  id: number;
+  id: string;
   title: string;
   titleJa: string;
   artist: string;
   date: string;
-  imageId: string;
   width: number;
   height: number;
   localImage: string;
-  publicDomain: true;
-  medium: string;
-  subjects: string[];
-  palette: string[];
-  facts: string;
-  interpretation: string;
-  emotions: Record<Emotion, number>;
   source: string;
-  verifiedAt: string;
-  metadataSource: string;
+  museum: string;
+  medium: string;
+  facts: string;
   credit: string;
   imageSource: string;
   imageLicense: string;
+  licenseNote: string;
 }
 export interface Selection {
-  id: number;
+  id: string;
   role: Role;
   reason: string;
+  artwork?: Artwork;
 }
 export interface Exhibition {
   title: string;
   atmosphere: string;
   selections: Selection[];
-  mode: "demo" | "ai";
-  notice?: string;
+  verification: {
+    model: string;
+    catalogCommit: string;
+    candidateCount: number;
+    catalogCount: number;
+    inputTokens: number;
+    outputTokens: number;
+  };
+}
+export interface SelectionReview {
+  input: string;
+  exhibition: Exhibition;
+  displayedIds: string[];
 }
 export interface Exhibit extends Selection {
   artwork: Artwork;
@@ -53,4 +48,37 @@ export interface Exhibit extends Selection {
 export interface Slot {
   position: [number, number, number];
   rotation: [number, number, number];
+}
+export interface CatalogMaterial {
+  id: string;
+  title: string;
+  artist: string;
+  primary: string[];
+  secondary: string[];
+  strengths: Partial<Record<string, number>>;
+  summary: string;
+  fitting: { situation: string; reason: string; strength: number }[];
+  cautions: string[];
+  meaning: {
+    author_intent: {
+      status: string;
+      summary: string | null;
+      source_url: string | null;
+    };
+    scholarly_interpretation: { summary: string; source_url: string };
+    creation_context: string;
+    visual_clues: string;
+    uncertainty_note: string;
+  };
+}
+export interface CatalogImage {
+  id: string;
+  url: string;
+  sha256: string;
+}
+export interface Catalog {
+  commit: string;
+  artworks: Artwork[];
+  selection: CatalogMaterial[];
+  images: CatalogImage[];
 }

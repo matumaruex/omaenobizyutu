@@ -2,50 +2,43 @@
 import { useState } from "react";
 import { ChevronDown, ExternalLink } from "lucide-react";
 import type { Exhibit } from "@/lib/types";
-import { iiifImage } from "@/lib/collection";
 import Dialog from "./Dialog";
 export default function ArtworkView({
   exhibit,
-  mode,
   onClose,
 }: {
   exhibit: Exhibit;
-  mode: "demo" | "ai";
   onClose: () => void;
 }) {
   const [info, setInfo] = useState(false),
     [reason, setReason] = useState(false),
-    [highRes, setHighRes] = useState(false),
     [error, setError] = useState(false);
   const art = exhibit.artwork;
   return (
     <Dialog title="作品を鑑賞する" onClose={onClose} className="artwork-dialog">
       <div className="artwork-stage">
         <img
-          src={highRes ? iiifImage(art, 1686) : art.localImage}
+          src={art.localImage}
           alt={`${art.titleJa} — ${art.artist}`}
           onError={() => {
             setError(true);
-            setHighRes(false);
           }}
         />
       </div>
       <div className="artwork-toolbar">
         <p>ただ、絵と向き合う時間。</p>
-        <button
-          onClick={() => {
-            setHighRes(true);
-            setError(false);
-          }}
+        <a
+          href={art.localImage}
+          target="_blank"
+          rel="noreferrer"
           className="text-button"
-          disabled={highRes}
         >
-          高精細で見る <ExternalLink size={13} />
-        </button>
+          元の画像を開く <ExternalLink size={13} />
+        </a>
       </div>
       {error && (
         <p className="subtle-message" role="status">
-          高精細画像に接続できないため、保存済み画像を表示しています。
+          画像に接続できませんでした。少し時間をおいてお試しください。
         </p>
       )}
       <div className="artwork-details">
@@ -68,7 +61,7 @@ export default function ArtworkView({
             </p>
             <p className="art-facts">{art.facts}</p>
             <p className="small">
-              シカゴ美術館 / Art Institute of Chicago
+              {art.museum}
               <br />
               {art.medium}
               <br />
@@ -90,10 +83,7 @@ export default function ArtworkView({
             >
               保存画像の出典と権利情報 <ExternalLink size={11} />
             </a>
-            <p className="license-note">
-              保存画像：Wikimedia
-              Commonsのパブリックドメイン資料。基本データ：CC0。日本語題名は便宜訳です。
-            </p>
+            <p className="license-note">{art.licenseNote}</p>
           </div>
         )}
         <button
@@ -108,10 +98,7 @@ export default function ArtworkView({
         {reason && (
           <div id="art-reason" className="disclosure-content">
             <span className="interpretation-label">
-              {mode === "ai"
-                ? "AIによる鑑賞上の解釈"
-                : "デモ選定・編集上の解釈"}{" "}
-              · {exhibit.role}
+              AIによる鑑賞上の解釈 · {exhibit.role}
             </span>
             <p className="reason-text">{exhibit.reason}</p>
             <p className="license-note">

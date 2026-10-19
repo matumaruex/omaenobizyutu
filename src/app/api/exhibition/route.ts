@@ -1,12 +1,12 @@
 import { z } from "zod";
 import { aiConfigured, selectWithAI } from "@/lib/ai/select";
-import { createDemoExhibition } from "@/lib/curation";
 export const runtime = "nodejs";
 export const maxDuration = 45;
-const inputSchema = z.object({
-  text: z.string().trim().min(1).max(800),
-  mode: z.enum(["demo", "ai"]),
-});
+const inputSchema = z
+  .object({
+    text: z.string().trim().min(1).max(800),
+  })
+  .strict();
 let inFlight = 0;
 const headers = { "Cache-Control": "no-store" };
 function isSameOrigin(origin: string, host: string) {
@@ -64,12 +64,11 @@ export async function POST(request: Request) {
       { status: 400, headers },
     );
   }
-  if (input.mode === "demo")
-    return Response.json(createDemoExhibition(input.text), { headers });
   if (!aiConfigured())
     return Response.json(
       {
-        error: "AIが設定されていません。無料デモで展示を作れます。",
+        error:
+          "MiMoの接続設定が完了していません。少し時間をおいてお試しください。",
         code: "AI_UNAVAILABLE",
       },
       { status: 503, headers },
@@ -77,8 +76,7 @@ export async function POST(request: Request) {
   if (inFlight >= 3)
     return Response.json(
       {
-        error:
-          "ただいま選定が混み合っています。少し待つか、無料デモをお使いください。",
+        error: "ただいま選定が混み合っています。少し待ってからお試しください。",
       },
       { status: 429, headers },
     );
@@ -87,12 +85,21 @@ export async function POST(request: Request) {
     return Response.json(await selectWithAI(input.text, request.signal), {
       headers,
     });
-  } catch {
+  } catch (error) {
     // Never log request text, SDK errors or provider response bodies.
+    const status =
+      typeof error === "object" && error !== null && "statusCode" in error
+        ? error.statusCode
+        : null;
+    const message =
+      status === 401 || status === 403
+        ? "MiMoの認証に失敗しました。接続設定の確認が必要です。"
+        : status === 429
+          ? "MiMoの利用制限に達しました。残高・利用枠を確認し、時間をおいてお試しください。"
+          : "AIの選定を完了できませんでした。時間をおいて、もう一度お試しください。";
     return Response.json(
       {
-        error:
-          "AIの選定を完了できませんでした。もう一度試すか、無料デモで展示を作れます。",
+        error: message,
         code: "AI_FAILED",
       },
       { status: 502, headers },

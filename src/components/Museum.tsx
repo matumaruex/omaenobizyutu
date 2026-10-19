@@ -3,17 +3,16 @@ import dynamic from "next/dynamic";
 import { Component, useCallback, useEffect, useRef, useState } from "react";
 import {
   ArrowRight,
-  Check,
   CircleHelp,
   Compass,
   LoaderCircle,
   SlidersHorizontal,
   X,
 } from "lucide-react";
-import { collection } from "@/lib/collection";
-import type { Exhibit, Exhibition } from "@/lib/types";
+import type { Exhibit, Exhibition, SelectionReview } from "@/lib/types";
 import ArtworkView from "./ArtworkView";
 import Dialog from "./Dialog";
+import SelectionReviewView from "./SelectionReviewView";
 const Room = dynamic(() => import("./Room"), {
   ssr: false,
   loading: () => (
@@ -42,12 +41,14 @@ export default function Museum() {
   const [entered, setEntered] = useState(false);
   const [formOpen, setFormOpen] = useState(false),
     [text, setText] = useState("");
-  const [mode, setMode] = useState<"demo" | "ai">("demo"),
-    [aiAvailable, setAIAvailable] = useState(false);
+  const [aiAvailable, setAIAvailable] = useState<boolean | null>(null);
+  const [reviewEnabled, setReviewEnabled] = useState(false);
+  const [review, setReview] = useState<SelectionReview | null>(null);
+  const [reviewOpen, setReviewOpen] = useState(false);
   const [exhibitionVersion, setExhibitionVersion] = useState(0);
   const [exhibition, setExhibition] = useState<Exhibition | null>(null),
     [exhibits, setExhibits] = useState<Exhibit[]>([]);
-  const [selected, setSelected] = useState<number | null>(null),
+  const [selected, setSelected] = useState<string | null>(null),
     [help, setHelp] = useState(false),
     [settings, setSettings] = useState(false),
     [list, setList] = useState(false);
@@ -91,14 +92,21 @@ export default function Museum() {
       media.removeEventListener("change", change);
     };
   }, []);
-  const select = useCallback((id: number) => {
+  const select = useCallback((id: string) => {
     document.exitPointerLock?.();
     setSelected(id);
   }, []);
   const failWebgl = useCallback(() => setWebglError(true), []);
   const busy = ["selecting", "loading", "fading"].includes(phase);
   const active =
-    entered && !formOpen && !selected && !help && !settings && !list && !busy;
+    entered &&
+    !formOpen &&
+    !selected &&
+    !help &&
+    !settings &&
+    !list &&
+    !reviewOpen &&
+    !busy;
   function openForm() {
     document.exitPointerLock?.();
     setFormOpen(true);
@@ -115,6 +123,8 @@ export default function Museum() {
     setPhase("idle");
     setSelected(null);
     setList(false);
+    setReview(null);
+    setReviewOpen(false);
     setExhibition(null);
     setExhibits([]);
     setRoomVisit((visit) => visit + 1);
@@ -123,6 +133,7 @@ export default function Museum() {
     e.preventDefault();
     if (!text.trim() || busy) return;
     abort.current?.abort();
+    const inputText = text.trim();
     const controller = new AbortController();
     abort.current = controller;
     setError("");
@@ -131,17 +142,18 @@ export default function Museum() {
       const response = await fetch("/api/exhibition", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text, mode }),
+        body: JSON.stringify({ text: inputText }),
         signal: controller.signal,
       });
       const data = await response.json();
       if (!response.ok)
         throw new Error(data.error || "選定に接続できませんでした。");
       const result = data as Exhibition;
-      const candidates = result.selections.flatMap((selection) => {
-        const artwork = collection.find((a) => a.id === selection.id);
-        return artwork ? [{ ...selection, artwork }] : [];
-      });
+      if (controller.signal.aborted || !mounted.current) return;
+      setReview({ input: inputText, exhibition: result, displayedIds: [] });
+      const candidates = result.selections.flatMap((selection) =>
+        selection.artwork ? [{ ...selection, artwork: selection.artwork }] : [],
+      );
       setPhase("loading");
       setProgress({ done: 0, total: candidates.length });
       // Three concurrent decoded images, never an unbounded texture load.
@@ -182,7 +194,16 @@ export default function Museum() {
             img.onerror = () => finish(false);
             img.src = exhibit.artwork.localImage;
           });
-          if (success) loaded.push({ ...exhibit, image: img });
+          if (success)
+            loaded.push({
+              ...exhibit,
+              artwork: {
+                ...exhibit.artwork,
+                width: img.naturalWidth,
+                height: img.naturalHeight,
+              },
+              image: img,
+            });
           done++;
           if (mounted.current && !controller.signal.aborted)
             setProgress({ done, total: candidates.length });
@@ -196,6 +217,11 @@ export default function Museum() {
           candidates.findIndex((c) => c.id === a.id) -
           candidates.findIndex((c) => c.id === b.id),
       );
+      setReview({
+        input: inputText,
+        exhibition: result,
+        displayedIds: loaded.map((a) => a.id),
+      });
       if (loaded.length < 4)
         throw new Error(
           "作品画像を十分に読み込めませんでした。通信を確認して、もう一度お試しください。",
@@ -306,6 +332,11 @@ export default function Museum() {
                   <X size={16} />
                 </button>
               )}
+              {aiAvailable === false && (
+                <p className="form-error" role="status">
+                  MiMoの接続設定が完了していません。
+                </p>
+              )}
               <form className="feeling-form" onSubmit={createExhibition}>
                 <label htmlFor="feeling">今の気持ちを教えてください</label>
                 <textarea
@@ -348,26 +379,25 @@ export default function Museum() {
                   作品一覧
                 </button>
               )}
-              {mode === "ai" && (
-                <p className="privacy-note">
-                  入力文と候補作品をOpenAIへ送信します。API利用料が発生します。
-                  入力した言葉は、この美術館に保存されません。
-                </p>
+              {reviewEnabled && review && !busy && (
+                <button
+                  className="text-button"
+                  onClick={() => {
+                    setReviewOpen(true);
+                    setFormOpen(false);
+                  }}
+                >
+                  選定結果を確認（試験用）
+                </button>
               )}
+              <p className="privacy-note">
+                入力文と候補作品の資料をXiaomi
+                MiMoへ送信します。API利用料が発生します。
+                入力した言葉は、この美術館に保存されません。
+              </p>
               {error && (
                 <div className="form-error" role="alert">
                   {error}
-                  {mode === "ai" && (
-                    <button
-                      className="text-button"
-                      onClick={() => {
-                        setMode("demo");
-                        setError("");
-                      }}
-                    >
-                      無料デモに切り替える <ArrowRight size={13} />
-                    </button>
-                  )}
                 </div>
               )}
               {busy && (
@@ -378,9 +408,7 @@ export default function Museum() {
                 >
                   <span className="loading-line" />
                   {phase === "selecting"
-                    ? mode === "ai"
-                      ? "言葉の背景から、作品を選んでいます。"
-                      : "言葉の手がかりから、作品を選んでいます。"
+                    ? "言葉の背景から、作品を選んでいます。"
                     : phase === "loading"
                       ? `作品の画像を準備しています。 ${progress.done} / ${progress.total}`
                       : "前の展示が、静かに消えていきます。"}
@@ -424,7 +452,6 @@ export default function Museum() {
         <ArtworkView
           key={viewed.id}
           exhibit={viewed}
-          mode={exhibition?.mode || "demo"}
           onClose={() => setSelected(null)}
         />
       )}
@@ -463,7 +490,8 @@ export default function Museum() {
             </div>
           </div>
           <p className="license-note">
-            会員登録・履歴保存はありません。無料デモはAIを使用しません。AIモードは入力文をOpenAIに送信します。
+            会員登録・履歴保存はありません。展示の作成時に入力文と候補作品の資料をXiaomi
+            MiMoに送信します。
           </p>
         </Dialog>
       )}
@@ -491,33 +519,29 @@ export default function Museum() {
               onChange={(e) => setReducedMotion(e.target.checked)}
             />
           </label>
-          <h3 className="settings-heading">作品の選び方</h3>
-          <div className="mode-row">
-            <button
-              className={mode === "demo" ? "mode active" : "mode"}
-              disabled={busy}
-              onClick={() => setMode("demo")}
-            >
-              {mode === "demo" && <Check size={11} />}無料デモ
-            </button>
-            <button
-              className={mode === "ai" ? "mode active" : "mode"}
-              disabled={busy || !aiAvailable}
-              onClick={() => setMode("ai")}
-              title={
-                aiAvailable
-                  ? "文章をOpenAIに送信して選定します"
-                  : "サーバーにAPIキーとモデルの設定が必要です"
-              }
-            >
-              AIで選ぶ{!aiAvailable && "（未設定）"}
-            </button>
-          </div>
+          <label className="setting-row">
+            <span>
+              選定結果を確認する<small>試験用。入力欄から結果を開けます</small>
+            </span>
+            <input
+              type="checkbox"
+              checked={reviewEnabled}
+              onChange={(e) => setReviewEnabled(e.target.checked)}
+            />
+          </label>
           <p className="license-note">
-            無料デモはAIを使用しません。入力した言葉は保存しません。
-            AIモードでは入力文をOpenAIに送信します。
+            作品はGitHubの絵画DBから、MiMoが選定します。入力と試験結果は、このページを開いている間だけ保持し、退出すると消去します。
           </p>
         </Dialog>
+      )}
+      {reviewOpen && review && (
+        <SelectionReviewView
+          review={review}
+          onClose={() => {
+            setReviewOpen(false);
+            setFormOpen(true);
+          }}
+        />
       )}
       {list && (
         <Dialog

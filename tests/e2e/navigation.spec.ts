@@ -1,5 +1,7 @@
 import { test, expect, type Page } from "@playwright/test";
-import { collection } from "../../src/lib/collection";
+import seed from "../../src/data/catalog-seed.json";
+import { setup } from "./fixtures";
+const collection = seed.artworks;
 async function turn(page: Page, mobile: boolean, degrees: number) {
   const box = (await page.locator("canvas").boundingBox())!;
   const dx = (degrees * Math.PI) / 180 / 0.0024;
@@ -36,6 +38,7 @@ test("discover four walls by turning, without walking or floor-tap movement", as
   test.setTimeout(60000);
   const mobile = testInfo.project.name === "mobile";
   await page.emulateMedia({ reducedMotion: "reduce" });
+  await setup(page);
   await page.goto("/");
   await page.getByRole("button", { name: "部屋に入る" }).click();
   await page.getByRole("button", { name: "気持ちを教える" }).click();

@@ -1,7 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { PerspectiveCamera, Vector3, Euler } from "three";
 import { exhibitionSlots, paintingSize, ROOM } from "../src/lib/layout";
-import { collection } from "../src/lib/collection";
+import seed from "../src/data/catalog-seed.json";
+const collection = seed.artworks;
 describe("discovery from the center of a room", () => {
   for (let count = 4; count <= 12; count++)
     it(`${count} works occupy all four walls without overlapping`, () => {
