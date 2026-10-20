@@ -21,7 +21,7 @@ const highResolution = z.object({
   byte_length: z.number().int().positive(),
   width: z.number().int().positive(),
   height: z.number().int().positive(),
-  verification: z.literal("complete_jpeg_sha256_and_visual_match"),
+  verification: z.literal("complete_jpeg_sha256_and_downscale_match"),
 });
 const text = z.string().max(12000);
 const rawSchema = z.object({
