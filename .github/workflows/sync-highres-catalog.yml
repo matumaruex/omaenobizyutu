@@ -1,0 +1,40 @@
+name: Update museum seed with verified high-resolution originals
+on:
+  push:
+    paths:
+      - ".github/workflows/sync-highres-catalog.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - name: Checkout museum preview branch
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Use Node.js 24
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "24"
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Regenerate 300-artwork seed from shared GitHub database
+        run: npm run catalog:sync
+      - name: Typecheck and tests
+        run: |
+          npm run typecheck
+          npm test
+      - name: Commit seed when validated
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/data/catalog-seed.json
+          if ! git diff --cached --quiet; then
+            git commit -m "新しい300作品と高解像度245作品をプレビューの初期DBに反映"
+            git pull --rebase
+            git push
+          fi
