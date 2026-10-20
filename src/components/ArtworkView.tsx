@@ -44,17 +44,6 @@ export default function ArtworkView({
           }}
         />
       </div>
-      <div className="artwork-toolbar">
-        <p>ただ、絵と向き合う時間。</p>
-        <a
-          href={art.localImage}
-          target="_blank"
-          rel="noreferrer"
-          className="text-button"
-        >
-          元の画像を開く <ExternalLink size={13} />
-        </a>
-      </div>
       {error && (
         <p className="subtle-message" role="status">
           画像に接続できませんでした。少し時間をおいてお試しください。
@@ -62,12 +51,12 @@ export default function ArtworkView({
       )}
       <div className="artwork-details">
         <button
-          className="disclosure"
+          className="disclosure artwork-reading-toggle"
           aria-expanded={info}
           aria-controls="art-info"
           onClick={() => setInfo(!info)}
         >
-          作品について{" "}
+          {info ? "解説を閉じる" : "解説を開く"}{" "}
           <ChevronDown size={16} className={info ? "rotated" : ""} />
         </button>
         {info && (
@@ -119,8 +108,28 @@ export default function ArtworkView({
                 )}
               </section>
             )}
+            <button
+              className="disclosure"
+              aria-expanded={reason}
+              aria-controls="art-reason"
+              onClick={() => setReason(!reason)}
+            >
+              この作品が選ばれた理由{" "}
+              <ChevronDown size={16} className={reason ? "rotated" : ""} />
+            </button>
+            {reason && (
+              <div id="art-reason" className="disclosure-content">
+                <span className="interpretation-label">
+                  AIによる鑑賞上の解釈 · {exhibit.role}
+                </span>
+                <p className="reason-text">{exhibit.reason}</p>
+                <p className="license-note">
+                  作品の歴史的な事実や、あなたの心理を断定する説明ではありません。感じ方は、あなた自身のものです。
+                </p>
+              </div>
+            )}
             <details className="artwork-sources">
-              <summary>出典・所蔵情報</summary>
+              <summary>画像・出典・所蔵情報</summary>
               <p className="small">
                 {art.museum}
                 <br />
@@ -129,6 +138,14 @@ export default function ArtworkView({
                 {art.credit}
               </p>
               <div className="artwork-source-links">
+                <a
+                  href={art.localImage}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="source-link"
+                >
+                  元の画像を開く <ExternalLink size={13} />
+                </a>
                 <a
                   href={art.source}
                   target="_blank"
@@ -165,29 +182,17 @@ export default function ArtworkView({
                 >
                   保存画像の出典と権利情報 <ExternalLink size={11} />
                 </a>
+                <a
+                  href={art.imageLicense}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="image-credit"
+                >
+                  画像の利用条件 <ExternalLink size={11} />
+                </a>
               </div>
               <p className="license-note">{art.licenseNote}</p>
             </details>
-          </div>
-        )}
-        <button
-          className="disclosure"
-          aria-expanded={reason}
-          aria-controls="art-reason"
-          onClick={() => setReason(!reason)}
-        >
-          この作品が選ばれた理由{" "}
-          <ChevronDown size={16} className={reason ? "rotated" : ""} />
-        </button>
-        {reason && (
-          <div id="art-reason" className="disclosure-content">
-            <span className="interpretation-label">
-              AIによる鑑賞上の解釈 · {exhibit.role}
-            </span>
-            <p className="reason-text">{exhibit.reason}</p>
-            <p className="license-note">
-              作品の歴史的な事実や、あなたの心理を断定する説明ではありません。感じ方は、あなた自身のものです。
-            </p>
           </div>
         )}
       </div>

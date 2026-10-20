@@ -49,7 +49,7 @@ test("API-only room → selection → art → optional review; viewing never res
   await page.getByRole("button", { name: "閉じる", exact: true }).click();
   await page.getByRole("button", { name: "作品一覧", exact: true }).click();
   await page.locator(".artwork-grid button").first().click();
-  await page.getByRole("button", { name: "作品について" }).click();
+  await page.getByRole("button", { name: "解説を開く" }).click();
   await expect(page.locator("#art-info")).toContainText(
     exhibition().selections[0].artwork.museum,
   );

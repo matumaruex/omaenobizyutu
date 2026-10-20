@@ -398,22 +398,9 @@ svg {
   object-fit: contain;
   box-shadow: 0 10px 32px #44382116;
 }
-.artwork-toolbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 18px 0 26px;
-  gap: 20px;
-}
-.artwork-toolbar p {
-  font-family: var(--serif);
-  color: #a09583;
-  font-size: 11px;
-  letter-spacing: 0.1em;
-}
 .artwork-details {
   max-width: 650px;
-  margin: 0 auto;
+  margin: 24px auto 0;
 }
 .disclosure {
   display: flex;
@@ -428,6 +415,10 @@ svg {
 .disclosure svg {
   color: #a18b68;
   transition: transform 0.2s;
+}
+.artwork-reading-toggle {
+  font-size: 13px;
+  color: #685c48;
 }
 .rotated {
   transform: rotate(180deg);
@@ -457,9 +448,6 @@ svg {
   font-size: 10px;
   color: #a09583;
   line-height: 2;
-}
-.art-facts {
-  margin: 24px 0;
 }
 .artwork-description {
   margin: 28px 0;
@@ -645,16 +633,6 @@ svg {
   .artwork-stage {
     height: 47svh;
     min-height: 180px;
-  }
-  .artwork-toolbar {
-    gap: 10px;
-    margin-bottom: 15px;
-  }
-  .artwork-toolbar p {
-    font-size: 9px;
-  }
-  .artwork-toolbar .text-button {
-    font-size: 8px;
   }
   .artwork-grid {
     grid-template-columns: repeat(2, 1fr);

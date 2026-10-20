@@ -44,16 +44,24 @@ test("the room contains full DB explanations with optional sources and no furthe
   });
   await createExhibition(page);
   const dialog = await openArtwork(page, 0);
-  const expected = exhibition().selections[0].artwork.interpretation;
-  const toggle = dialog.getByRole("button", {
-    name: "作品について",
-    exact: true,
+  await expect(dialog.locator(".artwork-stage img")).toBeVisible();
+  await expect(dialog.getByRole("link")).toHaveCount(0);
+  await expect(dialog.getByRole("button")).toHaveCount(2);
+  await expect(
+    dialog.getByRole("button", { name: "解説を開く", exact: true }),
+  ).toBeVisible();
+  await page.screenshot({
+    path: `artifacts/${info.project.name}-artwork-first.png`,
   });
+  const expected = exhibition().selections[0].artwork.interpretation;
+  const toggle = dialog.locator(".artwork-reading-toggle");
   await expect(toggle).toHaveAttribute("aria-expanded", "false");
   await expect(
     dialog.getByRole("heading", { name: "制作背景", exact: true }),
   ).toHaveCount(0);
   await toggle.click();
+  await expect(toggle).toHaveText("解説を閉じる");
+  await expect(dialog.getByRole("link")).toHaveCount(0);
   await expect(
     dialog.getByRole("region", { name: "描かれているもの", exact: true }),
   ).toContainText(expected.visual_clues);
@@ -81,14 +89,20 @@ test("the room contains full DB explanations with optional sources and no furthe
   await expect(
     dialog.getByRole("link", { name: "美術館の作品ページ" }),
   ).toBeHidden();
-  await dialog.getByText("出典・所蔵情報", { exact: true }).click();
+  await dialog.getByText("画像・出典・所蔵情報", { exact: true }).click();
+  await expect(
+    dialog.getByRole("link", { name: "元の画像を開く" }),
+  ).toHaveAttribute("href", exhibition().selections[0].artwork.localImage);
+  await expect(
+    dialog.getByRole("link", { name: "画像の利用条件" }),
+  ).toHaveAttribute("href", exhibition().selections[0].artwork.imageLicense);
   await expect(
     dialog.getByRole("link", { name: "作品解説の出典" }),
   ).toHaveAttribute("href", expected.scholarly_interpretation.source_url);
   await expect(
     dialog.getByRole("link", { name: "作者の発言・考えの出典" }),
   ).toHaveAttribute("href", expected.author_intent.source_url!);
-  await dialog.getByText("出典・所蔵情報", { exact: true }).click();
+  await dialog.getByText("画像・出典・所蔵情報", { exact: true }).click();
   await dialog
     .getByRole("region", { name: "制作背景", exact: true })
     .scrollIntoViewIfNeeded();
@@ -148,7 +162,7 @@ test("author statements retain their verification scope and unverified statement
   for (let i = 0; i < 4; i++) {
     const dialog = await openArtwork(page, i);
     await dialog
-      .getByRole("button", { name: "作品について", exact: true })
+      .getByRole("button", { name: "解説を開く", exact: true })
       .click();
     for (const [j, heading] of headings.entries()) {
       await expect(
@@ -163,7 +177,7 @@ test("author statements retain their verification scope and unverified statement
       await expect(
         dialog.getByText("作者に関する試験資料3", { exact: true }),
       ).toHaveCount(0);
-      await dialog.getByText("出典・所蔵情報", { exact: true }).click();
+      await dialog.getByText("画像・出典・所蔵情報", { exact: true }).click();
       await expect(
         dialog.getByRole("link", { name: "作者の発言・考えの出典" }),
       ).toHaveCount(0);
