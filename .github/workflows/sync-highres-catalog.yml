@@ -1,8 +1,15 @@
 name: Update museum seed with verified high-resolution originals
 on:
   push:
+    branches:
+      - codex/museum-preview
     paths:
       - ".github/workflows/sync-highres-catalog.yml"
+      - "src/lib/catalog/normalize.ts"
+      - "src/lib/types.ts"
+      - "src/lib/ai/candidates.ts"
+      - "src/data/catalog-seed.json"
+      - "tests/catalog.test.ts"
   workflow_dispatch:
 
 permissions:
@@ -24,17 +31,18 @@ jobs:
         run: npm ci
       - name: Regenerate 300-artwork seed from shared GitHub database
         run: npm run catalog:sync
-      - name: Typecheck and tests
+      - name: Typecheck, regression tests, and production build
         run: |
           npm run typecheck
           npm test
+          npm run build
       - name: Commit seed when validated
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add src/data/catalog-seed.json
           if ! git diff --cached --quiet; then
-            git commit -m "新しい300作品と高解像度245作品をプレビューの初期DBに反映"
+            git commit -m "300作品の初期DBを共有データの最新版に同期"
             git pull --rebase
             git push
           fi
