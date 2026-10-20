@@ -53,7 +53,6 @@ const rawSchema = z.object({
           }),
           emotion_strengths: z.record(z.string(), z.number().min(1).max(3)),
           search_profile: z.object({
-            summary_for_ai: text,
             fitting_situations: z.array(
               z.object({ situation: text, reason: text, strength: z.number() }),
             ),
@@ -165,7 +164,6 @@ export function normalizeCatalog(
       primary: c.emotion_categories.primary,
       secondary: c.emotion_categories.secondary,
       strengths: c.emotion_strengths,
-      summary: c.search_profile.summary_for_ai,
       fitting: c.search_profile.fitting_situations,
       cautions: c.search_profile.selection_cautions,
       meaning: c.meaning_basis,
