@@ -126,6 +126,17 @@ describe("the GitHub DB is the only artwork catalog", () => {
     expect(normalized.selection[10].artistKey).not.toBe(normalized.selection[11].artistKey);
     expect(normalized.selection[12].artistKey).not.toBe(normalized.selection[13].artistKey);
   });
+  it("keeps School/Style attributions separate from the named painter", () => {
+    const rembrandt = catalog.selection.find((x) => x.id === "met-437412");
+    const hokusai = catalog.selection.find((x) => x.id === "met-57280");
+    expect(rembrandt?.artist).toBe("Style of Rembrandt (Rembrandt van Rijn)");
+    expect(rembrandt?.artistKey).toBe(
+      "artist:Style of Rembrandt (Rembrandt van Rijn)",
+    );
+    expect(rembrandt?.artistKey).not.toBe("artist:Rembrandt van Rijn");
+    expect(hokusai?.artist).toBe("School of Katsushika Hokusai");
+    expect(hokusai?.artistKey).not.toBe("artist:Katsushika Hokusai");
+  });
   it("caps each named artist at two candidates across aliases, but not unidentified works", () => {
     const make = (id: string, artist: string, artistKey: string) => ({
       ...catalog.selection[0], id, artist, artistKey,
