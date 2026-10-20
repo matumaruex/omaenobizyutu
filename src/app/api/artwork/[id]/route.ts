@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { getRevisionCatalog } from "@/lib/catalog/server";
 export const runtime = "nodejs";
-export const maxDuration = 30;
+export const maxDuration = 60;
 const allowedHosts = new Set([
   "images.metmuseum.org",
   "thumb.wikimedia.org",
@@ -42,7 +42,7 @@ export async function GET(
   try {
     const signal = AbortSignal.any([
       request.signal,
-      AbortSignal.timeout(20000),
+      AbortSignal.timeout(45000),
     ]);
     let url = new URL(image.url),
       response: Response | undefined;
@@ -69,7 +69,8 @@ export async function GET(
       throw Error();
     }
     stage = "BODY_FAILED";
-    const limit = 8 * 1024 * 1024;
+    // Original museum JPEGs can exceed Vercel's 4.5MB buffered-response cap.
+    const limit = 32 * 1024 * 1024;
     if (Number(response.headers.get("content-length")) > limit) {
       await response.body.cancel();
       stage = "IMAGE_TOO_LARGE";
@@ -97,7 +98,22 @@ export async function GET(
       createHash("sha256").update(bytes).digest("hex") !== image.sha256
     )
       throw Error("IMAGE_MISMATCH");
-    return new Response(new Uint8Array(bytes), {
+    // Stream the already hash-verified bytes, rather than returning a large
+    // buffered Response. Vercel allows streaming responses beyond its
+    // ordinary 4.5MB Function response-payload limit.
+    let offset = 0;
+    const body = new ReadableStream<Uint8Array>({
+      pull(controller) {
+        if (offset >= bytes.length) {
+          controller.close();
+          return;
+        }
+        const end = Math.min(offset + 64 * 1024, bytes.length);
+        controller.enqueue(new Uint8Array(bytes.subarray(offset, end)));
+        offset = end;
+      },
+    });
+    return new Response(body, {
       headers: {
         "Content-Type": "image/jpeg",
         "Cache-Control": version
