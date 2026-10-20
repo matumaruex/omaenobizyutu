@@ -15,6 +15,14 @@ const imageUrl = https.refine((s) => {
   const u = new URL(s);
   return imageHosts.has(u.hostname) && !u.port && !u.username && !u.password;
 });
+const highResolution = z.object({
+  url: imageUrl,
+  sha256: z.string().regex(/^[a-f0-9]{64}$/),
+  byte_length: z.number().int().positive(),
+  width: z.number().int().positive(),
+  height: z.number().int().positive(),
+  verification: z.literal("complete_jpeg_sha256_and_visual_match"),
+});
 const text = z.string().max(12000);
 const rawSchema = z.object({
   artworks: z
@@ -35,6 +43,7 @@ const rawSchema = z.object({
           display_url: imageUrl,
           sha256: z.string().regex(/^[a-f0-9]{64}$/),
           live_image_checked: z.literal(true),
+          high_resolution: highResolution.optional(),
         }),
         curation: z.object({
           emotion_categories: z.object({
@@ -76,6 +85,7 @@ const registrySchema = z.object({
         id,
         image_source: z.object({
           sha256: z.string(),
+          high_resolution: highResolution.optional(),
           license_url: https,
           license_label: text,
           official_image_page: https.optional(),
@@ -103,9 +113,24 @@ export function normalizeCatalog(
     const im = registry.get(a.id);
     if (!im || im.sha256 !== a.image.sha256)
       throw Error("IMAGE_REGISTRY_MISMATCH");
+    const high = a.image.high_resolution;
+    const sourceHigh = im.high_resolution;
+    if (Boolean(high) !== Boolean(sourceHigh)) throw Error("HIGH_RES_IMAGE_REGISTRY_MISMATCH");
+    if (high && sourceHigh && (
+      high.url !== sourceHigh.url ||
+      high.sha256 !== sourceHigh.sha256 ||
+      high.byte_length !== sourceHigh.byte_length ||
+      high.width !== sourceHigh.width ||
+      high.height !== sourceHigh.height ||
+      high.verification !== sourceHigh.verification
+    )) throw Error("HIGH_RES_IMAGE_REGISTRY_MISMATCH");
+    // Use original-resolution JPEG for every image consumer, including
+    // the exhibition room, selection list and full artwork view.
+    // Historical web-size JPEG remains in the source record for audits.
+    const display = high ?? { url: a.image.display_url, sha256: im.sha256 };
     const c = a.curation,
       f = a.facts;
-    const localImage = `/api/artwork/${a.id}?revision=${commit}&v=${im.sha256.slice(0, 16)}`;
+    const localImage = `/api/artwork/${a.id}?revision=${commit}&v=${display.sha256.slice(0, 16)}`;
     catalog.artworks.push({
       id: a.id,
       title: f.title_original,
@@ -138,8 +163,8 @@ export function normalizeCatalog(
     });
     catalog.images.push({
       id: a.id,
-      url: a.image.display_url,
-      sha256: im.sha256,
+      url: display.url,
+      sha256: display.sha256,
     });
   }
   return catalog;
