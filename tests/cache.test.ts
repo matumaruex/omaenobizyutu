@@ -36,7 +36,7 @@ it("configures a day-long shared cache, and immutable revision caches", () => {
 });
 it("returns a ready cache value and a failed refresh never substitutes legacy artwork", async () => {
   mocks.head.mockResolvedValue(seed.commit);
-  expect((await getCatalog()).artworks).toHaveLength(200);
+  expect((await getCatalog()).artworks).toHaveLength(seed.artworks.length);
   mocks.head.mockRejectedValue(Error("GitHub unavailable"));
   expect((await getCatalog()).commit).toBe(seed.commit);
   expect(
