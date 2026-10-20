@@ -20,7 +20,7 @@ import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { UsageLedger } from "../src/lib/usage/ledger";
-import { getPricing } from "../src/lib/usage/pricing";
+import { getPricing, unknownUsage } from "../src/lib/usage/pricing";
 const run = promisify(execFile);
 const bin = process.env.REDIS_TEST_BIN;
 // Optional real Redis integration; no mock of the atomic Lua scripts.
@@ -130,13 +130,24 @@ describe.skipIf(!bin)("durable atomic ledger on a real Redis server", () => {
       "MIMO_PRICING_JSON",
       JSON.stringify({ ...getPricing(), usdJpy: 100 }),
     );
-    await l.reserve(crypto.randomUUID(), "unknown response", "mimo-v2.6-flash");
+    const unknown = await l.reserve(
+      crypto.randomUUID(),
+      "unknown response",
+      "mimo-v2.6-flash",
+    );
+    const failure = { kind: "network" as const, elapsedMs: 20000 };
+    await l.update({ ...unknown, failure }, unknownUsage(), "failed");
     const report = await ledger(ns).report();
     expect(report.calls).toBe(2);
     expect(report.unpricedCalls).toBe(1);
     expect(report.totalNanoJpy).toBe(14_910_000);
     expect(report.records.find((v) => v.id === r.id)?.pricing.usdJpy).toBe(150);
     expect(JSON.stringify(report)).not.toContain("private text");
+    expect(
+      (await ledger(ns).history()).entries.find(
+        (e) => e.accounting.id === unknown.id,
+      )?.accounting.failure,
+    ).toEqual(failure);
   });
   it("retains input, search, selections, image results and fees across instances without altering usage totals", async () => {
     const ns = crypto.randomUUID(),
@@ -157,16 +168,14 @@ describe.skipIf(!bin)("durable atomic ledger on a real Redis server", () => {
     const selection = {
       title: "保存する展示",
       atmosphere: "選定の意図。",
-      works: chosen
-        .slice(0, 4)
-        .map((a) => ({
-          id: a.id,
-          title: a.title,
-          titleJa: "保存時の題名",
-          artist: a.artist,
-          role: "共鳴" as const,
-          reason: "保存する理由。",
-        })),
+      works: chosen.slice(0, 4).map((a) => ({
+        id: a.id,
+        title: a.title,
+        titleJa: "保存時の題名",
+        artist: a.artist,
+        role: "共鳴" as const,
+        reason: "保存する理由。",
+      })),
     };
     await l.update(
       record,

@@ -4,6 +4,8 @@ import { aiConfigured, selectWithAI } from "@/lib/ai/select";
 import { UsageLedger, UsageGateError } from "@/lib/usage/ledger";
 import { unknownUsage, estimateCost } from "@/lib/usage/pricing";
 import type { UsageRecord } from "@/lib/usage/types";
+import { SelectionFailure } from "@/lib/ai/failure";
+import { failureMessage } from "@/lib/usage/failure";
 export const runtime = "nodejs";
 // Leave time for durable accounting around the 35-second provider timeout.
 export const maxDuration = 60;
@@ -159,6 +161,9 @@ export async function POST(request: Request) {
     if (record) result.verification.accounting = { record, persisted };
     return Response.json(result, { headers });
   } catch (error) {
+    const failure =
+      error instanceof SelectionFailure ? error.diagnostic : undefined;
+    if (record && failure) record = { ...record, failure };
     await finish("failed");
     const blocked =
       gateError || (error instanceof UsageGateError ? error : undefined);
@@ -182,13 +187,20 @@ export async function POST(request: Request) {
         },
       );
     }
+    // Log only an allowlisted classification and numeric timing/status.
+    if (record && failure)
+      console.warn("museum_selection_failed", {
+        requestId: record.id,
+        ...failure,
+      });
     // Never log request text, SDK errors or provider response bodies.
     const status =
       typeof error === "object" && error !== null && "statusCode" in error
         ? error.statusCode
         : null;
-    const message =
-      status === 401 || status === 403
+    const message = failure
+      ? failureMessage(failure)
+      : status === 401 || status === 403
         ? "MiMoの認証に失敗しました。接続設定の確認が必要です。"
         : status === 429
           ? "MiMoの利用制限に達しました。残高・利用枠を確認し、時間をおいてお試しください。"

@@ -140,3 +140,61 @@ test("failed selection retains known usage and flags a failed accounting write",
     "言葉を探している",
   );
 });
+
+test("a failed connection displays a safe reason and unknown fees without retrying", async ({
+  page,
+}, info) => {
+  await setup(page);
+  let calls = 0;
+  await page.route("**/api/exhibition", (route) => {
+    calls++;
+    return route.fulfill({
+      status: 502,
+      json: {
+        error: "MiMoとの通信が途中で失敗しました。自動で再送はしていません。",
+        accounting: {
+          persisted: true,
+          record: {
+            id: "failed-network",
+            createdAt: "2026-10-20T04:19:30Z",
+            model: "mimo-v2.6-flash",
+            status: "failed",
+            usage: {
+              inputTokens: null,
+              outputTokens: null,
+              reasoningTokens: null,
+              cachedInputTokens: null,
+            },
+            estimate: null,
+            pricing: { version: "試験単価", usdJpy: 150 },
+            failure: { kind: "network", elapsedMs: 20000 },
+          },
+        },
+      },
+    });
+  });
+  await page.goto("/");
+  await page.getByRole("button", { name: "表示設定" }).click();
+  await page.getByLabel("選定結果を確認する").check();
+  await page.getByRole("button", { name: "閉じる", exact: true }).click();
+  await page.getByRole("button", { name: "部屋に入る" }).click();
+  await page.getByRole("button", { name: "気持ちを教える" }).click();
+  await page
+    .getByLabel("今の気持ちを教えてください")
+    .fill("不安でもやもやする");
+  await page.getByRole("button", { name: "展示する" }).click();
+  const usage = page.getByRole("region", { name: "直近のAPI使用量" });
+  await expect(usage).toContainText("問い合わせ開始から20.0秒");
+  await expect(usage).toContainText("料金は未確定");
+  await expect(usage).toContainText("0円を意味しません");
+  await expect(
+    page.getByRole("button", { name: "展示する", exact: true }),
+  ).toBeEnabled();
+  await expect(page.getByLabel("今の気持ちを教えてください")).toHaveValue(
+    "不安でもやもやする",
+  );
+  await page.screenshot({
+    path: `artifacts/${info.project.name}-failed-connection.png`,
+  });
+  expect(calls).toBe(1);
+});

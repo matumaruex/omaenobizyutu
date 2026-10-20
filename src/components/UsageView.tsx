@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { UsageRecord, UsageReport } from "@/lib/usage/types";
 import Dialog from "./Dialog";
+import { failureMessage } from "@/lib/usage/failure";
 export const yen = (nano: number) =>
   new Intl.NumberFormat("ja-JP", {
     style: "currency",
@@ -14,6 +15,14 @@ const tokens = (value: number | null) =>
 export function UsageDetail({ record }: { record: UsageRecord }) {
   return (
     <>
+      {record.failure && (
+        <p className="small">
+          {failureMessage(record.failure)} 問い合わせ開始から
+          {(record.failure.elapsedMs / 1000).toFixed(1)}秒
+          {record.failure.httpStatus !== undefined &&
+            ` · 応答番号：${record.failure.httpStatus}`}
+        </p>
+      )}
       <dl className="usage-tokens">
         <div>
           <dt>入力</dt>
@@ -35,6 +44,11 @@ export function UsageDetail({ record }: { record: UsageRecord }) {
       <p>
         推定料金：{record.estimate ? yen(record.estimate.nanoJpy) : "未取得"}
       </p>
+      {!record.estimate && record.status === "failed" && (
+        <p className="small">
+          使用量を取得できなかったため、料金は未確定です。0円を意味しません。
+        </p>
+      )}
       <p className="small">
         換算：1米ドル＝{record.pricing.usdJpy}円（設定値）。単価版：
         {record.pricing.version}

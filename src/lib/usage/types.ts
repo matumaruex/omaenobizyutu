@@ -25,6 +25,21 @@ export interface UsageRecord {
   usage: TokenUsage;
   estimate: CostEstimate | null;
   pricing: Pricing;
+  failure?: SelectionFailureDiagnostic;
+}
+export interface SelectionFailureDiagnostic {
+  kind:
+    | "timeout"
+    | "cancelled"
+    | "network"
+    | "provider_auth"
+    | "provider_limit"
+    | "provider_error"
+    | "provider_request"
+    | "invalid_response"
+    | "invalid_selection";
+  elapsedMs: number;
+  httpStatus?: number;
 }
 export interface UsageReport {
   calls: number;

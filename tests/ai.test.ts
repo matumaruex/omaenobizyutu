@@ -69,6 +69,7 @@ function request(text = input, extra = {}) {
   });
 }
 beforeEach(() => {
+  vi.spyOn(console, "warn").mockImplementation(() => {});
   vi.stubEnv("MIMO_API_KEY", "test-only-not-a-real-key");
   ledgerMock.reserve.mockReset().mockImplementation(async (id: string) => ({
     id,
@@ -89,6 +90,7 @@ beforeEach(() => {
     }));
 });
 afterEach(() => {
+  vi.restoreAllMocks();
   vi.unstubAllEnvs();
   vi.unstubAllGlobals();
 });
@@ -168,6 +170,7 @@ describe("real SDK request contract, with all upstream HTTP mocked", () => {
       cachedInputTokens: 1000,
     });
     expect(body.accounting.record.estimate.nanoJpy).toBe(99_120_000);
+    expect(body.accounting.record.failure.kind).toBe("invalid_selection");
     expect(mock).toHaveBeenCalledTimes(1);
   });
   for (const [code, status] of [
@@ -208,7 +211,75 @@ describe("real SDK request contract, with all upstream HTTP mocked", () => {
     expect(body.accounting.record.estimate).toBeNull();
     expect(body.accounting.record.usage.inputTokens).toBeNull();
     expect(body.accounting.record.status).toBe("failed");
+    expect(body.accounting.record.failure.kind).toBe("network");
+    expect(body.accounting.record.failure.httpStatus).toBeUndefined();
+    expect(body.accounting.record.failure.elapsedMs).toBeGreaterThanOrEqual(0);
   });
+  for (const [status, kind] of [
+    [400, "provider_request"],
+    [429, "provider_limit"],
+    [503, "provider_error"],
+  ] as const)
+    it(`records safe upstream status ${status} without keeping its secret body`, async () => {
+      const secret = "secret-provider-body-with-api-key";
+      const mock = vi.fn(async () =>
+        Response.json({ error: { message: secret } }, { status }),
+      );
+      vi.stubGlobal("fetch", mock);
+      const r = await POST(request());
+      const body = await r.json();
+      expect(body.accounting.record.failure).toMatchObject({
+        kind,
+        httpStatus: status,
+      });
+      expect(body.accounting.record.estimate).toBeNull();
+      expect(mock).toHaveBeenCalledTimes(1);
+      expect(JSON.stringify(body)).not.toContain(secret);
+      expect(JSON.stringify(vi.mocked(console.warn).mock.calls)).not.toContain(
+        secret,
+      );
+      expect(JSON.stringify(vi.mocked(console.warn).mock.calls)).not.toContain(
+        input,
+      );
+      expect(ledgerMock.update.mock.calls.at(-1)?.[0].failure).toMatchObject({
+        kind,
+        httpStatus: status,
+      });
+    });
+  it("distinguishes an unreadable successful HTTP response from output validation", async () => {
+    const mock = vi.fn(
+      async () => new Response("private invalid response", { status: 200 }),
+    );
+    vi.stubGlobal("fetch", mock);
+    const body = await (await POST(request())).json();
+    expect(body.accounting.record.failure).toMatchObject({
+      kind: "invalid_response",
+      httpStatus: 200,
+    });
+    expect(JSON.stringify(body)).not.toContain("private invalid response");
+    expect(mock).toHaveBeenCalledTimes(1);
+  });
+  for (const cancelled of [false, true])
+    it(`distinguishes ${cancelled ? "client cancellation" : "provider timeout"} without retrying`, async () => {
+      const timeout = new AbortController();
+      vi.spyOn(AbortSignal, "timeout").mockReturnValueOnce(timeout.signal);
+      const client = new AbortController();
+      const mock = vi.fn(async (_url, init) => {
+        (cancelled ? client : timeout).abort(
+          new DOMException("private abort detail", "AbortError"),
+        );
+        throw init.signal.reason;
+      });
+      vi.stubGlobal("fetch", mock);
+      const req = new Request(request(), { signal: client.signal });
+      const body = await (await POST(req)).json();
+      expect(body.accounting.record.failure.kind).toBe(
+        cancelled ? "cancelled" : "timeout",
+      );
+      expect(body.accounting.record.estimate).toBeNull();
+      expect(JSON.stringify(body)).not.toContain("private abort detail");
+      expect(mock).toHaveBeenCalledTimes(1);
+    });
   it("requires a valid idempotency key before any paid operation", async () => {
     const mock = vi.fn();
     vi.stubGlobal("fetch", mock);
