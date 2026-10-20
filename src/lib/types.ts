@@ -58,6 +58,8 @@ export interface CatalogMaterial {
   id: string;
   title: string;
   artist: string;
+  /** Stable selection identity; distinguishes unidentified creators per work. */
+  artistKey: string;
   primary: string[];
   secondary: string[];
   strengths: Partial<Record<string, number>>;
