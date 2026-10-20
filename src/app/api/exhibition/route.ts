@@ -6,6 +6,7 @@ import { unknownUsage, estimateCost } from "@/lib/usage/pricing";
 import type { UsageRecord } from "@/lib/usage/types";
 import { SelectionFailure } from "@/lib/ai/failure";
 import { failureMessage } from "@/lib/usage/failure";
+import { inspectionAvailable } from "@/lib/access";
 export const runtime = "nodejs";
 // Leave time for durable accounting around the 35-second provider timeout.
 export const maxDuration = 60;
@@ -172,7 +173,9 @@ export async function POST(request: Request) {
         blocked.code === "DUPLICATE"
           ? "同じ展示の連続送信を防止しました。同じ文章での再選定は1分ほど待ってください。"
           : blocked.code === "LIMIT"
-            ? "試験用のAPI呼び出し上限に達しました。使用量画面で確認してください。"
+            ? inspectionAvailable()
+              ? "試験用のAPI呼び出し上限に達しました。使用量画面で確認してください。"
+              : "試験用の利用上限に達しました。招待した人に連絡してください。"
             : "使用量の保存先に接続できないため、API呼び出しを停止しました。接続設定を確認してください。";
       return Response.json(
         { error: message, code: blocked.code },

@@ -46,6 +46,7 @@ export default function Museum() {
     [text, setText] = useState("");
   const [aiAvailable, setAIAvailable] = useState<boolean | null>(null);
   const [reviewEnabled, setReviewEnabled] = useState(false);
+  const [inspectionAvailable, setInspectionAvailable] = useState(false);
   const [review, setReview] = useState<SelectionReview | null>(null);
   const [reviewOpen, setReviewOpen] = useState(false);
   const [usageOpen, setUsageOpen] = useState<"settings" | "form" | null>(null);
@@ -81,7 +82,10 @@ export default function Museum() {
     fetch("/api/config")
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => {
-        if (mounted.current) setAIAvailable(Boolean(d?.aiAvailable));
+        if (mounted.current) {
+          setAIAvailable(Boolean(d?.aiAvailable));
+          setInspectionAvailable(d?.inspectionAvailable === true);
+        }
       })
       .catch(() => {});
     const media = matchMedia("(prefers-reduced-motion: reduce)");
@@ -421,7 +425,7 @@ export default function Museum() {
                   作品一覧
                 </button>
               )}
-              {reviewEnabled && review && !busy && (
+              {inspectionAvailable && reviewEnabled && review && !busy && (
                 <button
                   className="text-button"
                   onClick={() => {
@@ -432,7 +436,7 @@ export default function Museum() {
                   選定結果を確認（試験用）
                 </button>
               )}
-              {reviewEnabled && !busy && (
+              {inspectionAvailable && reviewEnabled && !busy && (
                 <button
                   className="text-button"
                   onClick={() => {
@@ -443,18 +447,21 @@ export default function Museum() {
                   API使用量・料金（試験用）
                 </button>
               )}
-              {reviewEnabled && lastAccounting && !busy && (
-                <section aria-label="直近のAPI使用量">
-                  <h3>直近のAPI使用量</h3>
-                  <UsageDetail record={lastAccounting.record} />
-                  {!lastAccounting.persisted && (
-                    <p role="alert">
-                      選定結果・使用量を保存できませんでした。履歴や累計に反映されていない可能性があります。自動再送はしません。
-                    </p>
-                  )}
-                </section>
-              )}
-              {reviewEnabled && !busy && (
+              {inspectionAvailable &&
+                reviewEnabled &&
+                lastAccounting &&
+                !busy && (
+                  <section aria-label="直近のAPI使用量">
+                    <h3>直近のAPI使用量</h3>
+                    <UsageDetail record={lastAccounting.record} />
+                    {!lastAccounting.persisted && (
+                      <p role="alert">
+                        選定結果・使用量を保存できませんでした。履歴や累計に反映されていない可能性があります。自動再送はしません。
+                      </p>
+                    )}
+                  </section>
+                )}
+              {inspectionAvailable && reviewEnabled && !busy && (
                 <button
                   className="text-button"
                   onClick={() => {
@@ -466,9 +473,17 @@ export default function Museum() {
                 </button>
               )}
               <p className="privacy-note">
-                入力文と候補作品の資料をXiaomi
-                MiMoへ送信します。API利用料が発生します。
-                入力文・選定結果・使用量と推定料金を、試験記録として保存します。
+                {inspectionAvailable ? (
+                  <>
+                    入力文と候補作品の資料をXiaomi
+                    MiMoへ送信します。API利用料が発生します。
+                    入力文・選定結果・使用量と推定料金を、試験記録として保存します。
+                  </>
+                ) : (
+                  <>
+                    作品の選定にAIを使用します。入力文・選定結果は、試験・改善のために運営側へ記録されます。
+                  </>
+                )}
               </p>
               {error && (
                 <div className="form-error" role="alert">
@@ -594,42 +609,49 @@ export default function Museum() {
               onChange={(e) => setReducedMotion(e.target.checked)}
             />
           </label>
-          <label className="setting-row">
-            <span>
-              選定結果を確認する<small>試験用。入力欄から結果を開けます</small>
-            </span>
-            <input
-              type="checkbox"
-              checked={reviewEnabled}
-              onChange={(e) => setReviewEnabled(e.target.checked)}
-            />
-          </label>
-          {reviewEnabled && (
-            <button
-              className="text-button"
-              onClick={() => {
-                setSettings(false);
-                setUsageOpen("settings");
-              }}
-            >
-              API使用量・料金（試験用）
-            </button>
+          {inspectionAvailable && (
+            <>
+              <label className="setting-row">
+                <span>
+                  選定結果を確認する
+                  <small>試験用。入力欄から結果を開けます</small>
+                </span>
+                <input
+                  type="checkbox"
+                  checked={reviewEnabled}
+                  onChange={(e) => setReviewEnabled(e.target.checked)}
+                />
+              </label>
+              {inspectionAvailable && reviewEnabled && (
+                <button
+                  className="text-button"
+                  onClick={() => {
+                    setSettings(false);
+                    setUsageOpen("settings");
+                  }}
+                >
+                  API使用量・料金（試験用）
+                </button>
+              )}
+              <button
+                className="text-button"
+                onClick={() => {
+                  setSettings(false);
+                  setHistoryOpen("settings");
+                }}
+              >
+                選定・料金の履歴（試験用）
+              </button>
+            </>
           )}
-          <button
-            className="text-button"
-            onClick={() => {
-              setSettings(false);
-              setHistoryOpen("settings");
-            }}
-          >
-            選定・料金の履歴（試験用）
-          </button>
           <p className="license-note">
-            作品はGitHubの絵画DBから、MiMoが選定します。入力文・検索候補・選定結果・使用量・推定料金・日時を試験記録として保存します。部屋から出ても履歴は残ります。
+            {inspectionAvailable
+              ? "作品はGitHubの絵画DBから、MiMoが選定します。入力文・検索候補・選定結果・使用量・推定料金・日時を試験記録として保存します。部屋から出ても履歴は残ります。"
+              : "作品の選定にAIを使用します。入力文・選定結果は、試験・改善のために運営側へ記録されます。"}
           </p>
         </Dialog>
       )}
-      {historyOpen && (
+      {inspectionAvailable && historyOpen && (
         <HistoryView
           onClose={() => {
             if (historyOpen === "settings") setSettings(true);
@@ -638,7 +660,7 @@ export default function Museum() {
           }}
         />
       )}
-      {usageOpen && (
+      {inspectionAvailable && usageOpen && (
         <UsageView
           onClose={() => {
             if (usageOpen === "settings") setSettings(true);
@@ -647,7 +669,7 @@ export default function Museum() {
           }}
         />
       )}
-      {reviewOpen && review && (
+      {inspectionAvailable && reviewOpen && review && (
         <SelectionReviewView
           review={review}
           onClose={() => {

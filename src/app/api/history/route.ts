@@ -1,8 +1,14 @@
 import { UsageLedger } from "@/lib/usage/ledger";
+import { inspectionAvailable } from "@/lib/access";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export async function GET(request: Request) {
   const headers = { "Cache-Control": "no-store" };
+  if (!inspectionAvailable())
+    return Response.json(
+      { error: "この入口からは履歴を表示できません。" },
+      { status: 403, headers },
+    );
   const params = new URL(request.url).searchParams;
   const offset = Number(params.get("offset") || 0),
     limit = Number(params.get("limit") || 20);

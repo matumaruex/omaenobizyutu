@@ -26,6 +26,8 @@ Node.js 24で `npm ci` を実行し、`.env.example` を `.env.local` にコピ�
 
 [履歴の保存・確認方法](docs/HISTORY.md)も参照してください。
 
+家族への試用依頼には、履歴を非公開にした別の入口を使います。[家族向けの共有方法](docs/FAMILY-TEST.md)を参照してください。試用分も既存の累計・API上限に含めます。
+
 ## DBの更新と画像
 
 `src/lib/catalog/` がGitHubのmainブランチを読みます。Next.js Data Cacheを利用し、検証済みDBを共有・約24時間キャッシュします。期限後のアクセスでは保存済みDBを返し、裏で最新版を確認します。定期実行サービスは使いません。

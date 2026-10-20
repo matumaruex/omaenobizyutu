@@ -37,6 +37,7 @@ export async function setup(page: Page) {
     r.fulfill({
       json: {
         aiAvailable: true,
+        inspectionAvailable: true,
         catalogCount: 200,
         catalogCommit: seed.commit,
       },
