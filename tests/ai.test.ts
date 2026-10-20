@@ -110,6 +110,7 @@ describe("real SDK request contract, with all upstream HTTP mocked", () => {
     expect(body.response_format).toEqual({ type: "json_object" });
     const payload = JSON.parse(body.messages.at(-1).content);
     expect(payload.candidates).toHaveLength(24);
+    expect(payload.candidates.every((a: Record<string, unknown>) => !("summary" in a))).toBe(true);
     expect(
       payload.candidates.every((a: { id: string }) =>
         seed.artworks.some((v) => v.id === a.id),
