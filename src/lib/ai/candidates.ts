@@ -43,9 +43,14 @@ export function searchCandidates(text: string, catalog: CatalogMaterial[]) {
     }))
     .sort((a, b) => b.score - a.score || a.art.id.localeCompare(b.art.id));
   const chosen: CatalogMaterial[] = [];
+  const countsByArtist = new Map<string, number>();
   for (const { art } of ranked) {
-    if (chosen.filter((a) => a.artist === art.artist).length >= 2) continue;
+    // Avoid overrepresenting one painter, including source-name variants.
+    // Unidentified creators get individual keys and must not be grouped.
+    const count = countsByArtist.get(art.artistKey) ?? 0;
+    if (count >= 2) continue;
     chosen.push(art);
+    countsByArtist.set(art.artistKey, count + 1);
     if (chosen.length === 24) break;
   }
   return {
