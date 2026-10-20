@@ -119,6 +119,11 @@ describe("real SDK request contract, with all upstream HTTP mocked", () => {
     expect(result.verification.usage.reasoningTokens).toBe(120);
     expect(result.verification.usage.cachedInputTokens).toBe(1000);
     expect(result.selections.every((a) => a.artwork?.id === a.id)).toBe(true);
+    for (const selected of result.selections) {
+      expect(selected.artwork?.interpretation).toEqual(
+        seed.selection.find((a) => a.id === selected.id)!.meaning,
+      );
+    }
     expect(JSON.stringify(result)).not.toContain("test-only-not-a-real-key");
   });
   for (const kind of ["outside", "duplicate", "schema"] as const)

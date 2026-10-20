@@ -137,7 +137,11 @@ export async function selectWithAI(
       ...output,
       selections: output.selections.map((s) => ({
         ...s,
-        artwork: catalog.artworks.find((a) => a.id === s.id)!,
+        artwork: {
+          ...catalog.artworks.find((a) => a.id === s.id)!,
+          // Return the full original DB text, not the shortened model input.
+          interpretation: candidates.find((a) => a.id === s.id)!.meaning,
+        },
       })),
       verification: {
         model: MIMO_MODEL,

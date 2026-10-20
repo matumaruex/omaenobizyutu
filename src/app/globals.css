@@ -461,6 +461,42 @@ svg {
 .art-facts {
   margin: 24px 0;
 }
+.artwork-description {
+  margin: 28px 0;
+}
+.artwork-description h3 {
+  margin: 0 0 10px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #74664f;
+}
+.artwork-description p {
+  font-size: 14px;
+  color: #665f54;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+.artwork-description .artwork-description-note {
+  font-size: 12px;
+  color: #8b806d;
+}
+.artwork-sources {
+  margin-top: 30px;
+  border-top: 1px solid #e3dbcd;
+  padding-top: 16px;
+}
+.artwork-sources summary {
+  cursor: pointer;
+  font-size: 11px;
+  color: #8b806d;
+}
+.artwork-source-links {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  margin: 16px 0;
+}
 .source-link {
   font-size: 10px;
   color: #8d7958;

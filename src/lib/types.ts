@@ -14,6 +14,8 @@ export interface Artwork {
   museum: string;
   medium: string;
   facts: string;
+  /** Original DB explanation, distinct from the model's selection reason. */
+  interpretation?: CatalogMaterial["meaning"];
   credit: string;
   imageSource: string;
   imageLicense: string;

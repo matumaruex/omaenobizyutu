@@ -11,7 +11,10 @@ export function exhibition(reverse = false) {
       role: i === 3 ? "余韻" : "共鳴",
       reason:
         "作品の具体的な主題と、この文章との無理のない接点を選定の手掛かりとしました。",
-      artwork: seed.artworks.find((a) => a.id === id)!,
+      artwork: {
+        ...seed.artworks.find((a) => a.id === id)!,
+        interpretation: seed.selection.find((a) => a.id === id)!.meaning,
+      },
     })),
     verification: {
       model: "mimo-v2.6-flash",
