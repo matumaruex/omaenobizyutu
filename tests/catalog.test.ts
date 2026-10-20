@@ -54,11 +54,11 @@ function source() {
   return { raw, registry };
 }
 describe("the GitHub DB is the only artwork catalog", () => {
-  it("normalizes all 200 source records and versioned image references", () => {
+  it("normalizes all 300 source records and versioned image references", () => {
     const { raw, registry } = source();
     const result = normalizeCatalog(raw, registry, catalog.commit);
-    expect(result.artworks).toHaveLength(200);
-    expect(new Set(result.artworks.map((a) => a.id)).size).toBe(200);
+    expect(result.artworks).toHaveLength(300);
+    expect(new Set(result.artworks.map((a) => a.id)).size).toBe(300);
     expect(
       result.artworks.every(
         (a) =>
@@ -66,7 +66,7 @@ describe("the GitHub DB is the only artwork catalog", () => {
           a.localImage.includes(catalog.commit),
       ),
     ).toBe(true);
-    expect(result.images).toHaveLength(200);
+    expect(result.images).toHaveLength(300);
   });
   it("reflects additions, edits and removals from the same source", () => {
     const { raw, registry } = source();
@@ -95,6 +95,54 @@ describe("the GitHub DB is the only artwork catalog", () => {
         raw.artworks[0].facts.is_public_domain_at_source = false;
       expect(() => normalizeCatalog(raw, registry, catalog.commit)).toThrow();
     });
+  it("recognizes cross-museum spelling aliases without changing the source attribution", () => {
+    const { raw, registry } = source();
+    const aliases = [
+      ["Auguste Renoir", "Pierre-Auguste Renoir"],
+      ["Pierre-Auguste Renoir", "Pierre-Auguste Renoir"],
+      ["Edouard Manet", "Édouard Manet"],
+      ["Édouard Manet", "Édouard Manet"],
+      ["Paul Cezanne", "Paul Cézanne"],
+      ["Paul Cézanne", "Paul Cézanne"],
+      ["Rembrandt (Rembrandt van Rijn)", "Rembrandt van Rijn"],
+      ["Rembrandt van Rijn", "Rembrandt van Rijn"],
+      ["Domenico Theotokópoulos, called El Greco", "El Greco"],
+      ["El Greco", "El Greco"],
+    ];
+    aliases.forEach(([source, canonical], index) => {
+      raw.artworks[index].facts.artist = source;
+      Object.assign(raw.artworks[index].facts, { artist_canonical: canonical });
+    });
+    raw.artworks[10].facts.artist = "Unidentified artist";
+    raw.artworks[11].facts.artist = "Unidentified artist";
+    raw.artworks[12].facts.artist = "Workshop of Dieric Bouts";
+    raw.artworks[13].facts.artist = "Dieric Bouts";
+    const normalized = normalizeCatalog(raw, registry, catalog.commit);
+    const pairs = aliases.map((_, index) => normalized.selection[index]);
+    for (let i = 0; i < pairs.length; i += 2) {
+      expect(pairs[i].artistKey).toBe(pairs[i + 1].artistKey);
+      expect(pairs[i].artist).toBe(pairs[i + 1].artist);
+    }
+    expect(normalized.selection[10].artistKey).not.toBe(normalized.selection[11].artistKey);
+    expect(normalized.selection[12].artistKey).not.toBe(normalized.selection[13].artistKey);
+  });
+  it("caps each named artist at two candidates across aliases, but not unidentified works", () => {
+    const make = (id: string, artist: string, artistKey: string) => ({
+      ...catalog.selection[0], id, artist, artistKey,
+      primary: ["喜び"], secondary: [], strengths: { 喜び: 3 }
+    });
+    const works = [
+      make("met-900001", "Pierre-Auguste Renoir", "artist:Pierre-Auguste Renoir"),
+      make("met-900002", "Pierre-Auguste Renoir", "artist:Pierre-Auguste Renoir"),
+      make("met-900003", "Pierre-Auguste Renoir", "artist:Pierre-Auguste Renoir"),
+      make("met-900004", "Unidentified artist", "unidentified:met-900004"),
+      make("met-900005", "Unidentified artist", "unidentified:met-900005"),
+      make("met-900006", "Unidentified artist", "unidentified:met-900006"),
+    ];
+    const chosen = selectCandidates("嬉しい", works);
+    expect(chosen.filter((a) => a.artistKey === "artist:Pierre-Auguste Renoir")).toHaveLength(2);
+    expect(chosen.filter((a) => a.artist === "Unidentified artist")).toHaveLength(3);
+  });
   it("retrieves at most 24 tagged candidates, including secondary-only works", () => {
     const secondary = {
       ...catalog.selection[0],
