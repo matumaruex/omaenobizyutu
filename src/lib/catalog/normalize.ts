@@ -34,6 +34,7 @@ const rawSchema = z.object({
           title_original: text,
           title_ja_provisional: text,
           artist: text,
+          artist_canonical: z.string().trim().min(1).max(300).optional(),
           creation_date_display: text,
           type: text,
           is_public_domain_at_source: z.literal(true),
@@ -130,12 +131,19 @@ export function normalizeCatalog(
     const display = high ?? { url: a.image.display_url, sha256: im.sha256 };
     const c = a.curation,
       f = a.facts;
+    // The source museum's attribution remains in facts.artist. A curated
+    // display alias resolves known alternate spellings without collapsing
+    // workshop pieces or disputed attributions into the named painter.
+    const artist = f.artist_canonical ?? f.artist;
+    const artistKey = f.artist === "Unidentified artist"
+      ? `unidentified:${a.id}`
+      : `artist:${artist.normalize("NFC")}`;
     const localImage = `/api/artwork/${a.id}?revision=${commit}&v=${display.sha256.slice(0, 16)}`;
     catalog.artworks.push({
       id: a.id,
       title: f.title_original,
       titleJa: f.title_ja_provisional,
-      artist: f.artist,
+      artist,
       date: f.creation_date_display,
       width: 1,
       height: 1,
@@ -152,7 +160,8 @@ export function normalizeCatalog(
     catalog.selection.push({
       id: a.id,
       title: f.title_original,
-      artist: f.artist,
+      artist,
+      artistKey,
       primary: c.emotion_categories.primary,
       secondary: c.emotion_categories.secondary,
       strengths: c.emotion_strengths,
