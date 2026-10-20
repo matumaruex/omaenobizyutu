@@ -31,7 +31,6 @@ function source() {
         emotion_strengths: catalog.selection.find((v) => v.id === a.id)!
           .strengths,
         search_profile: {
-          summary_for_ai: catalog.selection.find((v) => v.id === a.id)!.summary,
           fitting_situations: catalog.selection.find((v) => v.id === a.id)!
             .fitting,
           selection_cautions: catalog.selection.find((v) => v.id === a.id)!
