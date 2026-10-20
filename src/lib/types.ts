@@ -65,7 +65,6 @@ export interface CatalogMaterial {
   primary: string[];
   secondary: string[];
   strengths: Partial<Record<string, number>>;
-  summary: string;
   fitting: { situation: string; reason: string; strength: number }[];
   cautions: string[];
   meaning: {
