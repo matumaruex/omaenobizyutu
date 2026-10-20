@@ -26,7 +26,7 @@ afterEach(() => {
 });
 it("configures a day-long shared cache, and immutable revision caches", () => {
   expect(mocks.options).toContainEqual({
-    keys: ["kaiga-data-latest-v1"],
+    keys: ["kaiga-data-latest-v1", seed.commit],
     options: { revalidate: 86400 },
   });
   expect(mocks.options).toContainEqual({

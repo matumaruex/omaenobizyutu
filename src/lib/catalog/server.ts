@@ -18,7 +18,8 @@ export async function getRevisionCatalog(commit: string) {
 // throw, so Next's time-based stale-while-revalidate keeps the previous good value.
 const latest = unstable_cache(
   async () => getRevisionCatalog(await readHead()),
-  ["kaiga-data-latest-v1"],
+  // A refreshed bundled snapshot must not reuse an older deployment's cache.
+  ["kaiga-data-latest-v1", initialCatalog.commit],
   { revalidate: 86400 },
 );
 export async function getCatalog() {
