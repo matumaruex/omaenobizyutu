@@ -32,11 +32,15 @@ async function turn(page: Page, mobile: boolean, degrees: number) {
   }
   await touch?.detach();
 }
-test("discover four walls by turning, without walking or floor-tap movement", async ({
+test("discover all eight walls from the center without walking or floor-tap movement", async ({
   page,
 }, testInfo) => {
-  test.setTimeout(60000);
+  test.setTimeout(90000);
   const mobile = testInfo.project.name === "mobile";
+  let calls = 0;
+  page.on("request", (request) => {
+    if (request.url().endsWith("/api/exhibition")) calls++;
+  });
   await page.emulateMedia({ reducedMotion: "reduce" });
   await setup(page);
   await page.goto("/");
@@ -108,15 +112,12 @@ test("discover four walls by turning, without walking or floor-tap movement", as
     await page.getByRole("button", { name: "閉じる", exact: true }).click();
   };
   await pick(0);
-  // Four different works become available as the viewer freely turns around.
-  for (const [index, name] of [
-    [3, "left"],
-    [2, "back"],
-    [1, "right"],
-  ] as const) {
-    await turn(page, mobile, 90);
+  // Every 45-degree turn reveals the next wall, with all eight works selectable.
+  expect(exhibition.selections).toHaveLength(8);
+  for (const index of [7, 6, 5, 4, 3, 2, 1]) {
+    await turn(page, mobile, 45);
     await page.screenshot({
-      path: `artifacts/${testInfo.project.name}-${name}-wall.png`,
+      path: `artifacts/${testInfo.project.name}-octagon-wall-${index}.png`,
     });
     await pick(index);
   }
@@ -125,9 +126,10 @@ test("discover four walls by turning, without walking or floor-tap movement", as
   await page.keyboard.press("ArrowLeft");
   await page.getByRole("button", { name: "展示に戻る" }).click();
   await pick(1);
-  await turn(page, mobile, 90);
+  await turn(page, mobile, 45);
   await pick(0);
   await expect
     .poll(() => page.evaluate(() => document.pointerLockElement))
     .toBeNull();
+  expect(calls).toBe(1);
 });

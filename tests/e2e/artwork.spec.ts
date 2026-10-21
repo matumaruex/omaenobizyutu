@@ -141,7 +141,9 @@ test("author statements retain their verification scope and unverified statement
     "同じ主題・連作についての作者の考え",
     "作者の制作への考え",
   ];
-  for (const [i, selected] of result.selections.entries()) {
+  for (const [i, selected] of result.selections
+    .slice(0, statuses.length)
+    .entries()) {
     selected.artwork.interpretation = structuredClone(
       selected.artwork.interpretation,
     );

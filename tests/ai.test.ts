@@ -27,7 +27,7 @@ function chosen() {
     title: "気持ちの余白",
     atmosphere: "揺れる気持ちを入口に、作品それぞれの背景へ開く構成。",
     selections: selectCandidates(input, seed.selection)
-      .slice(0, 6)
+      .slice(0, 8)
       .map((a) => ({
         id: a.id,
         role: "共鳴",
@@ -110,7 +110,11 @@ describe("real SDK request contract, with all upstream HTTP mocked", () => {
     expect(body.response_format).toEqual({ type: "json_object" });
     const payload = JSON.parse(body.messages.at(-1).content);
     expect(payload.candidates).toHaveLength(24);
-    expect(payload.candidates.every((a: Record<string, unknown>) => !("summary" in a))).toBe(true);
+    expect(
+      payload.candidates.every(
+        (a: Record<string, unknown>) => !("summary" in a),
+      ),
+    ).toBe(true);
     expect(
       payload.candidates.every((a: { id: string }) =>
         seed.artworks.some((v) => v.id === a.id),
@@ -120,6 +124,8 @@ describe("real SDK request contract, with all upstream HTTP mocked", () => {
     expect(result.verification.usage.reasoningTokens).toBe(120);
     expect(result.verification.usage.cachedInputTokens).toBe(1000);
     expect(result.selections.every((a) => a.artwork?.id === a.id)).toBe(true);
+    expect(result.selections).toHaveLength(8);
+    expect(body.messages[0].content).toContain("必ず8点");
     for (const selected of result.selections) {
       expect(selected.artwork?.interpretation).toEqual(
         seed.selection.find((a) => a.id === selected.id)!.meaning,
@@ -127,12 +133,27 @@ describe("real SDK request contract, with all upstream HTTP mocked", () => {
     }
     expect(JSON.stringify(result)).not.toContain("test-only-not-a-real-key");
   });
-  for (const kind of ["outside", "duplicate", "schema"] as const)
+  for (const kind of [
+    "outside",
+    "duplicate",
+    "schema",
+    "too_few",
+    "too_many",
+  ] as const)
     it(`rejects ${kind} provider output`, async () => {
       const value = chosen();
       if (kind === "outside") value.selections[0].id = "met-9999999";
       if (kind === "duplicate") value.selections[0].id = value.selections[1].id;
       if (kind === "schema") value.atmosphere = "";
+      if (kind === "too_few") value.selections.pop();
+      if (kind === "too_many") {
+        const extra = selectCandidates(input, seed.selection)[8];
+        value.selections.push({
+          id: extra.id,
+          role: "共鳴",
+          reason: "追加の作品",
+        });
+      }
       vi.stubGlobal(
         "fetch",
         vi.fn(async () => response(value)),

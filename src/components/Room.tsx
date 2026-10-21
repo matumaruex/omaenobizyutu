@@ -2,7 +2,7 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
-import { exhibitionSlots, paintingSize, ROOM } from "@/lib/layout";
+import { exhibitionSlots, paintingSize, ROOM, ROOM_WALLS } from "@/lib/layout";
 import { createRoomTextures } from "@/lib/room-materials";
 import type { Exhibit } from "@/lib/types";
 
@@ -16,40 +16,31 @@ interface Props {
   onSelect: (id: string) => void;
 }
 type RoomTextures = ReturnType<typeof createRoomTextures>;
-const wallSurfaces = [
-  {
-    position: [0, ROOM.height / 2, -ROOM.halfDepth],
-    rotation: [0, 0, 0],
-    tint: "#ffffff",
-  },
-  {
-    position: [ROOM.halfWidth, ROOM.height / 2, 0],
-    rotation: [0, -Math.PI / 2, 0],
-    tint: "#f9f9f7",
-  },
-  {
-    position: [0, ROOM.height / 2, ROOM.halfDepth],
-    rotation: [0, Math.PI, 0],
-    tint: "#fbfaf7",
-  },
-  {
-    position: [-ROOM.halfWidth, ROOM.height / 2, 0],
-    rotation: [0, Math.PI / 2, 0],
-    tint: "#ffffff",
-  },
-] as const;
+const paintingSlots = exhibitionSlots(ROOM.wallCount);
+const wallTints = [
+  "#ffffff",
+  "#faf9f6",
+  "#f6f4ef",
+  "#f8f6f1",
+  "#fbf9f4",
+  "#f9f7f2",
+  "#f7f5f0",
+  "#fcfbf7",
+];
 function Architecture({ textures }: { textures: RoomTextures }) {
-  const span = ROOM.halfWidth * 2;
+  const span = ROOM.wallWidth;
   return (
     <group>
       <ambientLight intensity={0.75} />
       <hemisphereLight args={["#fff9ed", "#b4afa3", 1.1]} />
       <directionalLight position={[-3, 6, 2]} intensity={1.5} color="#fffcf4" />
       <mesh rotation={[-Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[span, ROOM.halfDepth * 2]} />
+        <circleGeometry
+          args={[ROOM.floorRadius, ROOM.wallCount, Math.PI / ROOM.wallCount]}
+        />
         <meshBasicMaterial map={textures.floor} toneMapped={false} />
       </mesh>
-      {wallSurfaces.map((wall, index) => (
+      {ROOM_WALLS.map((wall, index) => (
         <group
           key={index}
           position={[...wall.position]}
@@ -59,7 +50,7 @@ function Architecture({ textures }: { textures: RoomTextures }) {
             <planeGeometry args={[span, ROOM.height]} />
             <meshBasicMaterial
               map={textures.wall}
-              color={wall.tint}
+              color={wallTints[index]}
               toneMapped={false}
             />
           </mesh>
@@ -80,7 +71,9 @@ function Architecture({ textures }: { textures: RoomTextures }) {
         </group>
       ))}
       <mesh position={[0, ROOM.height, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[span, ROOM.halfDepth * 2]} />
+        <circleGeometry
+          args={[ROOM.floorRadius, ROOM.wallCount, Math.PI / ROOM.wallCount]}
+        />
         <meshBasicMaterial color="#e6e4dc" toneMapped={false} />
       </mesh>
     </group>
@@ -104,14 +97,12 @@ function Painting({
   const [loaded, setLoaded] = useState(false);
   const elapsed = useRef(0);
   const size = paintingSize(exhibit.artwork);
-  const scale = index < 4 ? 1 : 0.84;
-  const width = size.width * scale,
-    height = size.height * scale;
+  const { width, height } = size;
   const mat = 0.075;
   const rail = 0.026;
   const outerWidth = width + (mat + rail) * 2;
   const outerHeight = height + (mat + rail) * 2;
-  const slot = exhibitionSlots(12)[index];
+  const slot = paintingSlots[index];
   useEffect(() => {
     // Reuse the already decoded image from the bounded preload queue.
     // Creating a GPU texture does not start another network request.
@@ -389,7 +380,7 @@ export default function Room(props: Props) {
   return (
     <Canvas
       className="room-canvas"
-      aria-label={`中央から見回す白い展示室、展示作品${props.exhibits.length}点`}
+      aria-label={`中央から見回す八角形の展示室、展示作品${props.exhibits.length}点`}
       camera={{
         position: [0, ROOM.eye, 0],
         rotation: [0, 0, 0],

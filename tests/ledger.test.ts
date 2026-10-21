@@ -249,7 +249,7 @@ describe.skipIf(!bin)("durable atomic ledger on a real Redis server", () => {
           });
         paidCalls++;
         const selections = selectCandidates(input, seed.selection)
-          .slice(0, 6)
+          .slice(0, 8)
           .map((a) => ({
             id: a.id,
             role: "共鳴",
@@ -303,7 +303,7 @@ describe.skipIf(!bin)("durable atomic ledger on a real Redis server", () => {
       await historyGET(new Request("http://localhost/api/history"))
     ).json();
     expect(history.entries[0].history.input).toBe(input);
-    expect(history.entries[0].history.selection.works).toHaveLength(6);
+    expect(history.entries[0].history.selection.works).toHaveLength(8);
     expect(history.entries[0].history.search.candidates).toHaveLength(24);
     expect(history.entries[0].accounting.id).toBe(id);
     expect(JSON.stringify(history)).not.toContain("internal private trace");
