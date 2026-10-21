@@ -4,6 +4,9 @@
   --line: #dfd9ce;
   --paper: #fbf9f4;
   --accent: #75664f;
+  --gallery-surface: #e8e4da;
+  --gallery-line: #c9c0b1;
+  --gallery-muted: #71685a;
   --serif: "Yu Mincho", "Hiragino Mincho ProN", "Noto Serif JP", Georgia, serif;
   --sans: "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
 }
@@ -379,7 +382,36 @@ svg {
 }
 .artwork-dialog {
   width: min(1100px, calc(100% - 32px));
-  background: #fbf9f4;
+  background: var(--gallery-surface);
+  border-color: var(--gallery-line);
+  box-shadow: 0 24px 80px #463b2433;
+}
+.artwork-dialog::backdrop {
+  background: #51493938;
+  backdrop-filter: blur(5px);
+}
+.artwork-dialog .dialog-close {
+  background: #ded8cc;
+  color: var(--ink);
+}
+.artwork-dialog .dialog-close:hover {
+  background: #d3cbbb;
+}
+.artwork-dialog :is(.disclosure, .artwork-sources) {
+  border-color: var(--gallery-line);
+}
+.artwork-dialog
+  .artwork-details
+  :is(
+    .eyebrow,
+    .original-title,
+    .license-note,
+    .small,
+    .image-credit,
+    .interpretation-label,
+    .artwork-description-note
+  ) {
+  color: var(--gallery-muted);
 }
 .artwork-dialog .dialog-inner {
   padding: 45px 45px 30px;

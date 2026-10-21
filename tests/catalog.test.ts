@@ -173,7 +173,7 @@ describe("the GitHub DB is the only artwork catalog", () => {
   });
   it("rejects duplicates and IDs outside the submitted candidates", () => {
     const selected = catalog.artworks
-      .slice(0, 4)
+      .slice(0, 8)
       .map((a) => ({ id: a.id, role: "共鳴" as const, reason: "短い説明" }));
     expect(
       validateSelections(
@@ -188,5 +188,18 @@ describe("the GitHub DB is the only artwork catalog", () => {
       ),
     ).toBe(false);
     expect(validateSelections(selected, [])).toBe(false);
+    for (const count of [4, 7, 9, 12]) {
+      const works = catalog.artworks.slice(0, count).map((a) => ({
+        id: a.id,
+        role: "共鳴" as const,
+        reason: "短い説明",
+      }));
+      expect(
+        validateSelections(
+          works,
+          catalog.artworks.map((a) => a.id),
+        ),
+      ).toBe(false);
+    }
   });
 });
