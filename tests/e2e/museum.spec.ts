@@ -39,8 +39,8 @@ test("API-only room → selection → art → optional review; viewing never res
   await page.getByRole("button", { name: "選定結果を確認（試験用）" }).click();
   const dialog = page.getByRole("dialog", { name: "選定結果（試験用）" });
   await expect(dialog).toContainText("嬉しいけれど不安もある");
-  await expect(dialog.locator("ol li")).toHaveCount(4);
-  await expect(dialog).toContainText("DB 200作品");
+  await expect(dialog.locator("ol li")).toHaveCount(8);
+  await expect(dialog).toContainText("DB 300作品");
   await expect(dialog).toContainText("aic-28560");
   await page.screenshot({
     path: `artifacts/${info.project.name}-selection-review.png`,
@@ -112,7 +112,7 @@ test("failed images leave the empty room and do not call MiMo again", async ({
   );
   expect(calls).toBe(1);
   await expect(
-    page.locator('[aria-label="中央から見回す白い展示室、展示作品0点"]'),
+    page.locator('[aria-label="中央から見回す八角形の展示室、展示作品0点"]'),
   ).toBeVisible();
 });
 test("pending selection can be cancelled with the input retained", async ({
@@ -154,7 +154,7 @@ test("an image taking longer than 15 seconds is kept without another selection",
   await page.getByLabel("今の気持ちを教えてください").fill("ゆっくり見たい");
   await page.getByRole("button", { name: "展示する" }).click();
   await expect(
-    page.locator('[aria-label="中央から見回す白い展示室、展示作品4点"]'),
+    page.locator('[aria-label="中央から見回す八角形の展示室、展示作品8点"]'),
   ).toBeVisible({ timeout: 30000 });
   expect(calls).toBe(1);
   await expect(page.locator(".form-error[role=alert]")).toHaveCount(0);
