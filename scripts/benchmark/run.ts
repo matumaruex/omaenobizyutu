@@ -5,17 +5,9 @@ import { readUsage } from "../../src/lib/usage/pricing";
 import type { AccountingResult } from "../../src/lib/usage/types";
 
 // This paid runner exists only on the benchmark branch. Normal builds never run it.
-const runId = "mimo-timeout-20261022-a";
+const runId = "mimo-timeout-20261022-b";
 const outputPath = `public/${runId}.json`;
 const cases = [
-  {
-    text: "憂鬱なきぶん",
-    newId: "752ab240-2a14-497f-bb8a-f803a9cdfe24",
-  },
-  {
-    text: "不安はないけれど、何もする気が起きない",
-    newId: "2c5f7a1f-f5e0-47c3-a794-e738b35e3616",
-  },
   {
     text: "転職が決まってうれしい。でも新しい場所でやっていけるか心配で落ち着かない。",
     newId: "b9b20efb-664f-4eb3-a372-f26ff2c90c7b",
@@ -26,7 +18,7 @@ const cases = [
   },
 ];
 async function main() {
-  if (!process.argv.includes("--run-paid-timeout-20261022a")) {
+  if (!process.argv.includes("--run-paid-timeout-20261022b")) {
     console.log("MIMO_BENCH_NOT_RUN: explicit paid-run argument required");
     return;
   }
@@ -43,7 +35,7 @@ async function main() {
     createdAt: new Date().toISOString(),
     baselineCommit: "fc902865c133eeba527b497e01bfcab0971e2cbb",
     improvedCommit: "9326ac1ed1647c3280988a683ccd1029fa1f797d",
-    maxPaidCalls: 8,
+    maxPaidCalls: 4,
     timeoutsMs: { retrieval: 30000, selection: 90000 },
     complete: false,
     stop: "",
