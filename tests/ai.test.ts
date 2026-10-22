@@ -124,7 +124,7 @@ describe("real SDK request contract, with all upstream HTTP mocked", () => {
       firstPayload.catalog.some((a: { tags: string[] }) => a.tags.length === 0),
     ).toBe(true);
     expect(firstBody.thinking).toEqual({ type: "disabled" });
-    expect(firstBody.max_completion_tokens).toBe(3600);
+    expect(firstBody.max_completion_tokens).toBe(700);
     const [url, init] = mock.mock.calls[1] as unknown as [string, RequestInit];
     expect(String(url)).toBe("https://api.xiaomimimo.com/v1/chat/completions");
     const body = JSON.parse(String(init.body));
@@ -341,8 +341,8 @@ describe("real SDK request contract, with all upstream HTTP mocked", () => {
   for (const kind of ["outside", "duplicate", "too_few", "artist"] as const)
     it(`stops after invalid retrieval (${kind}) without spending on stage two`, async () => {
       const value = candidateOutput();
-      if (kind === "outside") value.candidates[0].id = "met-9999999";
-      if (kind === "duplicate") value.candidates[0].id = value.candidates[1].id;
+      if (kind === "outside") value.candidates[0] = "met-9999999";
+      if (kind === "duplicate") value.candidates[0] = value.candidates[1];
       if (kind === "too_few") value.candidates.pop();
       if (kind === "artist") {
         const byArtist = Map.groupBy(seed.selection, (a) => a.artistKey);
@@ -354,7 +354,7 @@ describe("real SDK request contract, with all upstream HTTP mocked", () => {
           ...candidateWorks
             .filter((a) => a.artistKey !== three[0].artistKey)
             .slice(0, 21),
-        ].map((a) => ({ id: a.id, reason: "検証用の短い説明。" }));
+        ].map((a) => a.id);
       }
       const mock = vi.fn(async () => response(value));
       vi.stubGlobal("fetch", mock);

@@ -195,56 +195,62 @@ test("old usage remains visible with unavailable selections and free history pag
 });
 
 // Browser fixtures do not call MiMo or Redis.
-test("semantic retrieval and final selection remain distinct and old scores are not invented", async ({
-  page,
-}) => {
-  const final = entry();
-  const group = final.accounting.id;
-  final.accounting.pipeline = { exhibitionId: group, stage: "selection" };
-  const search = final.history!.search!;
-  search.method = "ai-semantic-v1";
-  search.eligibleCount = 300;
-  search.catalogCount = 300;
-  search.matchingCount = null;
-  search.detectedCategories = [];
-  search.candidates = search.candidates.map((c) => ({
-    ...c,
-    score: null,
-    matchedTags: [],
-    reason: "曖昧な気持ちと作品の待つ場面に接点があるため。",
-  }));
-  const first: HistoryEntry = {
-    accounting: {
-      ...final.accounting,
-      id: "5d191b34-423f-4cb9-8ae0-68e2ee06928a",
-      pipeline: { exhibitionId: group, stage: "retrieval" },
-    },
-    history: { input, search },
-  };
-  await page.route("**/api/history?**", (route) =>
-    route.fulfill({
-      json: { calls: 2, offset: 0, limit: 20, entries: [final, first] },
-    }),
-  );
-  await page.goto("/");
-  await page.getByRole("button", { name: "表示設定" }).click();
-  await page.getByRole("button", { name: label }).click();
-  const rows = page.locator(".history-entry");
-  await rows.nth(1).locator(":scope > summary").click();
-  await expect(rows.nth(1)).toContainText("候補選びの記録です");
-  await expect(rows.nth(1)).not.toContainText(
-    "失敗・中断などで結果を保存できなかった",
-  );
-  await rows
-    .nth(1)
-    .getByText("候補検索から選定までの流れ", { exact: true })
-    .click();
-  await expect(rows.nth(1)).toContainText("タグの有無を問わず300点");
-  await expect(rows.nth(1)).toContainText("曖昧な気持ちと作品の待つ場面");
-  await expect(rows.nth(1)).not.toContainText("検索点");
-  await rows.nth(0).locator(":scope > summary").click();
-  await expect(rows.nth(0)).toContainText("最終選定");
-  await expect(rows.nth(0).locator(":scope > .review-works > li")).toHaveCount(
-    8,
-  );
-});
+for (const version of ["ai-semantic-v1", "ai-semantic-v2"] as const)
+  test(`semantic retrieval ${version} and final selection remain distinct`, async ({
+    page,
+  }) => {
+    const final = entry();
+    const group = final.accounting.id;
+    final.accounting.pipeline = { exhibitionId: group, stage: "selection" };
+    const search = final.history!.search!;
+    search.method = version;
+    search.eligibleCount = 300;
+    search.catalogCount = 300;
+    search.matchingCount = null;
+    search.detectedCategories = [];
+    search.candidates = search.candidates.map((c) => ({
+      ...c,
+      score: null,
+      matchedTags: [],
+      reason:
+        version === "ai-semantic-v1"
+          ? "曖昧な気持ちと作品の待つ場面に接点があるため。"
+          : undefined,
+    }));
+    const first: HistoryEntry = {
+      accounting: {
+        ...final.accounting,
+        id: "5d191b34-423f-4cb9-8ae0-68e2ee06928a",
+        pipeline: { exhibitionId: group, stage: "retrieval" },
+      },
+      history: { input, search },
+    };
+    await page.route("**/api/history?**", (route) =>
+      route.fulfill({
+        json: { calls: 2, offset: 0, limit: 20, entries: [final, first] },
+      }),
+    );
+    await page.goto("/");
+    await page.getByRole("button", { name: "表示設定" }).click();
+    await page.getByRole("button", { name: label }).click();
+    const rows = page.locator(".history-entry");
+    await rows.nth(1).locator(":scope > summary").click();
+    await expect(rows.nth(1)).toContainText("候補選びの記録です");
+    await expect(rows.nth(1)).not.toContainText(
+      "失敗・中断などで結果を保存できなかった",
+    );
+    await rows
+      .nth(1)
+      .getByText("候補検索から選定までの流れ", { exact: true })
+      .click();
+    await expect(rows.nth(1)).toContainText("タグの有無を問わず300点");
+    if (version === "ai-semantic-v1")
+      await expect(rows.nth(1)).toContainText("曖昧な気持ちと作品の待つ場面");
+    else await expect(rows.nth(1)).toContainText("候補選びは作品IDだけを出力");
+    await expect(rows.nth(1)).not.toContainText("検索点");
+    await rows.nth(0).locator(":scope > summary").click();
+    await expect(rows.nth(0)).toContainText("最終選定");
+    await expect(
+      rows.nth(0).locator(":scope > .review-works > li"),
+    ).toHaveCount(8);
+  });

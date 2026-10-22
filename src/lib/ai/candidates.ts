@@ -4,12 +4,7 @@ import type { CatalogMaterial } from "../types";
 export const CANDIDATE_COUNT = 24;
 export const candidateSchema = z.object({
   candidates: z
-    .array(
-      z.object({
-        id: z.string().regex(/^(aic|met)-[1-9]\d*$/),
-        reason: z.string().trim().min(1).max(120),
-      }),
-    )
+    .array(z.string().regex(/^(aic|met)-[1-9]\d*$/))
     .length(CANDIDATE_COUNT),
 });
 
@@ -48,12 +43,12 @@ export function validateCandidates(
   const seen = new Set<string>();
   const artists = new Map<string, number>();
   return parsed.candidates.map((candidate) => {
-    const art = byId.get(candidate.id);
-    if (!art || seen.has(candidate.id)) throw Error("INVALID_CANDIDATE");
-    seen.add(candidate.id);
+    const art = byId.get(candidate);
+    if (!art || seen.has(candidate)) throw Error("INVALID_CANDIDATE");
+    seen.add(candidate);
     const count = (artists.get(art.artistKey) ?? 0) + 1;
     if (count > 2) throw Error("INVALID_CANDIDATE_ARTIST_COUNT");
     artists.set(art.artistKey, count);
-    return { art, reason: candidate.reason };
+    return art;
   });
 }

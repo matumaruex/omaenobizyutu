@@ -12,8 +12,5 @@ export const candidateWorks = [...seed.selection]
   })
   .slice(0, 24);
 export const candidateOutput = () => ({
-  candidates: candidateWorks.map((a) => ({
-    id: a.id,
-    reason: "文章の文脈と作品の具体的な主題に接点があるため。",
-  })),
+  candidates: candidateWorks.map((a) => a.id),
 });
