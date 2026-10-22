@@ -1,12 +1,13 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { performance } from "node:perf_hooks";
+import seed from "../../src/data/catalog-seed.json";
 import { POST as newPost } from "../../src/app/api/exhibition/route";
 import { readUsage } from "../../src/lib/usage/pricing";
 import type { AccountingResult } from "../../src/lib/usage/types";
 
 // Only an explicit, deployment-specific build command may run paid benchmarks.
 // Normal pushes, builds, page views and application requests never run this file.
-const runId = "mimo-comparison-20261022-c";
+const runId = "mimo-comparison-20261022-d";
 const outputPath = `public/${runId}.json`;
 const cases = [
   {
@@ -17,12 +18,12 @@ const cases = [
   {
     text: "不安はないけれど、何もする気が起きない",
     oldId: "47a1a364-5820-4155-a59a-049a0146ba54",
-    newId: "b3fa2966-424e-41aa-b194-e90e2d4b20db",
+    newId: "0853ba06-5abc-47ce-a4ce-f2f012f17d39",
   },
 ];
 
 async function main() {
-  if (!process.argv.includes("--run-paid-20261022c")) {
+  if (!process.argv.includes("--run-paid-20261022d")) {
     console.log("MIMO_BENCH_NOT_RUN: explicit paid-run argument required");
     return;
   }
@@ -31,6 +32,7 @@ async function main() {
     elapsedMs: number;
     status?: number;
     usage?: ReturnType<typeof readUsage>;
+    detail?: Record<string, unknown>;
   }[] = [];
   const results: Record<string, unknown>[] = [];
   const report = {
@@ -38,7 +40,7 @@ async function main() {
     createdAt: new Date().toISOString(),
     baselineCommit: "6bcc249ba9316e0f2917b46cb0ae9dbadc72dd0b",
     improvedCommit: "9ef1a3784e46ff52914373870fbb5286d4a8ed47",
-    maxPaidCalls: 4,
+    maxPaidCalls: 2,
     complete: false,
     stop: "",
     results,
@@ -57,7 +59,44 @@ async function main() {
       call.status = response.status;
       // Include receipt of the complete non-streaming JSON, without retaining it.
       try {
-        call.usage = readUsage((await response.clone().json())?.usage);
+        const raw = await response.clone().json();
+        call.usage = readUsage(raw?.usage);
+        try {
+          const content = JSON.parse(
+            raw?.choices?.[0]?.message?.content ?? "null",
+          );
+          const values = Array.isArray(content) ? content : content?.candidates;
+          const list = Array.isArray(values) ? values : [];
+          const ids = list
+            .map((v) => (typeof v === "string" ? v : v?.id))
+            .filter((v) => typeof v === "string");
+          const byId = new Map(seed.selection.map((a) => [a.id, a]));
+          const artistCounts = new Map<string, number>();
+          for (const id of ids) {
+            const art = byId.get(id);
+            if (art)
+              artistCounts.set(
+                art.artistKey,
+                (artistCounts.get(art.artistKey) ?? 0) + 1,
+              );
+          }
+          call.detail = {
+            outputArray: Array.isArray(content),
+            hasCandidates: Array.isArray(content?.candidates),
+            count: list.length,
+            stringCount: list.filter((v) => typeof v === "string").length,
+            idCount: ids.length,
+            duplicateCount: ids.length - new Set(ids).size,
+            unknownIdCount: ids.filter((id) => !byId.has(id)).length,
+            artistsOverLimit: [...artistCounts.entries()].filter(
+              ([, count]) => count > 2,
+            ),
+            truncated: raw?.choices?.[0]?.finish_reason === "length",
+          };
+        } catch {
+          call.detail = { jsonParseFailed: true };
+        }
+        console.log("MIMO_BENCH_CALL " + JSON.stringify(call));
       } catch {}
       return response;
     } finally {
@@ -70,8 +109,8 @@ async function main() {
   };
   try {
     for (const mode of ["new"] as const) {
-      for (let index = 0; index < cases.length; index++) {
-        const item = cases[index];
+      for (let index = 0; index < 1; index++) {
+        const item = cases[1];
         const callOffset = providerCalls.length;
         const started = performance.now();
         const response = await newPost(
@@ -91,7 +130,7 @@ async function main() {
           accounting?.records ?? (accounting ? [accounting.record] : []);
         const row = {
           mode,
-          caseIndex: index,
+          caseIndex: 1,
           input: item.text,
           status: response.status,
           elapsedMs: Math.round(performance.now() - started),
@@ -124,7 +163,7 @@ async function main() {
           "MIMO_BENCH_CASE " +
             JSON.stringify({
               mode,
-              caseIndex: index,
+              caseIndex: 1,
               status: row.status,
               elapsedMs: row.elapsedMs,
               paidCalls: row.paidCalls,
