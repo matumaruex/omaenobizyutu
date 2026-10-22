@@ -6,22 +6,17 @@ import { readUsage } from "../../src/lib/usage/pricing";
 import type { AccountingResult } from "../../src/lib/usage/types";
 
 // This paid runner exists only on the benchmark branch. Normal builds never run it.
-const runId = "mimo-tags-20261022-b";
+const runId = "mimo-tags-20261022-c";
 const outputPath = `public/${runId}.json`;
 const cases = [
   {
-    text: "憂鬱なきぶん",
-    oldId: "6780baa8-6740-4d2c-82bb-1998247b3a50",
-    newId: "3f98d301-80cf-4563-9873-b2b610c58569",
-  },
-  {
     text: "転職が決まってうれしい。でも新しい場所でやっていけるか心配で落ち着かない。",
     oldId: "3feaf4c5-dacc-4a17-ae66-e6b143449fc1",
-    newId: "9fa06435-2bb6-42b3-9884-39cb9d4fa89f",
+    newId: "d42cec23-7a3c-4d9d-a7ca-2cb554c3a14b",
   },
 ];
 async function main() {
-  if (!process.argv.includes("--run-paid-tags-20261022b")) {
+  if (!process.argv.includes("--run-paid-tags-20261022c")) {
     console.log("MIMO_BENCH_NOT_RUN: explicit paid-run argument required");
     return;
   }
@@ -38,7 +33,7 @@ async function main() {
     createdAt: new Date().toISOString(),
     baselineCommit: "6bcc249ba9316e0f2917b46cb0ae9dbadc72dd0b",
     improvedCommit: "0ee5860",
-    maxPaidCalls: 4,
+    maxPaidCalls: 2,
     complete: false,
     stop: "",
     results,
