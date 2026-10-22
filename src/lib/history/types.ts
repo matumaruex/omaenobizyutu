@@ -1,7 +1,8 @@
 import type { Role } from "../types";
 import type { UsageRecord } from "../usage/types";
 export interface SearchTrace {
-  method?: "ai-semantic-v1" | "ai-semantic-v2";
+  method?: "ai-semantic-v1" | "ai-semantic-v2" | "ai-semantic-v3";
+  proposedCount?: number;
   eligibleCount?: number;
   catalogCommit: string;
   catalogCount: number;

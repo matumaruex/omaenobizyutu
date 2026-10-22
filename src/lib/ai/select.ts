@@ -46,7 +46,7 @@ export async function selectWithAI(
   if (!aiConfigured()) throw Error("AI_NOT_CONFIGURED");
   const catalog = await getCatalog();
   const search: SearchTrace = {
-    method: "ai-semantic-v2",
+    method: "ai-semantic-v3",
     eligibleCount: catalog.selection.length,
     catalogCommit: catalog.commit,
     catalogCount: catalog.artworks.length,
@@ -148,6 +148,7 @@ export async function selectWithAI(
     (value) => validateCandidates(value, catalog.selection),
   );
   const candidates = retrieval.value;
+  search.proposedCount = CANDIDATE_COUNT;
   search.candidates = candidates.map((a) => ({
     id: a.id,
     title: a.title,

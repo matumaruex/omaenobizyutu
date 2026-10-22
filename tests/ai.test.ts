@@ -1,6 +1,7 @@
 import { UsageGateError } from "../src/lib/usage/ledger";
 import { beforeEach, afterEach, describe, it, expect, vi } from "vitest";
 import seed from "../src/data/catalog-seed.json";
+import { validateCandidates } from "../src/lib/ai/candidates";
 import { candidateWorks, candidateOutput } from "./fixtures/ai";
 vi.mock("../src/lib/catalog/server", () => ({ getCatalog: async () => seed }));
 const ledgerMock = vi.hoisted(() => ({ reserve: vi.fn(), update: vi.fn() }));
@@ -340,24 +341,12 @@ describe("real SDK request contract, with all upstream HTTP mocked", () => {
       expect(JSON.stringify(body)).not.toContain("private abort detail");
       expect(mock).toHaveBeenCalledTimes(1);
     });
-  for (const kind of ["outside", "duplicate", "too_few", "artist"] as const)
+  for (const kind of ["outside", "duplicate", "too_few"] as const)
     it(`stops after invalid retrieval (${kind}) without spending on stage two`, async () => {
       const value = candidateOutput();
       if (kind === "outside") value.candidates[0] = "met-9999999";
       if (kind === "duplicate") value.candidates[0] = value.candidates[1];
       if (kind === "too_few") value.candidates.pop();
-      if (kind === "artist") {
-        const byArtist = Map.groupBy(seed.selection, (a) => a.artistKey);
-        const three = [...byArtist.values()].find(
-          (works) => works.length >= 3,
-        )!;
-        value.candidates = [
-          ...three.slice(0, 3),
-          ...candidateWorks
-            .filter((a) => a.artistKey !== three[0].artistKey)
-            .slice(0, 21),
-        ].map((a) => a.id);
-      }
       const mock = vi.fn(async () => response(value));
       vi.stubGlobal("fetch", mock);
       const res = await POST(request());
@@ -368,6 +357,49 @@ describe("real SDK request contract, with all upstream HTTP mocked", () => {
       expect(body.accounting.record.failure.kind).toBe("invalid_selection");
       expect(mock).toHaveBeenCalledTimes(1);
     });
+  it("caps the repeated painters seen in real output without discarding a viable shortlist", async () => {
+    const repeated = seed.selection
+      .filter((a) => a.artistKey === "artist:Camille Pissarro")
+      .slice(0, 4);
+    const monet = seed.selection
+      .filter((a) => a.artistKey === "artist:Claude Monet")
+      .slice(0, 5);
+    const others = candidateWorks
+      .filter(
+        (a) =>
+          !["artist:Camille Pissarro", "artist:Claude Monet"].includes(
+            a.artistKey,
+          ),
+      )
+      .slice(0, 15);
+    const proposal = {
+      candidates: [...repeated, ...monet, ...others].map((a) => a.id),
+    };
+    const kept = validateCandidates(proposal, seed.selection);
+    expect(kept).toHaveLength(19);
+    const value = {
+      ...chosen(),
+      selections: kept
+        .slice(0, 8)
+        .map((a) => ({
+          id: a.id,
+          role: "共鳴",
+          reason: "作品資料と入力の接点を確かめて選びました。",
+        })),
+    };
+    const mock = vi.fn(async (_url, init) => {
+      const payload = JSON.parse(
+        JSON.parse(String(init?.body)).messages.at(-1).content,
+      );
+      return response(payload.catalog ? proposal : value);
+    });
+    vi.stubGlobal("fetch", mock);
+    const result = await selectWithAI(input);
+    expect(result.verification.candidateCount).toBe(19);
+    expect(result.verification.search?.proposedCount).toBe(24);
+    expect(result.selections).toHaveLength(8);
+    expect(mock).toHaveBeenCalledTimes(2);
+  });
   it("keeps the completed retrieval if the second quota reservation is blocked", async () => {
     const reserve = ledgerMock.reserve.getMockImplementation()!;
     ledgerMock.reserve.mockImplementation(async (...args) => {

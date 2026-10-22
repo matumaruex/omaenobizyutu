@@ -195,7 +195,11 @@ test("old usage remains visible with unavailable selections and free history pag
 });
 
 // Browser fixtures do not call MiMo or Redis.
-for (const version of ["ai-semantic-v1", "ai-semantic-v2"] as const)
+for (const version of [
+  "ai-semantic-v1",
+  "ai-semantic-v2",
+  "ai-semantic-v3",
+] as const)
   test(`semantic retrieval ${version} and final selection remain distinct`, async ({
     page,
   }) => {
@@ -204,6 +208,7 @@ for (const version of ["ai-semantic-v1", "ai-semantic-v2"] as const)
     final.accounting.pipeline = { exhibitionId: group, stage: "selection" };
     const search = final.history!.search!;
     search.method = version;
+    if (version === "ai-semantic-v3") search.proposedCount = 24;
     search.eligibleCount = 300;
     search.catalogCount = 300;
     search.matchingCount = null;
