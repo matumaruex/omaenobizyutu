@@ -1,5 +1,6 @@
 import { z } from "zod";
 import type { CatalogMaterial } from "../types";
+import { EXHIBITION_SIZE } from "../../config/exhibition";
 
 export const CANDIDATE_COUNT = 24;
 export const candidateSchema = z.object({
@@ -42,13 +43,16 @@ export function validateCandidates(
   const byId = new Map(catalog.map((a) => [a.id, a]));
   const seen = new Set<string>();
   const artists = new Map<string, number>();
-  return parsed.candidates.map((candidate) => {
+  const chosen: CatalogMaterial[] = [];
+  for (const candidate of parsed.candidates) {
     const art = byId.get(candidate);
     if (!art || seen.has(candidate)) throw Error("INVALID_CANDIDATE");
     seen.add(candidate);
     const count = (artists.get(art.artistKey) ?? 0) + 1;
-    if (count > 2) throw Error("INVALID_CANDIDATE_ARTIST_COUNT");
+    if (count > 2) continue;
     artists.set(art.artistKey, count);
-    return art;
-  });
+    chosen.push(art);
+  }
+  if (chosen.length < EXHIBITION_SIZE) throw Error("TOO_FEW_CANDIDATES");
+  return chosen;
 }

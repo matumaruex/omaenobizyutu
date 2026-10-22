@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import seed from "../src/data/catalog-seed.json";
 import { normalizeCatalog } from "../src/lib/catalog/normalize";
-import { compactCatalog } from "../src/lib/ai/candidates";
+import { compactCatalog, validateCandidates } from "../src/lib/ai/candidates";
 import { validateSelections } from "../src/lib/curation";
 import type { Catalog } from "../src/lib/types";
 const catalog: Catalog = seed;
@@ -162,6 +162,15 @@ describe("the GitHub DB is the only artwork catalog", () => {
     const [compact] = compactCatalog([original]);
     expect(compact.subject).toContain("作者本人の意図という根拠はない。");
     expect(compact.caution).toBe(denial);
+  });
+  it("stops if enforcing painter diversity leaves fewer than eight works", () => {
+    const works = Array.from({ length: 24 }, (_, index) => ({
+      ...catalog.selection[0],
+      id: `met-${900000 + index}`,
+    }));
+    expect(() =>
+      validateCandidates({ candidates: works.map((a) => a.id) }, works),
+    ).toThrow("TOO_FEW_CANDIDATES");
   });
   it("rejects duplicates and IDs outside the submitted candidates", () => {
     const selected = catalog.artworks

@@ -7,7 +7,9 @@ export default function SearchTraceView({
   selectedIds: string[];
 }) {
   const semantic =
-    search.method === "ai-semantic-v1" || search.method === "ai-semantic-v2";
+    search.method === "ai-semantic-v1" ||
+    search.method === "ai-semantic-v2" ||
+    search.method === "ai-semantic-v3";
   return (
     <details className="search-trace">
       <summary>候補検索から選定までの流れ</summary>
@@ -20,7 +22,9 @@ export default function SearchTraceView({
               点の短い主題・背景・留保と入力原文をMiMoに渡します。
             </li>
             <li>
-              MiMoが文章全体の意味から最大24点を候補にします。単語の一致点で絞り込まず、タグは作品理解の手掛かりとして使います。同じ作者は最大2点です。
+              MiMoが文章全体の意味から24点を提案します。単語の一致点で絞り込まず、タグは作品理解の手掛かりとして使います。同じ作者は最大2点です。
+              {search.method === "ai-semantic-v3" &&
+                "同じ作者の3点目以降は提案順を保って除き、8点未満なら停止します。"}
             </li>
             <li>
               {search.candidates.length
@@ -30,7 +34,7 @@ export default function SearchTraceView({
             </li>
           </ol>
           <p className="small">
-            {search.method === "ai-semantic-v2"
+            {search.method !== "ai-semantic-v1"
               ? "候補選びは作品IDだけを出力して時間と費用を抑え、選定理由は最終8作品について生成します。"
               : "下の候補理由はAIによる短い選定説明で、内部の推論過程ではありません。"}
             候補選びと最終選定は各1回のAPI呼び出しとして料金を記録します。
