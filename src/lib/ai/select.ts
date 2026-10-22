@@ -67,7 +67,9 @@ export async function selectWithAI(
     let sentAt: number | undefined;
     let httpStatus: number | undefined;
     let validating = false;
-    const providerTimeout = AbortSignal.timeout(35000);
+    const providerTimeout = AbortSignal.timeout(
+      stage === "retrieval" ? 60000 : 35000,
+    );
     const providerSignal = AbortSignal.any([
       providerTimeout,
       ...(signal ? [signal] : []),

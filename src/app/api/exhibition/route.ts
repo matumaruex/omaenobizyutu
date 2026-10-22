@@ -8,8 +8,8 @@ import { SelectionFailure } from "@/lib/ai/failure";
 import { failureMessage } from "@/lib/usage/failure";
 import { inspectionAvailable } from "@/lib/access";
 export const runtime = "nodejs";
-// Two bounded provider calls plus durable accounting and catalog loading.
-export const maxDuration = 120;
+// Up to 60s retrieval + 35s final selection, plus durable accounting.
+export const maxDuration = 150;
 const inputSchema = z
   .object({
     text: z.string().trim().min(1).max(800),
