@@ -145,9 +145,10 @@ export async function POST(request: Request) {
           throw gateError;
         }
       },
-      onUsage: async (usage) => {
+      onUsage: async (usage, elapsedMs) => {
         observed = usage;
         if (!record) return;
+        record = { ...record, elapsedMs };
         try {
           record = await ledger!.update(record, usage, "pending");
         } catch {
@@ -193,7 +194,7 @@ export async function POST(request: Request) {
     const failure =
       error instanceof SelectionFailure ? error.diagnostic : undefined;
     if (record?.status === "pending" && failure)
-      record = { ...record, failure };
+      record = { ...record, failure, elapsedMs: failure.elapsedMs };
     await finish("failed");
     const blocked =
       gateError || (error instanceof UsageGateError ? error : undefined);

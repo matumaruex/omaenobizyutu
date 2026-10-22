@@ -29,6 +29,8 @@ export interface UsageRecord {
   usage: TokenUsage;
   estimate: CostEstimate | null;
   pricing: Pricing;
+  /** Successful calls: send to complete response body; failures: send to failure. */
+  elapsedMs?: number;
   failure?: SelectionFailureDiagnostic;
 }
 export type ValidationIssue =

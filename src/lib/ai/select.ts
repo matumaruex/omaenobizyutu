@@ -35,7 +35,7 @@ export async function selectWithAI(
   signal?: AbortSignal,
   accounting?: {
     beforeRequest: (search: SearchTrace, stage: Stage) => Promise<void>;
-    onUsage: (usage: TokenUsage) => Promise<void>;
+    onUsage: (usage: TokenUsage, elapsedMs: number) => Promise<void>;
     onRetrievalComplete: (search: SearchTrace) => Promise<void>;
   },
 ): Promise<Exhibition> {
@@ -95,7 +95,7 @@ export async function selectWithAI(
         } catch {
           // Unknown is never assumed to be zero.
         }
-        await accounting?.onUsage(usage);
+        await accounting?.onUsage(usage, Math.max(0, Date.now() - sentAt));
         return response;
       },
     });

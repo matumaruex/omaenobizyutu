@@ -356,7 +356,14 @@ describe.skipIf(!bin)("durable atomic ledger on a real Redis server", () => {
       });
     const first = await POST(req());
     expect(first.status).toBe(200);
-    expect((await first.json()).verification.accounting.persisted).toBe(true);
+    const result = await first.json();
+    expect(result.verification.accounting.persisted).toBe(true);
+    expect(
+      result.verification.accounting.records.every(
+        (r: { elapsedMs?: number }) =>
+          typeof r.elapsedMs === "number" && r.elapsedMs >= 0,
+      ),
+    ).toBe(true);
     expect((await POST(req())).status).toBe(409);
     const report = await (await GET()).json();
     expect(report.calls).toBe(2);
@@ -369,6 +376,15 @@ describe.skipIf(!bin)("durable atomic ledger on a real Redis server", () => {
     expect(history.entries[0].history.selection.works).toHaveLength(8);
     expect(history.entries[0].history.search.candidates).toHaveLength(24);
     expect(history.entries[0].accounting.pipeline.exhibitionId).toBe(id);
+    expect(
+      history.entries.map(
+        (e: { accounting: { elapsedMs?: number } }) => e.accounting.elapsedMs,
+      ),
+    ).toEqual(
+      [...result.verification.accounting.records]
+        .reverse()
+        .map((r: { elapsedMs?: number }) => r.elapsedMs),
+    );
     expect(history.entries[1].accounting.id).toBe(id);
     expect(history.entries[1].accounting.pipeline.stage).toBe("retrieval");
     expect(history.entries[1].history.search.candidates).toHaveLength(24);

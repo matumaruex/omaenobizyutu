@@ -33,6 +33,11 @@ export function UsageDetail({ record }: { record: UsageRecord }) {
             ` · 応答番号：${record.failure.httpStatus}`}
         </p>
       )}
+      {!record.failure && record.elapsedMs !== undefined && (
+        <p className="small">
+          MiMo応答時間：{(record.elapsedMs / 1000).toFixed(1)}秒
+        </p>
+      )}
       <dl className="usage-tokens">
         <div>
           <dt>入力</dt>
