@@ -73,6 +73,7 @@ export async function setup(page: Page) {
             model: "mimo-v2.6-flash",
             createdAt: "2026-10-19T00:00:00Z",
             status: "succeeded",
+            elapsedMs: 23400,
             usage: {
               inputTokens: 6000,
               outputTokens: 700,

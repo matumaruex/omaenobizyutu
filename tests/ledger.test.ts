@@ -309,8 +309,8 @@ describe.skipIf(!bin)("durable atomic ledger on a real Redis server", () => {
         );
         const selections = (payload.candidates ?? [])
           .slice(0, 8)
-          .map((a: { id: string }) => ({
-            id: a.id,
+          .map((a: { candidate: number }) => ({
+            candidate: a.candidate,
             role: "共鳴",
             reason: "作品固有の主題を入口に鑑賞します。",
           }));

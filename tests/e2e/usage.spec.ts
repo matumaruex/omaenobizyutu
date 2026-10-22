@@ -39,6 +39,7 @@ test("trial usage panel shows real-response fields and estimates without generat
   await expect(dialog).toContainText("未取得が1件");
   await expect(dialog.locator(".usage-tokens")).toContainText("6,000");
   await expect(dialog.locator(".usage-tokens")).toContainText("2,000");
+  await expect(dialog).toContainText("MiMo応答時間：23.4秒");
   await expect(dialog).toContainText("実際の請求額とは異なる");
   await expect(dialog).toContainText("1米ドル＝150円");
   await dialog.getByText("現在の単価・換算設定").click();

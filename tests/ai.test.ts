@@ -26,8 +26,8 @@ function chosen() {
   return {
     title: "気持ちの余白",
     atmosphere: "揺れる気持ちを入口に、作品それぞれの背景へ開く構成。",
-    selections: candidateWorks.slice(0, 8).map((a) => ({
-      id: a.id,
+    selections: candidateWorks.slice(0, 8).map((_a, index) => ({
+      candidate: index + 1,
       role: "共鳴",
       reason: "作品の具体的な主題と、この言葉との接点から選びました。",
     })),
@@ -99,9 +99,88 @@ beforeEach(() => {
     }));
 });
 afterEach(() => {
+  vi.clearAllTimers();
+  vi.useRealTimers();
   vi.restoreAllMocks();
   vi.unstubAllEnvs();
   vi.unstubAllGlobals();
+});
+describe("waiting for the complete selection response body", () => {
+  // Exercise elapsed seconds instantly. Native fetch normally errors the body
+  // stream on abort; the mocked stream reproduces that boundary explicitly.
+  for (const outcome of ["slow_success", "timeout", "cancelled"] as const)
+    it(`handles ${outcome} after headers without a third provider call`, async () => {
+      vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout", "Date"] });
+      vi.spyOn(AbortSignal, "timeout").mockImplementation((ms) => {
+        const controller = new AbortController();
+        setTimeout(
+          () => controller.abort(new DOMException("Timed out", "TimeoutError")),
+          ms,
+        );
+        return controller.signal;
+      });
+      const client = new AbortController();
+      const mock = vi.fn(async (_url, init) => {
+        const payload = JSON.parse(
+          JSON.parse(String(init.body)).messages.at(-1).content,
+        );
+        if (payload.availableTags) return response(tagOutput());
+        const json = await response().text();
+        const signal = init.signal as AbortSignal;
+        return new Response(
+          new ReadableStream({
+            start(controller) {
+              const abort = () => {
+                clearTimeout(timer);
+                controller.error(signal.reason);
+              };
+              const timer = setTimeout(
+                () => {
+                  signal.removeEventListener("abort", abort);
+                  controller.enqueue(new TextEncoder().encode(json));
+                  controller.close();
+                },
+                outcome === "slow_success" ? 40000 : 90000,
+              );
+              signal.addEventListener("abort", abort, { once: true });
+            },
+          }),
+          { headers: { "content-type": "application/json" } },
+        );
+      });
+      vi.stubGlobal("fetch", mock);
+      const pending = POST(new Request(request(), { signal: client.signal }));
+      await vi.waitFor(() => expect(mock).toHaveBeenCalledTimes(2));
+      await vi.advanceTimersByTimeAsync(outcome === "timeout" ? 60001 : 40001);
+      if (outcome === "cancelled") client.abort();
+      const result = await pending;
+      const body = await result.json();
+      const records = (body.verification?.accounting ?? body.accounting)
+        .records;
+      expect(records).toHaveLength(2);
+      expect(records[0].status).toBe("succeeded");
+      if (outcome === "slow_success") {
+        expect(result.status).toBe(200);
+        expect(records[1].status).toBe("succeeded");
+        expect(records[1].elapsedMs).toBeGreaterThanOrEqual(40000);
+        expect(records[1].elapsedMs).toBeLessThan(60000);
+      } else {
+        expect(result.status).toBe(502);
+        expect(records[1].failure).toMatchObject({
+          kind: outcome,
+          httpStatus: 200,
+        });
+        if (outcome === "timeout")
+          expect(records[1].failure.elapsedMs).toBeGreaterThanOrEqual(60000);
+        expect(records[1].status).toBe("failed");
+        expect(records[1].estimate).toBeNull();
+      }
+      expect(mock).toHaveBeenCalledTimes(2);
+      const finalWrite = ledgerMock.update.mock.calls.at(-1);
+      expect(finalWrite?.[2]).toBe(
+        outcome === "slow_success" ? "succeeded" : "failed",
+      );
+    });
 });
 describe("real SDK request contract, with all upstream HTTP mocked", () => {
   it("makes two bounded MiMo calls, classifying tags before selecting eight", async () => {
@@ -109,7 +188,7 @@ describe("real SDK request contract, with all upstream HTTP mocked", () => {
     vi.stubGlobal("fetch", mock);
     const timeouts = vi.spyOn(AbortSignal, "timeout");
     const result = await selectWithAI(input);
-    expect(timeouts.mock.calls.map(([ms]) => ms)).toEqual([30000, 35000]);
+    expect(timeouts.mock.calls.map(([ms]) => ms)).toEqual([30000, 60000]);
     expect(mock).toHaveBeenCalledTimes(2);
     const [firstUrl, firstInit] = mock.mock.calls[0] as unknown as [
       string,
@@ -137,6 +216,9 @@ describe("real SDK request contract, with all upstream HTTP mocked", () => {
     const payload = JSON.parse(body.messages.at(-1).content);
     expect(payload.candidates).toHaveLength(24);
     expect(
+      payload.candidates.map((a: { candidate: number }) => a.candidate),
+    ).toEqual(Array.from({ length: 24 }, (_, i) => i + 1));
+    expect(
       payload.candidates.every(
         (a: Record<string, unknown>) => !("summary" in a),
       ),
@@ -151,6 +233,9 @@ describe("real SDK request contract, with all upstream HTTP mocked", () => {
     expect(result.verification.usage.cachedInputTokens).toBe(2000);
     expect(result.selections.every((a) => a.artwork?.id === a.id)).toBe(true);
     expect(result.selections).toHaveLength(8);
+    expect(result.selections.map((s) => s.id)).toEqual(
+      candidateWorks.slice(0, 8).map((a) => a.id),
+    );
     expect(body.messages[0].content).toContain("必ず8点");
     for (const selected of result.selections) {
       expect(selected.artwork?.interpretation).toEqual(
@@ -161,6 +246,8 @@ describe("real SDK request contract, with all upstream HTTP mocked", () => {
   });
   for (const kind of [
     "outside",
+    "zero",
+    "fractional",
     "duplicate",
     "schema",
     "too_few",
@@ -168,14 +255,16 @@ describe("real SDK request contract, with all upstream HTTP mocked", () => {
   ] as const)
     it(`rejects ${kind} provider output`, async () => {
       const value = chosen();
-      if (kind === "outside") value.selections[0].id = "met-9999999";
-      if (kind === "duplicate") value.selections[0].id = value.selections[1].id;
+      if (kind === "outside") value.selections[0].candidate = 25;
+      if (kind === "zero") value.selections[0].candidate = 0;
+      if (kind === "fractional") value.selections[0].candidate = 1.5;
+      if (kind === "duplicate")
+        value.selections[0].candidate = value.selections[1].candidate;
       if (kind === "schema") value.atmosphere = "";
       if (kind === "too_few") value.selections.pop();
       if (kind === "too_many") {
-        const extra = candidateWorks[8];
         value.selections.push({
-          id: extra.id,
+          candidate: 9,
           role: "共鳴",
           reason: "追加の作品",
         });
@@ -186,6 +275,22 @@ describe("real SDK request contract, with all upstream HTTP mocked", () => {
       );
       await expect(selectWithAI(input)).rejects.toThrow();
     });
+  it("maps nonsequential candidate numbers to the exact DB IDs and preserves order", async () => {
+    const value = chosen();
+    const indices = [24, 2, 10, 4, 6, 5, 3, 1];
+    value.selections.forEach((s, i) => {
+      s.candidate = indices[i];
+    });
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (_url, init) => respondTo(init, value)),
+    );
+    const result = await selectWithAI(input);
+    expect(result.selections.map((s) => s.id)).toEqual(
+      indices.map((index) => candidateWorks[index - 1].id),
+    );
+    expect(result.selections.every((s) => !("candidate" in s))).toBe(true);
+  });
   it("does not retry or expose provider errors, keys or the submitted feeling", async () => {
     const mock = vi.fn(async () =>
       Response.json(
