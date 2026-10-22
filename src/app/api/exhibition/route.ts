@@ -8,8 +8,8 @@ import { SelectionFailure } from "@/lib/ai/failure";
 import { failureMessage } from "@/lib/usage/failure";
 import { inspectionAvailable } from "@/lib/access";
 export const runtime = "nodejs";
-// Up to 30s tag classification + 60s selection, plus durable accounting.
-export const maxDuration = 120;
+// Up to 30s tag classification + 90s selection (benchmark only), plus durable accounting.
+export const maxDuration = 180;
 const inputSchema = z
   .object({
     text: z.string().trim().min(1).max(800),
