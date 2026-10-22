@@ -6,7 +6,8 @@ export default function SearchTraceView({
   search: SearchTrace;
   selectedIds: string[];
 }) {
-  const semantic = search.method === "ai-semantic-v1";
+  const semantic =
+    search.method === "ai-semantic-v1" || search.method === "ai-semantic-v2";
   return (
     <details className="search-trace">
       <summary>候補検索から選定までの流れ</summary>
@@ -29,7 +30,10 @@ export default function SearchTraceView({
             </li>
           </ol>
           <p className="small">
-            下の候補理由はAIによる短い選定説明で、内部の推論過程ではありません。候補選びと最終選定は各1回のAPI呼び出しとして料金を記録します。
+            {search.method === "ai-semantic-v2"
+              ? "候補選びは作品IDだけを出力して時間と費用を抑え、選定理由は最終8作品について生成します。"
+              : "下の候補理由はAIによる短い選定説明で、内部の推論過程ではありません。"}
+            候補選びと最終選定は各1回のAPI呼び出しとして料金を記録します。
           </p>
         </>
       ) : (
