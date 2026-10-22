@@ -7,7 +7,7 @@ import type { AccountingResult } from "../../src/lib/usage/types";
 
 // Only an explicit, deployment-specific build command may run paid benchmarks.
 // Normal pushes, builds, page views and application requests never run this file.
-const runId = "mimo-comparison-20261022-d";
+const runId = "mimo-comparison-20261022-e";
 const outputPath = `public/${runId}.json`;
 const cases = [
   {
@@ -18,12 +18,12 @@ const cases = [
   {
     text: "不安はないけれど、何もする気が起きない",
     oldId: "47a1a364-5820-4155-a59a-049a0146ba54",
-    newId: "0853ba06-5abc-47ce-a4ce-f2f012f17d39",
+    newId: "b1e8e111-63ad-432a-83ad-22e7e63858b8",
   },
 ];
 
 async function main() {
-  if (!process.argv.includes("--run-paid-20261022d")) {
+  if (!process.argv.includes("--run-paid-20261022e")) {
     console.log("MIMO_BENCH_NOT_RUN: explicit paid-run argument required");
     return;
   }
@@ -39,7 +39,7 @@ async function main() {
     runId,
     createdAt: new Date().toISOString(),
     baselineCommit: "6bcc249ba9316e0f2917b46cb0ae9dbadc72dd0b",
-    improvedCommit: "9ef1a3784e46ff52914373870fbb5286d4a8ed47",
+    improvedCommit: "02e7afd21979201f7225897d08abfec194bede86",
     maxPaidCalls: 2,
     complete: false,
     stop: "",
