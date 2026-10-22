@@ -107,7 +107,9 @@ describe("real SDK request contract, with all upstream HTTP mocked", () => {
   it("makes two bounded MiMo calls, reading all works before selecting eight", async () => {
     const mock = vi.fn(async (_url, init) => respondTo(init));
     vi.stubGlobal("fetch", mock);
+    const timeouts = vi.spyOn(AbortSignal, "timeout");
     const result = await selectWithAI(input);
+    expect(timeouts.mock.calls.map(([ms]) => ms)).toEqual([60000, 35000]);
     expect(mock).toHaveBeenCalledTimes(2);
     const [firstUrl, firstInit] = mock.mock.calls[0] as unknown as [
       string,
