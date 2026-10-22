@@ -5,6 +5,7 @@ import {
   readUsage,
   unknownUsage,
   callLimit,
+  sumUsage,
 } from "../src/lib/usage/pricing";
 import { usageConfigured, UsageLedger } from "../src/lib/usage/ledger";
 afterEach(() => {
@@ -36,6 +37,16 @@ describe("actual usage and historical price estimates", () => {
       nanoJpy: 25_200_000,
       cacheAssumedMiss: true,
     });
+  });
+  it("adds both stages and preserves unknown totals", () => {
+    const known = readUsage({ prompt_tokens: 1000, completion_tokens: 100 });
+    expect(sumUsage([known, known])).toEqual({
+      inputTokens: 2000,
+      outputTokens: 200,
+      reasoningTokens: null,
+      cachedInputTokens: null,
+    });
+    expect(sumUsage([known, unknownUsage()])).toEqual(unknownUsage());
   });
   it("preserves reported zero and rejects impossible counters", () => {
     expect(

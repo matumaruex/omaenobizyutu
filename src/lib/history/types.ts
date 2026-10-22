@@ -1,10 +1,12 @@
 import type { Role } from "../types";
 import type { UsageRecord } from "../usage/types";
 export interface SearchTrace {
+  method?: "ai-semantic-v1";
+  eligibleCount?: number;
   catalogCommit: string;
   catalogCount: number;
   taggedCount: number;
-  matchingCount: number;
+  matchingCount: number | null;
   detectedCategories: string[];
   candidates: {
     id: string;
@@ -13,7 +15,8 @@ export interface SearchTrace {
     primary: string[];
     secondary: string[];
     matchedTags: string[];
-    score: number;
+    score: number | null;
+    reason?: string;
   }[];
 }
 export interface SavedSelection {

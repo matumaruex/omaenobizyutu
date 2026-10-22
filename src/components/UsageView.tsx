@@ -1,6 +1,10 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import type { UsageRecord, UsageReport } from "@/lib/usage/types";
+import type {
+  AccountingResult,
+  UsageRecord,
+  UsageReport,
+} from "@/lib/usage/types";
 import Dialog from "./Dialog";
 import { failureMessage } from "@/lib/usage/failure";
 export const yen = (nano: number) =>
@@ -15,6 +19,12 @@ const tokens = (value: number | null) =>
 export function UsageDetail({ record }: { record: UsageRecord }) {
   return (
     <>
+      {record.pipeline && (
+        <p className="small">
+          {record.pipeline.stage === "retrieval" ? "候補選び" : "最終選定"} ·
+          展示ID：{record.pipeline.exhibitionId}
+        </p>
+      )}
       {record.failure && (
         <p className="small">
           {failureMessage(record.failure)} 問い合わせ開始から
@@ -58,6 +68,15 @@ export function UsageDetail({ record }: { record: UsageRecord }) {
           キャッシュ数が未取得のため、入力すべてを通常単価で概算しています。
         </p>
       )}
+    </>
+  );
+}
+export function UsageDetails({ accounting }: { accounting: AccountingResult }) {
+  return (
+    <>
+      {(accounting.records ?? [accounting.record]).map((record) => (
+        <UsageDetail key={record.id} record={record} />
+      ))}
     </>
   );
 }
@@ -135,7 +154,7 @@ export default function UsageView({ onClose }: { onClose: () => void }) {
             </p>
           )}
           <p className="small">
-            呼び出し回数は送信直前の予約を含みます。中断や通信障害で応答を確認できない場合も上限枠を使います。自動で再送しません。
+            1展示は候補選び・最終選定の原則2回です。呼び出し回数は送信直前の予約を含みます。中断や通信障害で応答を確認できない場合も上限枠を使います。自動で再送しません。
           </p>
           <details className="usage-rates">
             <summary>現在の単価・換算設定</summary>
@@ -172,6 +191,11 @@ export default function UsageView({ onClose }: { onClose: () => void }) {
                   （日本時間）
                 </strong>
                 <small>
+                  {record.pipeline?.stage === "retrieval"
+                    ? "候補選び · "
+                    : record.pipeline?.stage === "selection"
+                      ? "最終選定 · "
+                      : ""}
                   {record.status === "succeeded"
                     ? "選定成功"
                     : record.status === "failed"

@@ -18,6 +18,10 @@ export interface CostEstimate {
   cacheAssumedMiss: boolean;
 }
 export interface UsageRecord {
+  pipeline?: {
+    exhibitionId: string;
+    stage: "retrieval" | "selection";
+  };
   id: string;
   createdAt: string;
   model: string;
@@ -40,6 +44,11 @@ export interface SelectionFailureDiagnostic {
     | "invalid_selection";
   elapsedMs: number;
   httpStatus?: number;
+}
+export interface AccountingResult {
+  record: UsageRecord;
+  records?: UsageRecord[];
+  persisted: boolean;
 }
 export interface UsageReport {
   calls: number;

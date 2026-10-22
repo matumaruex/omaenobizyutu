@@ -23,10 +23,26 @@ redis.call('LPUSH', KEYS[2], ARGV[1])
 redis.call('INCR', KEYS[3])
 redis.call('SET', KEYS[4], ARGV[1], 'EX', 60)
 return 'OK'`;
+// A continuation consumes its own quota slot, only after a durably completed
+// retrieval. It cannot be replayed or reused as a second exhibition.
+export const CONTINUE_SCRIPT = `
+if redis.call('HEXISTS', KEYS[1], ARGV[1]) == 1 or redis.call('HEXISTS', KEYS[6], ARGV[5]) == 1 then return 'DUPLICATE' end
+local raw = redis.call('HGET', KEYS[1], ARGV[5])
+if not raw then return 'UNAVAILABLE' end
+local previous = cjson.decode(raw)
+if previous.status ~= 'succeeded' or not previous.pipeline or previous.pipeline.stage ~= 'retrieval' or previous.pipeline.exhibitionId ~= ARGV[5] then return 'UNAVAILABLE' end
+if tonumber(redis.call('GET', KEYS[3]) or '0') >= tonumber(ARGV[3]) then return 'LIMIT' end
+redis.call('HSET', KEYS[1], ARGV[1], ARGV[2])
+redis.call('HSET', KEYS[5], ARGV[1], ARGV[4])
+redis.call('HSET', KEYS[6], ARGV[5], ARGV[1])
+redis.call('LPUSH', KEYS[2], ARGV[1])
+redis.call('INCR', KEYS[3])
+return 'OK'`;
 export const UPDATE_SCRIPT = `
 if redis.call('HEXISTS', KEYS[1], ARGV[1]) == 0 then return 'MISSING' end
 redis.call('HSET', KEYS[1], ARGV[1], ARGV[2])
 if ARGV[3] ~= '' then redis.call('HSET', KEYS[2], ARGV[1], ARGV[3]) end
+if ARGV[4] ~= '' then redis.call('HSET', KEYS[3], ARGV[1], ARGV[4]) end
 return 'OK'`;
 export const REPORT_SCRIPT = `return {redis.call('GET', KEYS[1]) or '0', redis.call('HVALS', KEYS[2])}`;
 export const HISTORY_SCRIPT = `
@@ -115,6 +131,7 @@ export class UsageLedger {
     text: string,
     model: string,
     search?: SearchTrace,
+    pipeline?: UsageRecord["pipeline"],
   ): Promise<UsageRecord> {
     const pricing = getPricing();
     const record: UsageRecord = {
@@ -125,20 +142,23 @@ export class UsageLedger {
       usage: unknownUsage(),
       estimate: null,
       pricing,
+      ...(pipeline ? { pipeline } : {}),
     };
     // The dedupe key is HMAC; authorized trial history stores input separately.
     const fingerprint = createHmac("sha256", process.env.MIMO_API_KEY || "")
       .update(text.trim())
       .digest("hex");
+    const continuation = pipeline?.stage === "selection";
     const result = await this.send([
       "EVAL",
-      RESERVE_SCRIPT,
-      5,
+      continuation ? CONTINUE_SCRIPT : RESERVE_SCRIPT,
+      continuation ? 6 : 5,
       `${this.ns}:records`,
       `${this.ns}:order`,
       `${this.ns}:calls`,
       `${this.ns}:dedupe:${fingerprint}`,
       `${this.ns}:history`,
+      ...(continuation ? [`${this.ns}:continuations`] : []),
       id,
       JSON.stringify(record),
       callLimit(),
@@ -146,6 +166,7 @@ export class UsageLedger {
         input: text,
         ...(search ? { search } : {}),
       } satisfies SelectionHistory),
+      ...(continuation ? [pipeline.exhibitionId] : []),
     ]);
     if (result === "DUPLICATE" || result === "LIMIT")
       throw new UsageGateError(result);
@@ -157,6 +178,7 @@ export class UsageLedger {
     usage: TokenUsage,
     status: UsageRecord["status"],
     selection?: SavedSelection,
+    history?: SelectionHistory,
   ) {
     const next: UsageRecord = {
       ...record,
@@ -167,12 +189,14 @@ export class UsageLedger {
     const result = await this.send([
       "EVAL",
       UPDATE_SCRIPT,
-      2,
+      3,
       `${this.ns}:records`,
       `${this.ns}:selections`,
+      `${this.ns}:history`,
       record.id,
       JSON.stringify(next),
       selection ? JSON.stringify(selection) : "",
+      history ? JSON.stringify(history) : "",
     ]);
     if (result !== "OK") throw new UsageGateError("UNAVAILABLE");
     return next;

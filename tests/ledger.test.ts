@@ -1,10 +1,9 @@
 import { GET as historyGET } from "../src/app/api/history/route";
-import { searchCandidates } from "../src/lib/ai/candidates";
 import seed from "../src/data/catalog-seed.json";
 vi.mock("../src/lib/catalog/server", () => ({ getCatalog: async () => seed }));
 import { POST } from "../src/app/api/exhibition/route";
 import { GET } from "../src/app/api/usage/route";
-import { selectCandidates } from "../src/lib/ai/candidates";
+import { candidateWorks, candidateOutput } from "./fixtures/ai";
 import {
   afterAll,
   afterEach,
@@ -110,6 +109,49 @@ describe.skipIf(!bin)("durable atomic ledger on a real Redis server", () => {
     ).toBe(true);
     expect((await ledger(ns).report()).calls).toBe(3);
   });
+  it("requires durable retrieval success and permits only one atomic continuation", async () => {
+    const ns = crypto.randomUUID(),
+      l = ledger(ns),
+      id = crypto.randomUUID();
+    const first = await l.reserve(id, "first", "mimo-v2.6-flash", undefined, {
+      exhibitionId: id,
+      stage: "retrieval",
+    });
+    const next = () =>
+      ledger(ns).reserve(
+        crypto.randomUUID(),
+        "first",
+        "mimo-v2.6-flash",
+        undefined,
+        { exhibitionId: id, stage: "selection" },
+      );
+    await expect(next()).rejects.toMatchObject({ code: "UNAVAILABLE" });
+    await l.update(first, unknownUsage(), "succeeded");
+    const results = await Promise.allSettled([next(), next()]);
+    expect(results.filter((r) => r.status === "fulfilled")).toHaveLength(1);
+    expect(
+      (results.find((r) => r.status === "rejected") as PromiseRejectedResult)
+        .reason.code,
+    ).toBe("DUPLICATE");
+    expect((await l.report()).calls).toBe(2);
+  });
+  it("enforces the unchanged global limit on the second real request", async () => {
+    vi.stubEnv("MIMO_TEST_CALL_LIMIT", "1");
+    const l = ledger(),
+      id = crypto.randomUUID();
+    const first = await l.reserve(id, "first", "mimo-v2.6-flash", undefined, {
+      exhibitionId: id,
+      stage: "retrieval",
+    });
+    await l.update(first, unknownUsage(), "succeeded");
+    await expect(
+      l.reserve(crypto.randomUUID(), "first", "mimo-v2.6-flash", undefined, {
+        exhibitionId: id,
+        stage: "selection",
+      }),
+    ).rejects.toMatchObject({ code: "LIMIT" });
+    expect((await l.report()).calls).toBe(1);
+  });
   it("retains failed/unknown calls, counts finalization once and freezes old rates", async () => {
     const ns = crypto.randomUUID(),
       l = ledger(ns);
@@ -153,7 +195,21 @@ describe.skipIf(!bin)("durable atomic ledger on a real Redis server", () => {
     const ns = crypto.randomUUID(),
       l = ledger(ns),
       id = crypto.randomUUID();
-    const { chosen, ...retrieval } = searchCandidates("quartz", seed.selection);
+    const chosen = candidateWorks;
+    const retrieval = {
+      taggedCount: 212,
+      matchingCount: 0,
+      detectedCategories: [],
+      candidates: chosen.map((a) => ({
+        id: a.id,
+        title: a.title,
+        artist: a.artist,
+        primary: a.primary,
+        secondary: a.secondary,
+        matchedTags: [],
+        score: 0,
+      })),
+    };
     const search = {
       ...retrieval,
       catalogCommit: seed.commit,
@@ -248,13 +304,11 @@ describe.skipIf(!bin)("durable atomic ledger on a real Redis server", () => {
             result: await command(JSON.parse(init.body)),
           });
         paidCalls++;
-        const selections = selectCandidates(input, seed.selection)
-          .slice(0, 8)
-          .map((a) => ({
-            id: a.id,
-            role: "共鳴",
-            reason: "作品固有の主題を入口に鑑賞します。",
-          }));
+        const selections = candidateWorks.slice(0, 8).map((a) => ({
+          id: a.id,
+          role: "共鳴",
+          reason: "作品固有の主題を入口に鑑賞します。",
+        }));
         return Response.json({
           id: "test",
           model: "mimo-v2.6-flash",
@@ -266,11 +320,17 @@ describe.skipIf(!bin)("durable atomic ledger on a real Redis server", () => {
               message: {
                 role: "assistant",
                 reasoning_content: "internal private trace",
-                content: JSON.stringify({
-                  title: "余白",
-                  atmosphere: "作品の主題に触れる構成。",
-                  selections,
-                }),
+                content: JSON.stringify(
+                  JSON.parse(
+                    JSON.parse(String(init.body)).messages.at(-1).content,
+                  ).catalog
+                    ? candidateOutput()
+                    : {
+                        title: "余白",
+                        atmosphere: "作品の主題に触れる構成。",
+                        selections,
+                      },
+                ),
               },
               finish_reason: "stop",
             },
@@ -296,18 +356,21 @@ describe.skipIf(!bin)("durable atomic ledger on a real Redis server", () => {
     expect((await first.json()).verification.accounting.persisted).toBe(true);
     expect((await POST(req())).status).toBe(409);
     const report = await (await GET()).json();
-    expect(report.calls).toBe(1);
+    expect(report.calls).toBe(2);
     expect(report.records[0].usage.reasoningTokens).toBe(10);
-    expect(report.totalNanoJpy).toBe(14_910_000);
+    expect(report.totalNanoJpy).toBe(29_820_000);
     const history = await (
       await historyGET(new Request("http://localhost/api/history"))
     ).json();
     expect(history.entries[0].history.input).toBe(input);
     expect(history.entries[0].history.selection.works).toHaveLength(8);
     expect(history.entries[0].history.search.candidates).toHaveLength(24);
-    expect(history.entries[0].accounting.id).toBe(id);
+    expect(history.entries[0].accounting.pipeline.exhibitionId).toBe(id);
+    expect(history.entries[1].accounting.id).toBe(id);
+    expect(history.entries[1].accounting.pipeline.stage).toBe("retrieval");
+    expect(history.entries[1].history.search.candidates).toHaveLength(24);
     expect(JSON.stringify(history)).not.toContain("internal private trace");
     expect(JSON.stringify(history)).not.toContain("test-not-real");
-    expect(paidCalls).toBe(1);
+    expect(paidCalls).toBe(2);
   });
 });

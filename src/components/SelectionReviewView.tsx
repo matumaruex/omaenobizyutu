@@ -2,7 +2,7 @@
 import type { SelectionReview } from "@/lib/types";
 import Dialog from "./Dialog";
 import SearchTraceView from "./SearchTraceView";
-import { UsageDetail } from "./UsageView";
+import { UsageDetails } from "./UsageView";
 export default function SelectionReviewView({
   review,
   onClose,
@@ -47,7 +47,7 @@ export default function SelectionReviewView({
       {result.verification.accounting && (
         <section aria-label="今回のAPI使用量">
           <h3>今回のAPI使用量</h3>
-          <UsageDetail record={result.verification.accounting.record} />
+          <UsageDetails accounting={result.verification.accounting} />
           {!result.verification.accounting.persisted && (
             <p role="alert">
               選定結果・使用量を保存できませんでした。履歴や累計に反映されていない可能性があります。自動再送はしません。

@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import seed from "../src/data/catalog-seed.json";
 import { normalizeCatalog } from "../src/lib/catalog/normalize";
-import { selectCandidates } from "../src/lib/ai/candidates";
+import { compactCatalog } from "../src/lib/ai/candidates";
 import { validateSelections } from "../src/lib/curation";
 import type { Catalog } from "../src/lib/types";
 const catalog: Catalog = seed;
@@ -122,8 +122,12 @@ describe("the GitHub DB is the only artwork catalog", () => {
       expect(pairs[i].artistKey).toBe(pairs[i + 1].artistKey);
       expect(pairs[i].artist).toBe(pairs[i + 1].artist);
     }
-    expect(normalized.selection[10].artistKey).not.toBe(normalized.selection[11].artistKey);
-    expect(normalized.selection[12].artistKey).not.toBe(normalized.selection[13].artistKey);
+    expect(normalized.selection[10].artistKey).not.toBe(
+      normalized.selection[11].artistKey,
+    );
+    expect(normalized.selection[12].artistKey).not.toBe(
+      normalized.selection[13].artistKey,
+    );
   });
   it("keeps School/Style attributions separate from the named painter", () => {
     const rembrandt = catalog.selection.find((x) => x.id === "met-437412");
@@ -136,40 +140,28 @@ describe("the GitHub DB is the only artwork catalog", () => {
     expect(hokusai?.artist).toBe("School of Katsushika Hokusai");
     expect(hokusai?.artistKey).not.toBe("artist:Katsushika Hokusai");
   });
-  it("caps each named artist at two candidates across aliases, but not unidentified works", () => {
-    const make = (id: string, artist: string, artistKey: string) => ({
-      ...catalog.selection[0], id, artist, artistKey,
-      primary: ["喜び"], secondary: [], strengths: { 喜び: 3 }
-    });
-    const works = [
-      make("met-900001", "Pierre-Auguste Renoir", "artist:Pierre-Auguste Renoir"),
-      make("met-900002", "Pierre-Auguste Renoir", "artist:Pierre-Auguste Renoir"),
-      make("met-900003", "Pierre-Auguste Renoir", "artist:Pierre-Auguste Renoir"),
-      make("met-900004", "Unidentified artist", "unidentified:met-900004"),
-      make("met-900005", "Unidentified artist", "unidentified:met-900005"),
-      make("met-900006", "Unidentified artist", "unidentified:met-900006"),
-    ];
-    const chosen = selectCandidates("嬉しい", works);
-    expect(chosen.filter((a) => a.artistKey === "artist:Pierre-Auguste Renoir")).toHaveLength(2);
-    expect(chosen.filter((a) => a.artist === "Unidentified artist")).toHaveLength(3);
+  it("offers all 300 works to semantic retrieval, including untagged works", () => {
+    const compact = compactCatalog(catalog.selection);
+    expect(compact).toHaveLength(300);
+    expect(compact.map((a) => a.id)).toEqual(
+      catalog.selection.map((a) => a.id),
+    );
+    expect(compact.some((a) => a.tags.length === 0)).toBe(true);
+    expect(compact.every((a) => a.subject && a.caution)).toBe(true);
+    expect(JSON.stringify(compact)).not.toContain("summary_for_ai");
   });
-  it("retrieves at most 24 tagged candidates, including secondary-only works", () => {
-    const secondary = {
-      ...catalog.selection[0],
-      id: "met-9999999",
-      primary: [],
-      secondary: ["怒り"],
-      strengths: { 怒り: 1 },
-    };
-    const untagged = { ...secondary, id: "met-9999998", secondary: [] };
-    const candidates = selectCandidates("怒りを感じる", [
-      secondary,
-      untagged,
-      ...catalog.selection,
-    ]);
-    expect(candidates.length).toBeLessThanOrEqual(24);
-    expect(candidates.some((a) => a.id === secondary.id)).toBe(true);
-    expect(candidates.some((a) => a.id === untagged.id)).toBe(false);
+  it("keeps a long sentence's final negation and the complete uncertainty note", () => {
+    const original = structuredClone(catalog.selection[0]);
+    const denial =
+      "この解釈には" +
+      "慎重な資料の確認が必要であり、".repeat(12) +
+      "作者本人の意図という根拠はない。";
+    original.meaning.scholarly_interpretation.summary =
+      denial + "別の解釈も残る。";
+    original.meaning.uncertainty_note = denial;
+    const [compact] = compactCatalog([original]);
+    expect(compact.subject).toContain("作者本人の意図という根拠はない。");
+    expect(compact.caution).toBe(denial);
   });
   it("rejects duplicates and IDs outside the submitted candidates", () => {
     const selected = catalog.artworks

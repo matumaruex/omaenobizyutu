@@ -1,7 +1,7 @@
 import { UsageGateError } from "../src/lib/usage/ledger";
 import { beforeEach, afterEach, describe, it, expect, vi } from "vitest";
 import seed from "../src/data/catalog-seed.json";
-import { selectCandidates } from "../src/lib/ai/candidates";
+import { candidateWorks, candidateOutput } from "./fixtures/ai";
 vi.mock("../src/lib/catalog/server", () => ({ getCatalog: async () => seed }));
 const ledgerMock = vi.hoisted(() => ({ reserve: vi.fn(), update: vi.fn() }));
 vi.mock("../src/lib/usage/ledger", async (original) => {
@@ -26,13 +26,11 @@ function chosen() {
   return {
     title: "気持ちの余白",
     atmosphere: "揺れる気持ちを入口に、作品それぞれの背景へ開く構成。",
-    selections: selectCandidates(input, seed.selection)
-      .slice(0, 8)
-      .map((a) => ({
-        id: a.id,
-        role: "共鳴",
-        reason: "作品の具体的な主題と、この言葉との接点から選びました。",
-      })),
+    selections: candidateWorks.slice(0, 8).map((a) => ({
+      id: a.id,
+      role: "共鳴",
+      reason: "作品の具体的な主題と、この言葉との接点から選びました。",
+    })),
   };
 }
 function response(value: unknown = chosen()) {
@@ -57,6 +55,12 @@ function response(value: unknown = chosen()) {
     },
   });
 }
+function respondTo(init: RequestInit | undefined, value: unknown = chosen()) {
+  const payload = JSON.parse(
+    JSON.parse(String(init?.body)).messages.at(-1).content,
+  );
+  return response(payload.catalog ? candidateOutput() : value);
+}
 function request(text = input, extra = {}) {
   return new Request("http://localhost/api/exhibition", {
     method: "POST",
@@ -71,15 +75,20 @@ function request(text = input, extra = {}) {
 beforeEach(() => {
   vi.spyOn(console, "warn").mockImplementation(() => {});
   vi.stubEnv("MIMO_API_KEY", "test-only-not-a-real-key");
-  ledgerMock.reserve.mockReset().mockImplementation(async (id: string) => ({
-    id,
-    model: "mimo-v2.6-flash",
-    createdAt: new Date().toISOString(),
-    status: "pending",
-    usage: unknownUsage(),
-    estimate: null,
-    pricing: getPricing(),
-  }));
+  ledgerMock.reserve
+    .mockReset()
+    .mockImplementation(
+      async (id: string, _text, _model, _search, pipeline) => ({
+        pipeline,
+        id,
+        model: "mimo-v2.6-flash",
+        createdAt: new Date().toISOString(),
+        status: "pending",
+        usage: unknownUsage(),
+        estimate: null,
+        pricing: getPricing(),
+      }),
+    );
   ledgerMock.update
     .mockReset()
     .mockImplementation(async (r, usage, status) => ({
@@ -95,12 +104,28 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 describe("real SDK request contract, with all upstream HTTP mocked", () => {
-  it("makes one official MiMo Chat Completions call with thinking off and bounded JSON", async () => {
-    const mock = vi.fn(async () => response());
+  it("makes two bounded MiMo calls, reading all works before selecting eight", async () => {
+    const mock = vi.fn(async (_url, init) => respondTo(init));
     vi.stubGlobal("fetch", mock);
     const result = await selectWithAI(input);
-    expect(mock).toHaveBeenCalledTimes(1);
-    const [url, init] = mock.mock.calls[0] as unknown as [string, RequestInit];
+    expect(mock).toHaveBeenCalledTimes(2);
+    const [firstUrl, firstInit] = mock.mock.calls[0] as unknown as [
+      string,
+      RequestInit,
+    ];
+    expect(String(firstUrl)).toBe(
+      "https://api.xiaomimimo.com/v1/chat/completions",
+    );
+    const firstBody = JSON.parse(String(firstInit.body));
+    const firstPayload = JSON.parse(firstBody.messages.at(-1).content);
+    expect(firstPayload.catalog).toHaveLength(300);
+    expect(firstPayload.feeling).toBe(input);
+    expect(
+      firstPayload.catalog.some((a: { tags: string[] }) => a.tags.length === 0),
+    ).toBe(true);
+    expect(firstBody.thinking).toEqual({ type: "disabled" });
+    expect(firstBody.max_completion_tokens).toBe(3600);
+    const [url, init] = mock.mock.calls[1] as unknown as [string, RequestInit];
     expect(String(url)).toBe("https://api.xiaomimimo.com/v1/chat/completions");
     const body = JSON.parse(String(init.body));
     expect(body.model).toBe("mimo-v2.6-flash");
@@ -120,9 +145,9 @@ describe("real SDK request contract, with all upstream HTTP mocked", () => {
         seed.artworks.some((v) => v.id === a.id),
       ),
     ).toBe(true);
-    expect(result.verification.inputTokens).toBe(4500);
-    expect(result.verification.usage.reasoningTokens).toBe(120);
-    expect(result.verification.usage.cachedInputTokens).toBe(1000);
+    expect(result.verification.inputTokens).toBe(9000);
+    expect(result.verification.usage.reasoningTokens).toBe(240);
+    expect(result.verification.usage.cachedInputTokens).toBe(2000);
     expect(result.selections.every((a) => a.artwork?.id === a.id)).toBe(true);
     expect(result.selections).toHaveLength(8);
     expect(body.messages[0].content).toContain("必ず8点");
@@ -147,7 +172,7 @@ describe("real SDK request contract, with all upstream HTTP mocked", () => {
       if (kind === "schema") value.atmosphere = "";
       if (kind === "too_few") value.selections.pop();
       if (kind === "too_many") {
-        const extra = selectCandidates(input, seed.selection)[8];
+        const extra = candidateWorks[8];
         value.selections.push({
           id: extra.id,
           role: "共鳴",
@@ -156,7 +181,7 @@ describe("real SDK request contract, with all upstream HTTP mocked", () => {
       }
       vi.stubGlobal(
         "fetch",
-        vi.fn(async () => response(value)),
+        vi.fn(async (_url, init) => respondTo(init, value)),
       );
       await expect(selectWithAI(input)).rejects.toThrow();
     });
@@ -184,7 +209,7 @@ describe("real SDK request contract, with all upstream HTTP mocked", () => {
   it("records real response counters and prices even if output validation fails", async () => {
     const value = chosen();
     value.atmosphere = "";
-    const mock = vi.fn(async () => response(value));
+    const mock = vi.fn(async (_url, init) => respondTo(init, value));
     vi.stubGlobal("fetch", mock);
     const r = await POST(request());
     expect(r.status).toBe(502);
@@ -198,7 +223,9 @@ describe("real SDK request contract, with all upstream HTTP mocked", () => {
     });
     expect(body.accounting.record.estimate.nanoJpy).toBe(99_120_000);
     expect(body.accounting.record.failure.kind).toBe("invalid_selection");
-    expect(mock).toHaveBeenCalledTimes(1);
+    expect(body.accounting.records).toHaveLength(2);
+    expect(body.accounting.records[0].status).toBe("succeeded");
+    expect(mock).toHaveBeenCalledTimes(2);
   });
   for (const [code, status] of [
     ["DUPLICATE", 409],
@@ -215,8 +242,12 @@ describe("real SDK request contract, with all upstream HTTP mocked", () => {
       expect(mock).not.toHaveBeenCalled();
     });
   it("keeps a usable exhibition and a visible warning if post-call persistence fails", async () => {
-    ledgerMock.update.mockRejectedValue(new Error("storage secret detail"));
-    const mock = vi.fn(async () => response());
+    ledgerMock.update.mockImplementation(async (r, usage, status) => {
+      if (r.pipeline.stage === "selection")
+        throw Error("storage secret detail");
+      return { ...r, usage, status, estimate: estimateCost(usage, r.pricing) };
+    });
+    const mock = vi.fn(async (_url, init) => respondTo(init));
     vi.stubGlobal("fetch", mock);
     const r = await POST(request());
     expect(r.status).toBe(200);
@@ -224,7 +255,7 @@ describe("real SDK request contract, with all upstream HTTP mocked", () => {
     expect(body.verification.accounting.persisted).toBe(false);
     expect(body.verification.accounting.record.usage.inputTokens).toBe(4500);
     expect(JSON.stringify(body)).not.toContain("storage secret detail");
-    expect(mock).toHaveBeenCalledTimes(1);
+    expect(mock).toHaveBeenCalledTimes(2);
   });
   it("tracks an interrupted request as unknown usage rather than a zero bill", async () => {
     vi.stubGlobal(
@@ -307,6 +338,80 @@ describe("real SDK request contract, with all upstream HTTP mocked", () => {
       expect(JSON.stringify(body)).not.toContain("private abort detail");
       expect(mock).toHaveBeenCalledTimes(1);
     });
+  for (const kind of ["outside", "duplicate", "too_few", "artist"] as const)
+    it(`stops after invalid retrieval (${kind}) without spending on stage two`, async () => {
+      const value = candidateOutput();
+      if (kind === "outside") value.candidates[0].id = "met-9999999";
+      if (kind === "duplicate") value.candidates[0].id = value.candidates[1].id;
+      if (kind === "too_few") value.candidates.pop();
+      if (kind === "artist") {
+        const byArtist = Map.groupBy(seed.selection, (a) => a.artistKey);
+        const three = [...byArtist.values()].find(
+          (works) => works.length >= 3,
+        )!;
+        value.candidates = [
+          ...three.slice(0, 3),
+          ...candidateWorks
+            .filter((a) => a.artistKey !== three[0].artistKey)
+            .slice(0, 21),
+        ].map((a) => ({ id: a.id, reason: "検証用の短い説明。" }));
+      }
+      const mock = vi.fn(async () => response(value));
+      vi.stubGlobal("fetch", mock);
+      const res = await POST(request());
+      const body = await res.json();
+      expect(res.status).toBe(502);
+      expect(body.accounting.records).toHaveLength(1);
+      expect(body.accounting.record.pipeline.stage).toBe("retrieval");
+      expect(body.accounting.record.failure.kind).toBe("invalid_selection");
+      expect(mock).toHaveBeenCalledTimes(1);
+    });
+  it("keeps the completed retrieval if the second quota reservation is blocked", async () => {
+    const reserve = ledgerMock.reserve.getMockImplementation()!;
+    ledgerMock.reserve.mockImplementation(async (...args) => {
+      if (args[4].stage === "selection") throw new UsageGateError("LIMIT");
+      return reserve(...args);
+    });
+    const mock = vi.fn(async (_url, init) => respondTo(init));
+    vi.stubGlobal("fetch", mock);
+    const res = await POST(request());
+    const body = await res.json();
+    expect(res.status).toBe(429);
+    expect(body.accounting.record.status).toBe("succeeded");
+    expect(body.accounting.record.pipeline.stage).toBe("retrieval");
+    expect(body.accounting.records).toHaveLength(1);
+    expect(mock).toHaveBeenCalledTimes(1);
+  });
+  it("stops before the second paid request when retrieval persistence fails", async () => {
+    ledgerMock.update.mockRejectedValue(Error("private failure"));
+    const mock = vi.fn(async (_url, init) => respondTo(init));
+    vi.stubGlobal("fetch", mock);
+    const res = await POST(request());
+    const body = await res.json();
+    expect(res.status).toBe(503);
+    expect(body.accounting.persisted).toBe(false);
+    expect(body.accounting.records).toHaveLength(1);
+    expect(body.accounting.record.usage.inputTokens).toBe(4500);
+    expect(mock).toHaveBeenCalledTimes(1);
+  });
+  it("retains separate known and unknown costs if stage two loses its connection", async () => {
+    const mock = vi.fn(async (_url, init) => {
+      const payload = JSON.parse(
+        JSON.parse(String(init?.body)).messages.at(-1).content,
+      );
+      if (!payload.catalog) throw Error("private network detail");
+      return response(candidateOutput());
+    });
+    vi.stubGlobal("fetch", mock);
+    const body = await (await POST(request())).json();
+    expect(body.accounting.records).toHaveLength(2);
+    expect(body.accounting.records[0].status).toBe("succeeded");
+    expect(body.accounting.records[0].estimate.nanoJpy).toBe(99_120_000);
+    expect(body.accounting.records[1].estimate).toBeNull();
+    expect(body.accounting.records[1].failure.kind).toBe("network");
+    expect(mock).toHaveBeenCalledTimes(2);
+    expect(JSON.stringify(body)).not.toContain("private network detail");
+  });
   it("requires a valid idempotency key before any paid operation", async () => {
     const mock = vi.fn();
     vi.stubGlobal("fetch", mock);

@@ -82,8 +82,13 @@ export default function HistoryView({ onClose }: { onClose: () => void }) {
                     </strong>
                     <br />
                     <small>
+                      {a.pipeline?.stage === "retrieval"
+                        ? "候補選び · "
+                        : a.pipeline?.stage === "selection"
+                          ? "最終選定 · "
+                          : ""}
                       {a.status === "succeeded"
-                        ? "選定成功"
+                        ? "成功"
                         : a.status === "failed"
                           ? "選定失敗・中断"
                           : "応答未確認"}{" "}
@@ -127,6 +132,10 @@ export default function HistoryView({ onClose }: { onClose: () => void }) {
                           </p>
                         )}
                       </>
+                    ) : a.pipeline?.stage === "retrieval" ? (
+                      <p>
+                        候補選びの記録です。最終8作品と表示結果は、同じ展示IDの最終選定の記録に保存します。
+                      </p>
                     ) : (
                       <p>
                         この記録には選定結果がありません。失敗・中断などで結果を保存できなかった可能性があります。

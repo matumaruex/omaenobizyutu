@@ -55,6 +55,18 @@ export function readUsage(value: unknown): TokenUsage {
   };
 }
 export const unknownUsage = (): TokenUsage => readUsage(null);
+export function sumUsage(usages: TokenUsage[]): TokenUsage {
+  const total = (key: keyof TokenUsage) =>
+    usages.some((usage) => usage[key] === null)
+      ? null
+      : usages.reduce((sum, usage) => sum + usage[key]!, 0);
+  return {
+    inputTokens: total("inputTokens"),
+    outputTokens: total("outputTokens"),
+    cachedInputTokens: total("cachedInputTokens"),
+    reasoningTokens: total("reasoningTokens"),
+  };
+}
 export function estimateCost(
   usage: TokenUsage,
   pricing: Pricing,

@@ -14,8 +14,8 @@ import ArtworkView from "./ArtworkView";
 import Dialog from "./Dialog";
 import SelectionReviewView from "./SelectionReviewView";
 import HistoryView from "./HistoryView";
-import UsageView, { UsageDetail } from "./UsageView";
-import type { UsageRecord } from "@/lib/usage/types";
+import UsageView, { UsageDetails } from "./UsageView";
+import type { AccountingResult } from "@/lib/usage/types";
 const Room = dynamic(() => import("./Room"), {
   ssr: false,
   loading: () => (
@@ -54,10 +54,9 @@ export default function Museum() {
     null,
   );
   const submitting = useRef(false);
-  const [lastAccounting, setLastAccounting] = useState<{
-    record: UsageRecord;
-    persisted: boolean;
-  } | null>(null);
+  const [lastAccounting, setLastAccounting] = useState<AccountingResult | null>(
+    null,
+  );
   const [exhibitionVersion, setExhibitionVersion] = useState(0);
   const [exhibition, setExhibition] = useState<Exhibition | null>(null),
     [exhibits, setExhibits] = useState<Exhibit[]>([]);
@@ -453,7 +452,7 @@ export default function Museum() {
                 !busy && (
                   <section aria-label="直近のAPI使用量">
                     <h3>直近のAPI使用量</h3>
-                    <UsageDetail record={lastAccounting.record} />
+                    <UsageDetails accounting={lastAccounting} />
                     {!lastAccounting.persisted && (
                       <p role="alert">
                         選定結果・使用量を保存できませんでした。履歴や累計に反映されていない可能性があります。自動再送はしません。

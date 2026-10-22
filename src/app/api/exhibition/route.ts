@@ -1,6 +1,6 @@
 import type { SavedSelection } from "@/lib/history/types";
 import { z } from "zod";
-import { aiConfigured, selectWithAI } from "@/lib/ai/select";
+import { aiConfigured, MIMO_MODEL, selectWithAI } from "@/lib/ai/select";
 import { UsageLedger, UsageGateError } from "@/lib/usage/ledger";
 import { unknownUsage, estimateCost } from "@/lib/usage/pricing";
 import type { UsageRecord } from "@/lib/usage/types";
@@ -8,8 +8,8 @@ import { SelectionFailure } from "@/lib/ai/failure";
 import { failureMessage } from "@/lib/usage/failure";
 import { inspectionAvailable } from "@/lib/access";
 export const runtime = "nodejs";
-// Leave time for durable accounting around the 35-second provider timeout.
-export const maxDuration = 60;
+// Two bounded provider calls plus durable accounting and catalog loading.
+export const maxDuration = 120;
 const inputSchema = z
   .object({
     text: z.string().trim().min(1).max(800),
@@ -96,13 +96,19 @@ export async function POST(request: Request) {
     );
   inFlight++;
   let record: UsageRecord | undefined;
+  const records = new Map<string, UsageRecord>();
+  const remember = () => {
+    if (record) records.set(record.id, record);
+  };
+  const accountingResult = () =>
+    record ? { record, records: [...records.values()], persisted } : undefined;
   let gateError: UsageGateError | undefined;
   let observed = unknownUsage();
   let persisted = true;
   let ledger: UsageLedger | undefined;
   let selection: SavedSelection | undefined;
   const finish = async (status: "succeeded" | "failed") => {
-    if (!record || !ledger) return;
+    if (!record || !ledger || record.status !== "pending") return;
     record = {
       ...record,
       status,
@@ -111,23 +117,26 @@ export async function POST(request: Request) {
     };
     try {
       await ledger.update(record, observed, status, selection);
-      persisted = true;
     } catch {
       persisted = false;
     }
+    remember();
   };
   try {
     ledger = new UsageLedger();
     const result = await selectWithAI(input.text, request.signal, {
-      beforeRequest: async (search) => {
+      beforeRequest: async (search, stage) => {
         if (request.signal.aborted) throw Error("ABORTED");
         try {
           record = await ledger!.reserve(
-            requestId,
+            stage === "retrieval" ? requestId : crypto.randomUUID(),
             input.text,
-            "mimo-v2.6-flash",
+            MIMO_MODEL,
             search,
+            { exhibitionId: requestId, stage },
           );
+          observed = unknownUsage();
+          remember();
         } catch (error) {
           gateError =
             error instanceof UsageGateError
@@ -144,6 +153,25 @@ export async function POST(request: Request) {
         } catch {
           persisted = false;
         }
+        remember();
+      },
+      onRetrievalComplete: async (search) => {
+        if (!record) throw new UsageGateError("UNAVAILABLE");
+        // The next quota reservation checks this durable completion atomically.
+        // Never spend on stage two if stage one's result could not be saved.
+        try {
+          record = await ledger!.update(
+            record,
+            observed,
+            "succeeded",
+            undefined,
+            { input: input.text, search },
+          );
+          remember();
+        } catch {
+          persisted = false;
+          throw new UsageGateError("UNAVAILABLE");
+        }
       },
     });
     selection = {
@@ -159,12 +187,13 @@ export async function POST(request: Request) {
       })),
     };
     await finish("succeeded");
-    if (record) result.verification.accounting = { record, persisted };
+    result.verification.accounting = accountingResult();
     return Response.json(result, { headers });
   } catch (error) {
     const failure =
       error instanceof SelectionFailure ? error.diagnostic : undefined;
-    if (record && failure) record = { ...record, failure };
+    if (record?.status === "pending" && failure)
+      record = { ...record, failure };
     await finish("failed");
     const blocked =
       gateError || (error instanceof UsageGateError ? error : undefined);
@@ -178,7 +207,11 @@ export async function POST(request: Request) {
               : "試験用の利用上限に達しました。招待した人に連絡してください。"
             : "使用量の保存先に接続できないため、API呼び出しを停止しました。接続設定を確認してください。";
       return Response.json(
-        { error: message, code: blocked.code },
+        {
+          error: message,
+          code: blocked.code,
+          ...(record ? { accounting: accountingResult() } : {}),
+        },
         {
           status:
             blocked.code === "DUPLICATE"
@@ -212,7 +245,7 @@ export async function POST(request: Request) {
       {
         error: message,
         code: "AI_FAILED",
-        ...(record ? { accounting: { record, persisted } } : {}),
+        ...(record ? { accounting: accountingResult() } : {}),
       },
       { status: 502, headers },
     );
