@@ -1,8 +1,7 @@
 import { UsageGateError } from "../src/lib/usage/ledger";
 import { beforeEach, afterEach, describe, it, expect, vi } from "vitest";
 import seed from "../src/data/catalog-seed.json";
-import { validateCandidates } from "../src/lib/ai/candidates";
-import { candidateWorks, candidateOutput } from "./fixtures/ai";
+import { candidateWorks, tagOutput } from "./fixtures/ai";
 vi.mock("../src/lib/catalog/server", () => ({ getCatalog: async () => seed }));
 const ledgerMock = vi.hoisted(() => ({ reserve: vi.fn(), update: vi.fn() }));
 vi.mock("../src/lib/usage/ledger", async (original) => {
@@ -60,7 +59,7 @@ function respondTo(init: RequestInit | undefined, value: unknown = chosen()) {
   const payload = JSON.parse(
     JSON.parse(String(init?.body)).messages.at(-1).content,
   );
-  return response(payload.catalog ? candidateOutput() : value);
+  return response(payload.availableTags ? tagOutput() : value);
 }
 function request(text = input, extra = {}) {
   return new Request("http://localhost/api/exhibition", {
@@ -105,12 +104,12 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 describe("real SDK request contract, with all upstream HTTP mocked", () => {
-  it("makes two bounded MiMo calls, reading all works before selecting eight", async () => {
+  it("makes two bounded MiMo calls, classifying tags before selecting eight", async () => {
     const mock = vi.fn(async (_url, init) => respondTo(init));
     vi.stubGlobal("fetch", mock);
     const timeouts = vi.spyOn(AbortSignal, "timeout");
     const result = await selectWithAI(input);
-    expect(timeouts.mock.calls.map(([ms]) => ms)).toEqual([60000, 35000]);
+    expect(timeouts.mock.calls.map(([ms]) => ms)).toEqual([30000, 35000]);
     expect(mock).toHaveBeenCalledTimes(2);
     const [firstUrl, firstInit] = mock.mock.calls[0] as unknown as [
       string,
@@ -121,13 +120,12 @@ describe("real SDK request contract, with all upstream HTTP mocked", () => {
     );
     const firstBody = JSON.parse(String(firstInit.body));
     const firstPayload = JSON.parse(firstBody.messages.at(-1).content);
-    expect(firstPayload.catalog).toHaveLength(300);
+    expect(firstPayload.availableTags).toHaveLength(15);
+    expect(firstPayload.catalog).toBeUndefined();
+    expect(firstPayload.candidates).toBeUndefined();
     expect(firstPayload.feeling).toBe(input);
-    expect(
-      firstPayload.catalog.some((a: { tags: string[] }) => a.tags.length === 0),
-    ).toBe(true);
     expect(firstBody.thinking).toEqual({ type: "disabled" });
-    expect(firstBody.max_completion_tokens).toBe(700);
+    expect(firstBody.max_completion_tokens).toBe(350);
     const [url, init] = mock.mock.calls[1] as unknown as [string, RequestInit];
     expect(String(url)).toBe("https://api.xiaomimimo.com/v1/chat/completions");
     const body = JSON.parse(String(init.body));
@@ -341,12 +339,12 @@ describe("real SDK request contract, with all upstream HTTP mocked", () => {
       expect(JSON.stringify(body)).not.toContain("private abort detail");
       expect(mock).toHaveBeenCalledTimes(1);
     });
-  for (const kind of ["outside", "duplicate", "too_few"] as const)
-    it(`stops after invalid retrieval (${kind}) without spending on stage two`, async () => {
-      const value = candidateOutput();
-      if (kind === "outside") value.candidates[0] = "met-9999999";
-      if (kind === "duplicate") value.candidates[0] = value.candidates[1];
-      if (kind === "too_few") value.candidates.pop();
+  for (const kind of ["unknown", "duplicate", "contradiction"] as const)
+    it(`stops after invalid tag classification (${kind}) without a second call`, async () => {
+      const value = tagOutput();
+      if (kind === "unknown") value.tags = ["未登録の気持ち"];
+      if (kind === "duplicate") value.tags = ["不安", "不安"];
+      if (kind === "contradiction") value.negatedTags = ["不安"];
       const mock = vi.fn(async () => response(value));
       vi.stubGlobal("fetch", mock);
       const res = await POST(request());
@@ -354,52 +352,11 @@ describe("real SDK request contract, with all upstream HTTP mocked", () => {
       expect(res.status).toBe(502);
       expect(body.accounting.records).toHaveLength(1);
       expect(body.accounting.record.pipeline.stage).toBe("retrieval");
-      expect(body.accounting.record.failure.kind).toBe("invalid_selection");
+      expect(body.accounting.record.failure.validationIssue).toBe(
+        "tag_profile",
+      );
       expect(mock).toHaveBeenCalledTimes(1);
     });
-  it("caps the repeated painters seen in real output without discarding a viable shortlist", async () => {
-    const repeated = seed.selection
-      .filter((a) => a.artistKey === "artist:Camille Pissarro")
-      .slice(0, 4);
-    const monet = seed.selection
-      .filter((a) => a.artistKey === "artist:Claude Monet")
-      .slice(0, 5);
-    const others = candidateWorks
-      .filter(
-        (a) =>
-          !["artist:Camille Pissarro", "artist:Claude Monet"].includes(
-            a.artistKey,
-          ),
-      )
-      .slice(0, 15);
-    const proposal = {
-      candidates: [...repeated, ...monet, ...others].map((a) => a.id),
-    };
-    const kept = validateCandidates(proposal, seed.selection);
-    expect(kept).toHaveLength(19);
-    const value = {
-      ...chosen(),
-      selections: kept
-        .slice(0, 8)
-        .map((a) => ({
-          id: a.id,
-          role: "共鳴",
-          reason: "作品資料と入力の接点を確かめて選びました。",
-        })),
-    };
-    const mock = vi.fn(async (_url, init) => {
-      const payload = JSON.parse(
-        JSON.parse(String(init?.body)).messages.at(-1).content,
-      );
-      return response(payload.catalog ? proposal : value);
-    });
-    vi.stubGlobal("fetch", mock);
-    const result = await selectWithAI(input);
-    expect(result.verification.candidateCount).toBe(19);
-    expect(result.verification.search?.proposedCount).toBe(24);
-    expect(result.selections).toHaveLength(8);
-    expect(mock).toHaveBeenCalledTimes(2);
-  });
   it("keeps the completed retrieval if the second quota reservation is blocked", async () => {
     const reserve = ledgerMock.reserve.getMockImplementation()!;
     ledgerMock.reserve.mockImplementation(async (...args) => {
@@ -433,8 +390,8 @@ describe("real SDK request contract, with all upstream HTTP mocked", () => {
       const payload = JSON.parse(
         JSON.parse(String(init?.body)).messages.at(-1).content,
       );
-      if (!payload.catalog) throw Error("private network detail");
-      return response(candidateOutput());
+      if (!payload.availableTags) throw Error("private network detail");
+      return response(tagOutput());
     });
     vi.stubGlobal("fetch", mock);
     const body = await (await POST(request())).json();

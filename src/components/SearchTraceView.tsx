@@ -6,6 +6,7 @@ export default function SearchTraceView({
   search: SearchTrace;
   selectedIds: string[];
 }) {
+  const aiTags = search.method === "ai-tags-v1";
   const semantic =
     search.method === "ai-semantic-v1" ||
     search.method === "ai-semantic-v2" ||
@@ -13,7 +14,31 @@ export default function SearchTraceView({
   return (
     <details className="search-trace">
       <summary>候補検索から選定までの流れ</summary>
-      {semantic ? (
+      {aiTags ? (
+        <>
+          <ol>
+            <li>
+              入力原文とDBに登録された感情タグの一覧・意味をMiMoに渡します。この段階では作品資料を送りません。
+            </li>
+            <li>
+              {search.classificationComplete
+                ? `MiMoが選んだタグ：${search.detectedCategories.join("・") || "該当なし"}。否定されたタグ：${search.excludedCategories?.join("・") || "なし"}。`
+                : "タグ判定の応答は未記録です。"}
+            </li>
+            <li>
+              プログラムが選ばれたタグから均等に候補を集めます。同じ作者は最大2点、全体で最大24点。一致が少ない場合は他の作品も補い、同条件の順序は入力ごとに変えます。語句の一致点では順位を付けません。
+            </li>
+            <li>
+              タグに一致する作品は{search.matchingCount ?? "未記録"}点。候補
+              {search.candidates.length}
+              点の詳しい資料と入力原文を、別のMiMo呼び出しに渡して8点を選定します。
+            </li>
+          </ol>
+          <p className="small">
+            タグ判定と最終選定を各1回のAPI呼び出しとして記録します。一致タグ数は表示用で、候補の順位には使いません。AI内部の推論過程は記録しません。
+          </p>
+        </>
+      ) : semantic ? (
         <>
           <ol>
             <li>
@@ -75,7 +100,7 @@ export default function SearchTraceView({
             </strong>
             <small>
               {c.id} · {c.artist}
-              {!semantic && ` · 検索点 ${c.score}`}
+              {!semantic && ` · ${aiTags ? "一致タグ数" : "検索点"} ${c.score}`}
             </small>
             <p className="small">
               主タグ：{c.primary.join("・") || "なし"} ／ 補助タグ：

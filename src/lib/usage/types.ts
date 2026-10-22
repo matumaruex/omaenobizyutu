@@ -31,7 +31,17 @@ export interface UsageRecord {
   pricing: Pricing;
   failure?: SelectionFailureDiagnostic;
 }
+export type ValidationIssue =
+  | "tag_profile"
+  | "candidate_count"
+  | "title"
+  | "atmosphere"
+  | "selection_count"
+  | "selection_fields"
+  | "duplicate_ids"
+  | "outside_candidates";
 export interface SelectionFailureDiagnostic {
+  validationIssue?: ValidationIssue;
   kind:
     | "timeout"
     | "cancelled"

@@ -3,7 +3,7 @@ import seed from "../src/data/catalog-seed.json";
 vi.mock("../src/lib/catalog/server", () => ({ getCatalog: async () => seed }));
 import { POST } from "../src/app/api/exhibition/route";
 import { GET } from "../src/app/api/usage/route";
-import { candidateWorks, candidateOutput } from "./fixtures/ai";
+import { candidateWorks, tagOutput } from "./fixtures/ai";
 import {
   afterAll,
   afterEach,
@@ -304,11 +304,16 @@ describe.skipIf(!bin)("durable atomic ledger on a real Redis server", () => {
             result: await command(JSON.parse(init.body)),
           });
         paidCalls++;
-        const selections = candidateWorks.slice(0, 8).map((a) => ({
-          id: a.id,
-          role: "共鳴",
-          reason: "作品固有の主題を入口に鑑賞します。",
-        }));
+        const payload = JSON.parse(
+          JSON.parse(String(init.body)).messages.at(-1).content,
+        );
+        const selections = (payload.candidates ?? [])
+          .slice(0, 8)
+          .map((a: { id: string }) => ({
+            id: a.id,
+            role: "共鳴",
+            reason: "作品固有の主題を入口に鑑賞します。",
+          }));
         return Response.json({
           id: "test",
           model: "mimo-v2.6-flash",
@@ -321,10 +326,8 @@ describe.skipIf(!bin)("durable atomic ledger on a real Redis server", () => {
                 role: "assistant",
                 reasoning_content: "internal private trace",
                 content: JSON.stringify(
-                  JSON.parse(
-                    JSON.parse(String(init.body)).messages.at(-1).content,
-                  ).catalog
-                    ? candidateOutput()
+                  payload.availableTags
+                    ? tagOutput()
                     : {
                         title: "余白",
                         atmosphere: "作品の主題に触れる構成。",

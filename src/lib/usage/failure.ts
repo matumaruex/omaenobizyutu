@@ -17,5 +17,18 @@ export function failureMessage(failure: SelectionFailureDiagnostic): string {
     invalid_selection:
       "MiMoの選定結果が展示の条件を満たさなかったため、展示を停止しました。",
   };
-  return messages[failure.kind];
+  const validation = {
+    tag_profile: "タグ判定の形式が条件を満たしていません。",
+    candidate_count: "最終選定に必要な作品候補を確保できませんでした。",
+    title: "展示タイトルの長さ・形式が条件を満たしていません。",
+    atmosphere: "展示全体の説明の長さ・形式が条件を満たしていません。",
+    selection_count: "選ばれた作品が8点になっていません。",
+    selection_fields:
+      "作品の選定理由・役割などの形式が条件を満たしていません。",
+    duplicate_ids: "同じ作品が重複して選ばれました。",
+    outside_candidates: "候補にない作品が選ばれました。",
+  };
+  return failure.validationIssue
+    ? `${messages[failure.kind]} ${validation[failure.validationIssue]}`
+    : messages[failure.kind];
 }
