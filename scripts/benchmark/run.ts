@@ -1,29 +1,28 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { performance } from "node:perf_hooks";
-import { POST as oldPost } from "./old-route";
 import { POST as newPost } from "../../src/app/api/exhibition/route";
 import { readUsage } from "../../src/lib/usage/pricing";
 import type { AccountingResult } from "../../src/lib/usage/types";
 
 // Only an explicit, deployment-specific build command may run paid benchmarks.
 // Normal pushes, builds, page views and application requests never run this file.
-const runId = "mimo-comparison-20261022-a";
+const runId = "mimo-comparison-20261022-b";
 const outputPath = `public/${runId}.json`;
 const cases = [
   {
     text: "憂鬱なきぶん",
     oldId: "64718ea0-2667-43c7-b52b-77cd5ca52ec9",
-    newId: "29f6c09d-c8a1-4a7d-90bb-c34a6f4ac187",
+    newId: "fd3d9b7e-6ae7-4789-a89d-ae4bf570278a",
   },
   {
     text: "不安はないけれど、何もする気が起きない",
     oldId: "47a1a364-5820-4155-a59a-049a0146ba54",
-    newId: "14196015-d34d-4fd5-b414-e5d9368ef721",
+    newId: "05bfcd30-a759-47a2-a87f-0f0bbd69982c",
   },
 ];
 
 async function main() {
-  if (!process.argv.includes("--run-paid-20261022")) {
+  if (!process.argv.includes("--run-paid-20261022b")) {
     console.log("MIMO_BENCH_NOT_RUN: explicit paid-run argument required");
     return;
   }
@@ -38,8 +37,8 @@ async function main() {
     runId,
     createdAt: new Date().toISOString(),
     baselineCommit: "6bcc249ba9316e0f2917b46cb0ae9dbadc72dd0b",
-    improvedCommit: "12aace2056cafec707fa0622c6b400eff476c081",
-    maxPaidCalls: 6,
+    improvedCommit: "e95fa787d661fca206eabfd894063ae32212b089",
+    maxPaidCalls: 4,
     complete: false,
     stop: "",
     results,
@@ -70,24 +69,17 @@ async function main() {
     await writeFile(outputPath, JSON.stringify(report, null, 2));
   };
   try {
-    for (const mode of ["old", "new"] as const) {
-      if (mode === "new") {
-        // Respect the application's existing 60-second same-text dedupe gate.
-        console.log(
-          "MIMO_BENCH_WAIT: 61 seconds before reusing identical inputs",
-        );
-        await new Promise((resolve) => setTimeout(resolve, 61000));
-      }
+    for (const mode of ["new"] as const) {
       for (let index = 0; index < cases.length; index++) {
         const item = cases[index];
         const callOffset = providerCalls.length;
         const started = performance.now();
-        const response = await (mode === "old" ? oldPost : newPost)(
+        const response = await newPost(
           new Request("https://benchmark.invalid/api/exhibition", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "Idempotency-Key": mode === "old" ? item.oldId : item.newId,
+              "Idempotency-Key": item.newId,
             },
             body: JSON.stringify({ text: item.text }),
           }),
