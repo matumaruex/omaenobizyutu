@@ -26,7 +26,9 @@ async function main() {
   }
   if (process.env.VERCEL_ENV !== "preview") throw Error("PREVIEW_REQUIRED");
   const batch = Number(batchArg.split("=")[1]);
-  const selected = cases.slice((batch - 1) * 8, batch * 8);
+  const startArg = process.argv.find((a) => /^--start-at=[0-7]$/.test(a));
+  const startAt = startArg ? Number(startArg.split("=")[1]) : 0;
+  const selected = cases.slice((batch - 1) * 8 + startAt, batch * 8);
   // Applies only to this separate build process and this explicit ledger.
   process.env.MIMO_TEST_CALL_LIMIT = String(MAX_PAID_CALLS);
   const ledger = new UsageLedger(undefined, `{${RUN_ID}}`);
@@ -42,10 +44,14 @@ async function main() {
   );
   const nativeFetch = globalThis.fetch;
   let actualCalls = 0;
+  let currentCase = "";
+  const providerDiagnostics: Record<string, unknown>[] = [];
   const results: Record<string, unknown>[] = [];
   const report = {
     runId: RUN_ID,
     batch,
+    startAt,
+    providerDiagnostics,
     createdAt: new Date().toISOString(),
     baselineCommit: "727a8404acd8eaf3533cbcc241153481103f1e2c",
     testedCommit: process.env.VERCEL_GIT_COMMIT_SHA ?? null,
@@ -63,7 +69,7 @@ async function main() {
     quotaAfter: before.calls,
     ledger: before,
   };
-  const outputPath = `public/${RUN_ID}-${batch}.json`;
+  const outputPath = `public/${RUN_ID}-${batch}${startAt ? `-from-${startAt}` : ""}.json`;
   const save = async () => {
     report.actualCalls = actualCalls;
     await mkdir("public", { recursive: true });
@@ -74,11 +80,37 @@ async function main() {
     if (url.hostname === "api.xiaomimimo.com") {
       if (actualCalls >= report.batchCallCap) throw Error("BATCH_CALL_CAP");
       actualCalls++;
+      const diagnostic: Record<string, unknown> = { case: currentCase };
+      providerDiagnostics.push(diagnostic);
+      const response = await nativeFetch(input, init);
+      diagnostic.httpStatus = response.status;
+      try {
+        const raw = await response.clone().json();
+        const value = JSON.parse(raw.choices?.[0]?.message?.content ?? "null");
+        diagnostic.truncated = raw.choices?.[0]?.finish_reason === "length";
+        diagnostic.kind = Array.isArray(value?.selections)
+          ? "selection"
+          : "tags";
+        if (Array.isArray(value?.selections)) {
+          diagnostic.count = value.selections.length;
+          diagnostic.uniqueCount = new Set(
+            value.selections.map((s: { candidate: number }) => s.candidate),
+          ).size;
+          diagnostic.reasonLengths = value.selections.map(
+            (s: { reason: string }) =>
+              typeof s.reason === "string" ? s.reason.length : null,
+          );
+        }
+      } catch {
+        diagnostic.bodyUnavailable = true;
+      }
+      return response;
     }
     return nativeFetch(input, init);
   };
   try {
     for (const item of selected) {
+      currentCase = item.key;
       const prior = cases
         .filter(
           (c) =>
