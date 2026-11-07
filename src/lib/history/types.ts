@@ -1,6 +1,11 @@
 import type { Role } from "../types";
 import type { UsageRecord } from "../usage/types";
 export interface SearchTrace {
+  sampling?: {
+    version: "weighted-exposure-v1";
+    seed: string;
+    recentExhibitions: readonly (readonly string[])[];
+  };
   method?:
     "ai-semantic-v1" | "ai-semantic-v2" | "ai-semantic-v3" | "ai-tags-v1";
   excludedCategories?: string[];

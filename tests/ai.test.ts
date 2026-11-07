@@ -105,6 +105,36 @@ afterEach(() => {
   vi.unstubAllEnvs();
   vi.unstubAllGlobals();
 });
+it("evaluates rotated candidates in exactly two calls without numeric fitting strength", async () => {
+  const payloads: {
+    candidates?: { fitting: Record<string, unknown>[]; cautions: string[] }[];
+  }[] = [];
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async (_url, init) => {
+      payloads.push(
+        JSON.parse(JSON.parse(String(init?.body)).messages.at(-1).content),
+      );
+      return respondTo(init);
+    }),
+  );
+  const output = await selectWithAI(input, undefined, undefined, {
+    catalog: seed,
+    sampling: { seed: "exhibition-1", recentExhibitions: [] },
+  });
+  expect(payloads).toHaveLength(2);
+  expect(payloads[1].candidates).toHaveLength(24);
+  expect(
+    payloads[1]
+      .candidates!.flatMap((a) => a.fitting)
+      .every((f) => !("strength" in f) && "situation" in f && "reason" in f),
+  ).toBe(true);
+  expect(payloads[1].candidates!.every((a) => Array.isArray(a.cautions))).toBe(
+    true,
+  );
+  expect(output.selections).toHaveLength(8);
+  expect(output.verification.search?.sampling?.seed).toBe("exhibition-1");
+});
 describe("waiting for the complete selection response body", () => {
   // Exercise elapsed seconds instantly. Native fetch normally errors the body
   // stream on abort; the mocked stream reproduces that boundary explicitly.
