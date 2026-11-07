@@ -31,6 +31,20 @@ const groups = Object.fromEntries(
         unknown: subset.reduce((sum, r) => sum + r.unpricedCalls, 0),
         medianSeconds: median(subset.map((r) => r.elapsedMs / 1000)),
         meanSeconds: mean(subset.map((r) => r.elapsedMs / 1000)),
+        successfulMedianSeconds: median(
+          subset
+            .filter((r) => r.status === "succeeded")
+            .map((r) => r.elapsedMs / 1000),
+        ),
+        meanJpyPerAttempt: mean(subset.map((r) => r.knownNanoJpy / 1e9)),
+        successfulMeanJpy: mean(
+          subset
+            .filter((r) => r.status === "succeeded")
+            .map((r) => r.knownNanoJpy / 1e9),
+        ),
+        meanColdCacheJpyPerAttempt: mean(
+          subset.map((r) => r.coldCacheNanoJpy / 1e9),
+        ),
         rangeSeconds: subset.length
           ? [
               Math.min(...subset.map((r) => r.elapsedMs / 1000)),

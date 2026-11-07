@@ -93,6 +93,24 @@ async function main() {
           : "tags";
         if (Array.isArray(value?.selections)) {
           diagnostic.count = value.selections.length;
+          diagnostic.candidateTypes = value.selections.map(
+            (s: { candidate?: unknown }) => typeof s.candidate,
+          );
+          diagnostic.candidatesInRange = value.selections.every(
+            (s: { candidate?: unknown }) =>
+              Number.isInteger(s.candidate) &&
+              Number(s.candidate) >= 1 &&
+              Number(s.candidate) <= 24,
+          );
+          diagnostic.roles = value.selections.map((s: { role?: unknown }) =>
+            typeof s.role === "string" ? s.role.slice(0, 30) : typeof s.role,
+          );
+          diagnostic.titleLength =
+            typeof value.title === "string" ? value.title.trim().length : null;
+          diagnostic.atmosphereLength =
+            typeof value.atmosphere === "string"
+              ? value.atmosphere.trim().length
+              : null;
           diagnostic.uniqueCount = new Set(
             value.selections.map((s: { candidate: number }) => s.candidate),
           ).size;
@@ -262,7 +280,18 @@ async function main() {
             failure,
           }),
       );
-      if (status !== "succeeded") {
+      // Invalid output is a measured outcome, not a reason to retry the case.
+      // Continue only to the next predeclared independent case; infrastructure,
+      // accounting, timeout and provider errors still stop this paid batch.
+      if (
+        status !== "succeeded" &&
+        !(
+          typeof failure === "object" &&
+          failure !== null &&
+          "kind" in failure &&
+          failure.kind === "invalid_selection"
+        )
+      ) {
         report.stop = "CASE_FAILED_NO_RETRY";
         break;
       }
