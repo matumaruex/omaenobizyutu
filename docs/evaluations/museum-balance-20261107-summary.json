@@ -1,0 +1,209 @@
+{
+  "groups": {
+    "baseline": {
+      "exhibitions": 12,
+      "successes": 9,
+      "calls": 23,
+      "knownJpy": 1.28528988,
+      "coldCacheJpy": 2.669583,
+      "unknown": 0,
+      "medianSeconds": 21,
+      "meanSeconds": 19.57391666666667,
+      "successfulMedianSeconds": 19.577,
+      "meanJpyPerAttempt": 0.10710749000000001,
+      "successfulMeanJpy": 0.11671949333333334,
+      "meanColdCacheJpyPerAttempt": 0.22246525000000003,
+      "rangeSeconds": [
+        10.552,
+        24.892
+      ],
+      "meanInputTokensPerCall": 5003.347826086957,
+      "meanOutputTokensPerCall": 261.8695652173913
+    },
+    "balanced": {
+      "exhibitions": 12,
+      "successes": 11,
+      "calls": 24,
+      "knownJpy": 2.66255892,
+      "coldCacheJpy": 2.871981,
+      "unknown": 0,
+      "medianSeconds": 20.554499999999997,
+      "meanSeconds": 18.50875,
+      "successfulMedianSeconds": 20.956,
+      "meanJpyPerAttempt": 0.22187990999999999,
+      "successfulMeanJpy": 0.22106226545454544,
+      "meanColdCacheJpyPerAttempt": 0.23933174999999995,
+      "rangeSeconds": [
+        7.621,
+        26.52
+      ],
+      "meanInputTokensPerCall": 5158.375,
+      "meanOutputTokensPerCall": 270
+    }
+  },
+  "diversity": {
+    "sadness": {
+      "baseline": {
+        "n": 4,
+        "tags": [
+          [
+            "悲しみ"
+          ],
+          [
+            "悲しみ"
+          ],
+          [
+            "悲しみ"
+          ],
+          [
+            "悲しみ"
+          ]
+        ],
+        "candidateUnique": 24,
+        "selectedUnique": 12,
+        "overlaps": [
+          5,
+          7,
+          6
+        ],
+        "meanOverlap": 6
+      },
+      "balanced": {
+        "n": 5,
+        "tags": [
+          [
+            "悲しみ"
+          ],
+          [
+            "悲しみ"
+          ],
+          [
+            "悲しみ"
+          ],
+          [
+            "悲しみ"
+          ],
+          [
+            "悲しみ"
+          ]
+        ],
+        "candidateUnique": 33,
+        "selectedUnique": 22,
+        "overlaps": [
+          2,
+          2,
+          2,
+          2
+        ],
+        "meanOverlap": 2
+      }
+    },
+    "mixed": {
+      "baseline": {
+        "n": 2,
+        "tags": [
+          [
+            "喜び",
+            "不安"
+          ],
+          [
+            "喜び",
+            "不安"
+          ]
+        ],
+        "candidateUnique": 24,
+        "selectedUnique": 10,
+        "overlaps": [
+          6
+        ],
+        "meanOverlap": 6
+      },
+      "balanced": {
+        "n": 2,
+        "tags": [
+          [
+            "喜び",
+            "期待",
+            "不安"
+          ],
+          [
+            "喜び",
+            "期待",
+            "不安"
+          ]
+        ],
+        "candidateUnique": 45,
+        "selectedUnique": 16,
+        "overlaps": [
+          0
+        ],
+        "meanOverlap": 0
+      }
+    },
+    "unmapped": {
+      "baseline": {
+        "n": 2,
+        "tags": [
+          [],
+          []
+        ],
+        "candidateUnique": 24,
+        "selectedUnique": 11,
+        "overlaps": [
+          5
+        ],
+        "meanOverlap": 5
+      },
+      "balanced": {
+        "n": 2,
+        "tags": [
+          [
+            "悲しみ"
+          ],
+          [
+            "悲しみ"
+          ]
+        ],
+        "candidateUnique": 30,
+        "selectedUnique": 12,
+        "overlaps": [
+          4
+        ],
+        "meanOverlap": 4
+      }
+    },
+    "sparse": {
+      "baseline": {
+        "n": 1,
+        "tags": [
+          [
+            "怒り"
+          ]
+        ],
+        "candidateUnique": 24,
+        "selectedUnique": 8,
+        "overlaps": [],
+        "meanOverlap": null
+      },
+      "balanced": {
+        "n": 2,
+        "tags": [
+          [
+            "怒り"
+          ],
+          [
+            "怒り"
+          ]
+        ],
+        "candidateUnique": 40,
+        "selectedUnique": 10,
+        "overlaps": [
+          6
+        ],
+        "meanOverlap": 6
+      }
+    }
+  },
+  "totalActualCalls": 47,
+  "totalKnownJpy": 3.9478488
+}
