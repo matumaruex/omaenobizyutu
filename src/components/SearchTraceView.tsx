@@ -6,7 +6,9 @@ export default function SearchTraceView({
   search: SearchTrace;
   selectedIds: string[];
 }) {
-  const aiTags = search.method === "ai-tags-v1";
+  const aiTags =
+    search.method === "ai-tags-v1" || search.method === "ai-tags-v2";
+  const sampled = search.method === "ai-tags-v2" || Boolean(search.sampling);
   const semantic =
     search.method === "ai-semantic-v1" ||
     search.method === "ai-semantic-v2" ||
@@ -26,12 +28,18 @@ export default function SearchTraceView({
                 : "タグ判定の応答は未記録です。"}
             </li>
             <li>
-              プログラムが選ばれたタグから均等に候補を集めます。同じ作者は最大2点、全体で最大24点。一致が少ない場合は他の作品も補い、同条件の順序は入力ごとに変えます。語句の一致点では順位を付けません。
+              プログラムが選ばれたタグから均等に候補を集めます。同じ作者は最大2点、全体で最大24点。一致が少ない場合は他の作品も補います。
+              {sampled
+                ? "新しい展示ごとに抽選し、このブラウザの直近5展示で出た作品は少し出にくくします。再登場は可能です。"
+                : "同条件の順序は入力ごとに変えます。"}
+              語句の一致点では順位を付けません。
             </li>
             <li>
               タグに一致する作品は{search.matchingCount ?? "未記録"}点。候補
               {search.candidates.length}
               点の詳しい資料と入力原文を、別のMiMo呼び出しに渡して8点を選定します。
+              {sampled &&
+                "適合度の数字は渡さず、主題・背景・合う理由・注意事項から判断します。"}
             </li>
           </ol>
           <p className="small">

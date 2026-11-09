@@ -105,6 +105,36 @@ afterEach(() => {
   vi.unstubAllEnvs();
   vi.unstubAllGlobals();
 });
+it("evaluates rotated candidates in exactly two calls without numeric fitting strength", async () => {
+  const payloads: {
+    candidates?: { fitting: Record<string, unknown>[]; cautions: string[] }[];
+  }[] = [];
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async (_url, init) => {
+      payloads.push(
+        JSON.parse(JSON.parse(String(init?.body)).messages.at(-1).content),
+      );
+      return respondTo(init);
+    }),
+  );
+  const output = await selectWithAI(input, undefined, undefined, {
+    seed: "exhibition-1",
+    recentExhibitions: [],
+  });
+  expect(payloads).toHaveLength(2);
+  expect(payloads[1].candidates).toHaveLength(24);
+  expect(
+    payloads[1]
+      .candidates!.flatMap((a) => a.fitting)
+      .every((f) => !("strength" in f) && "situation" in f && "reason" in f),
+  ).toBe(true);
+  expect(payloads[1].candidates!.every((a) => Array.isArray(a.cautions))).toBe(
+    true,
+  );
+  expect(output.selections).toHaveLength(8);
+  expect(output.verification.search?.sampling?.seed).toBe("exhibition-1");
+});
 describe("waiting for the complete selection response body", () => {
   // Exercise elapsed seconds instantly. Native fetch normally errors the body
   // stream on abort; the mocked stream reproduces that boundary explicitly.
@@ -183,6 +213,52 @@ describe("waiting for the complete selection response body", () => {
     });
 });
 describe("real SDK request contract, with all upstream HTTP mocked", () => {
+  it("uses the request ID as seed and only valid recent catalog IDs, without reading shared history", async () => {
+    const mock = vi.fn(async (_url, init) => respondTo(init));
+    vi.stubGlobal("fetch", mock);
+    const req = request(input, {
+      recentExhibitions: [
+        [seed.selection[0].id, seed.selection[0].id, "met-9999999999999999"],
+      ],
+    });
+    const response = await POST(req);
+    expect(response.status).toBe(200);
+    const data = await response.json();
+    expect(data.verification.search.method).toBe("ai-tags-v2");
+    expect(data.verification.search.sampling).toEqual({
+      version: "weighted-exposure-v1",
+      seed: req.headers.get("Idempotency-Key"),
+      recentExhibitions: [[seed.selection[0].id]],
+    });
+    expect(mock).toHaveBeenCalledTimes(2);
+    expect(
+      mock.mock.calls.every(([url]) =>
+        String(url).startsWith("https://api.xiaomimimo.com/"),
+      ),
+    ).toBe(true);
+    const body = JSON.stringify(
+      mock.mock.calls.map(([, init]) => JSON.parse(String(init?.body))),
+    );
+    expect(body).not.toContain("recentExhibitions");
+    expect(body).not.toContain('"strength"');
+  });
+  it.each([
+    Array(6).fill(["met-1"]),
+    [Array(9).fill("met-1")],
+    [["文章を作品IDとして送る"]],
+    "invalid",
+  ])(
+    "rejects invalid recent history before any paid call: %j",
+    async (recentExhibitions) => {
+      const mock = vi.fn();
+      vi.stubGlobal("fetch", mock);
+      expect((await POST(request(input, { recentExhibitions }))).status).toBe(
+        400,
+      );
+      expect(mock).not.toHaveBeenCalled();
+      expect(ledgerMock.reserve).not.toHaveBeenCalled();
+    },
+  );
   it("makes two bounded MiMo calls, classifying tags before selecting eight", async () => {
     const mock = vi.fn(async (_url, init) => respondTo(init));
     vi.stubGlobal("fetch", mock);
@@ -234,7 +310,7 @@ describe("real SDK request contract, with all upstream HTTP mocked", () => {
     expect(result.selections.every((a) => a.artwork?.id === a.id)).toBe(true);
     expect(result.selections).toHaveLength(8);
     expect(result.selections.map((s) => s.id)).toEqual(
-      candidateWorks.slice(0, 8).map((a) => a.id),
+      payload.candidates.slice(0, 8).map((a: { id: string }) => a.id),
     );
     expect(body.messages[0].content).toContain("必ず8点");
     for (const selected of result.selections) {
@@ -281,13 +357,20 @@ describe("real SDK request contract, with all upstream HTTP mocked", () => {
     value.selections.forEach((s, i) => {
       s.candidate = indices[i];
     });
+    let sentCandidates: { id: string }[] = [];
     vi.stubGlobal(
       "fetch",
-      vi.fn(async (_url, init) => respondTo(init, value)),
+      vi.fn(async (_url, init) => {
+        const payload = JSON.parse(
+          JSON.parse(String(init?.body)).messages.at(-1).content,
+        );
+        if (payload.candidates) sentCandidates = payload.candidates;
+        return respondTo(init, value);
+      }),
     );
     const result = await selectWithAI(input);
     expect(result.selections.map((s) => s.id)).toEqual(
-      indices.map((index) => candidateWorks[index - 1].id),
+      indices.map((index) => sentCandidates[index - 1].id),
     );
     expect(result.selections.every((s) => !("candidate" in s))).toBe(true);
   });

@@ -16,6 +16,7 @@ import SelectionReviewView from "./SelectionReviewView";
 import HistoryView from "./HistoryView";
 import UsageView, { UsageDetails } from "./UsageView";
 import type { AccountingResult } from "@/lib/usage/types";
+import { createRecentExhibitionsStore } from "@/lib/recent-exhibitions";
 const Room = dynamic(() => import("./Room"), {
   ssr: false,
   loading: () => (
@@ -54,6 +55,11 @@ export default function Museum() {
     null,
   );
   const submitting = useRef(false);
+  const recentExhibitions = useRef<ReturnType<
+    typeof createRecentExhibitionsStore
+  > | null>(null);
+  if (!recentExhibitions.current)
+    recentExhibitions.current = createRecentExhibitionsStore();
   const [lastAccounting, setLastAccounting] = useState<AccountingResult | null>(
     null,
   );
@@ -167,7 +173,10 @@ export default function Museum() {
           "Content-Type": "application/json",
           "Idempotency-Key": crypto.randomUUID(),
         },
-        body: JSON.stringify({ text: inputText }),
+        body: JSON.stringify({
+          text: inputText,
+          recentExhibitions: recentExhibitions.current!.read(),
+        }),
         signal: controller.signal,
       });
       const data = await response.json();
@@ -287,6 +296,7 @@ export default function Museum() {
       setText("");
       setFormOpen(false);
       setPhase("ready");
+      recentExhibitions.current!.remember(loaded.map((a) => a.id));
       if (loaded.length < candidates.length)
         setError(
           "一部の画像を読み込めなかったため、読み込めた作品だけで展示しました。",
@@ -647,6 +657,7 @@ export default function Museum() {
             {inspectionAvailable
               ? "作品はGitHubの絵画DBから、MiMoが選定します。入力文・検索候補・選定結果・使用量・推定料金・日時を試験記録として保存します。部屋から出ても履歴は残ります。"
               : "作品の選定にAIを使用します。入力文・選定結果は、試験・改善のために運営側へ記録されます。"}
+            同じ作品が続くのを抑えるため、このブラウザに直近5展示の作品IDを保存します。
           </p>
         </Dialog>
       )}

@@ -7,12 +7,23 @@ import type { UsageRecord } from "@/lib/usage/types";
 import { SelectionFailure } from "@/lib/ai/failure";
 import { failureMessage } from "@/lib/usage/failure";
 import { inspectionAvailable } from "@/lib/access";
+import {
+  ARTWORK_ID_PATTERN,
+  RECENT_EXHIBITIONS_LIMIT,
+  RECENT_WORKS_LIMIT,
+} from "@/lib/recent-exhibitions";
 export const runtime = "nodejs";
 // Up to 30s tag classification + 60s selection, plus durable accounting.
 export const maxDuration = 120;
 const inputSchema = z
   .object({
     text: z.string().trim().min(1).max(800),
+    recentExhibitions: z
+      .array(
+        z.array(z.string().regex(ARTWORK_ID_PATTERN)).max(RECENT_WORKS_LIMIT),
+      )
+      .max(RECENT_EXHIBITIONS_LIMIT)
+      .default([]),
   })
   .strict();
 let inFlight = 0;
@@ -124,57 +135,62 @@ export async function POST(request: Request) {
   };
   try {
     ledger = new UsageLedger();
-    const result = await selectWithAI(input.text, request.signal, {
-      beforeRequest: async (search, stage) => {
-        if (request.signal.aborted) throw Error("ABORTED");
-        try {
-          record = await ledger!.reserve(
-            stage === "retrieval" ? requestId : crypto.randomUUID(),
-            input.text,
-            MIMO_MODEL,
-            search,
-            { exhibitionId: requestId, stage },
-          );
-          observed = unknownUsage();
+    const result = await selectWithAI(
+      input.text,
+      request.signal,
+      {
+        beforeRequest: async (search, stage) => {
+          if (request.signal.aborted) throw Error("ABORTED");
+          try {
+            record = await ledger!.reserve(
+              stage === "retrieval" ? requestId : crypto.randomUUID(),
+              input.text,
+              MIMO_MODEL,
+              search,
+              { exhibitionId: requestId, stage },
+            );
+            observed = unknownUsage();
+            remember();
+          } catch (error) {
+            gateError =
+              error instanceof UsageGateError
+                ? error
+                : new UsageGateError("UNAVAILABLE");
+            throw gateError;
+          }
+        },
+        onUsage: async (usage, elapsedMs) => {
+          observed = usage;
+          if (!record) return;
+          record = { ...record, elapsedMs };
+          try {
+            record = await ledger!.update(record, usage, "pending");
+          } catch {
+            persisted = false;
+          }
           remember();
-        } catch (error) {
-          gateError =
-            error instanceof UsageGateError
-              ? error
-              : new UsageGateError("UNAVAILABLE");
-          throw gateError;
-        }
+        },
+        onRetrievalComplete: async (search) => {
+          if (!record) throw new UsageGateError("UNAVAILABLE");
+          // The next quota reservation checks this durable completion atomically.
+          // Never spend on stage two if stage one's result could not be saved.
+          try {
+            record = await ledger!.update(
+              record,
+              observed,
+              "succeeded",
+              undefined,
+              { input: input.text, search },
+            );
+            remember();
+          } catch {
+            persisted = false;
+            throw new UsageGateError("UNAVAILABLE");
+          }
+        },
       },
-      onUsage: async (usage, elapsedMs) => {
-        observed = usage;
-        if (!record) return;
-        record = { ...record, elapsedMs };
-        try {
-          record = await ledger!.update(record, usage, "pending");
-        } catch {
-          persisted = false;
-        }
-        remember();
-      },
-      onRetrievalComplete: async (search) => {
-        if (!record) throw new UsageGateError("UNAVAILABLE");
-        // The next quota reservation checks this durable completion atomically.
-        // Never spend on stage two if stage one's result could not be saved.
-        try {
-          record = await ledger!.update(
-            record,
-            observed,
-            "succeeded",
-            undefined,
-            { input: input.text, search },
-          );
-          remember();
-        } catch {
-          persisted = false;
-          throw new UsageGateError("UNAVAILABLE");
-        }
-      },
-    });
+      { seed: requestId, recentExhibitions: input.recentExhibitions },
+    );
     selection = {
       title: result.title,
       atmosphere: result.atmosphere,

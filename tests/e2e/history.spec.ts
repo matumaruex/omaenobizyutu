@@ -200,6 +200,7 @@ for (const version of [
   "ai-semantic-v2",
   "ai-semantic-v3",
   "ai-tags-v1",
+  "ai-tags-v2",
 ] as const)
   test(`semantic retrieval ${version} and final selection remain distinct`, async ({
     page,
@@ -214,7 +215,7 @@ for (const version of [
     search.catalogCount = 300;
     search.matchingCount = null;
     search.detectedCategories = [];
-    if (version === "ai-tags-v1") {
+    if (version === "ai-tags-v1" || version === "ai-tags-v2") {
       search.detectedCategories = ["喜び"];
       search.excludedCategories = ["不安"];
       search.classificationComplete = true;
@@ -255,16 +256,21 @@ for (const version of [
       .nth(1)
       .getByText("候補検索から選定までの流れ", { exact: true })
       .click();
-    if (version === "ai-tags-v1") {
+    if (version === "ai-tags-v1" || version === "ai-tags-v2") {
       await expect(rows.nth(1)).toContainText("MiMoが選んだタグ：喜び");
       await expect(rows.nth(1)).toContainText("否定されたタグ：不安");
       await expect(rows.nth(1)).toContainText(
         "この段階では作品資料を送りません",
       );
+      if (version === "ai-tags-v2") {
+        await expect(rows.nth(1)).toContainText("新しい展示ごとに抽選");
+        await expect(rows.nth(1)).toContainText("適合度の数字は渡さず");
+      } else
+        await expect(rows.nth(1)).not.toContainText("新しい展示ごとに抽選");
     } else await expect(rows.nth(1)).toContainText("タグの有無を問わず300点");
     if (version === "ai-semantic-v1")
       await expect(rows.nth(1)).toContainText("曖昧な気持ちと作品の待つ場面");
-    else if (version !== "ai-tags-v1")
+    else if (version !== "ai-tags-v1" && version !== "ai-tags-v2")
       await expect(rows.nth(1)).toContainText("候補選びは作品IDだけを出力");
     await expect(rows.nth(1)).not.toContainText("検索点");
     await rows.nth(0).locator(":scope > summary").click();

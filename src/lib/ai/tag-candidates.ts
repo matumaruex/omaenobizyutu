@@ -3,21 +3,65 @@ import type { CatalogMaterial } from "../types";
 import type { TagProfile } from "./tag-profile";
 import { CANDIDATE_COUNT } from "./candidates";
 
+export interface CandidateSampling {
+  seed: string;
+  // Newest first. Only completed exhibitions from the same browser belong here.
+  recentExhibitions: readonly (readonly string[])[];
+}
+
+export function exposureWeight(
+  id: string,
+  recent: CandidateSampling["recentExhibitions"],
+) {
+  const factors = [0.45, 0.65, 0.8, 0.9, 0.95];
+  return Math.max(
+    0.2,
+    recent
+      .slice(0, 5)
+      .reduce(
+        (weight, ids, index) =>
+          weight * (ids.slice(0, 8).includes(id) ? factors[index] : 1),
+        1,
+      ),
+  );
+}
+
 // Classification is performed by MiMo. This function never parses feeling words.
 // Equal turns across the chosen tags prevent a frequent tag dominating the pool.
 export function retrieveByTags(
   text: string,
   profile: TagProfile,
   catalog: CatalogMaterial[],
+  sampling?: CandidateSampling,
 ) {
   const order = new Map(
     catalog.map((a) => [
       a.id,
-      createHash("sha256").update(text).update("\0").update(a.id).digest("hex"),
+      createHash("sha256")
+        .update(sampling ? `${text}\0${sampling.seed}` : text)
+        .update("\0")
+        .update(a.id)
+        .digest("hex"),
     ]),
   );
+  // Exponential-race weighted sampling without replacement. Scores/strengths do
+  // not rank the pool. Every eligible work retains a positive chance; weights
+  // only reduce recent exposure. A request seed makes replay reproducible.
+  const priority = new Map(
+    catalog.map((a) => {
+      const uniform =
+        (parseInt(order.get(a.id)!.slice(0, 13), 16) + 1) / (2 ** 52 + 1);
+      return [
+        a.id,
+        -Math.log(uniform) /
+          exposureWeight(a.id, sampling?.recentExhibitions ?? []),
+      ];
+    }),
+  );
   const sorted = [...catalog].sort((a, b) =>
-    order.get(a.id)!.localeCompare(order.get(b.id)!),
+    sampling
+      ? priority.get(a.id)! - priority.get(b.id)! || a.id.localeCompare(b.id)
+      : order.get(a.id)!.localeCompare(order.get(b.id)!),
   );
   const tagsOf = (art: CatalogMaterial) => [
     ...new Set([...art.primary, ...art.secondary]),
