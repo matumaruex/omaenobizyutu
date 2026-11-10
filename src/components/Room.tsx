@@ -254,7 +254,7 @@ function Controls({
         ) - Math.PI;
       pitch.current = THREE.MathUtils.clamp(
         // Keep horizontal swipes steady despite incidental vertical finger drift.
-        pitch.current + dy * (pointerType === "touch" ? 0.0006 : 0.0024),
+        pitch.current + dy * (pointerType === "touch" ? 0.0012 : 0.0024),
         -ROOM.lookLimit,
         ROOM.lookLimit,
       );
