@@ -215,10 +215,13 @@ export default function Museum() {
           pendingImages.current.push(img);
           const success = await new Promise<boolean>((resolve) => {
             let finished = false;
+            let retried = false;
+            let retryTimer: ReturnType<typeof setTimeout> | undefined;
             const finish = (ok: boolean) => {
               if (finished) return;
               finished = true;
               clearTimeout(timer);
+              clearTimeout(retryTimer);
               controller.signal.removeEventListener("abort", cancel);
               img.onload = null;
               img.onerror = null;
@@ -233,13 +236,27 @@ export default function Museum() {
               img.src = "";
             }, 70000);
             controller.signal.addEventListener("abort", cancel, { once: true });
+            const retryOrFinish = () => {
+              if (finished || controller.signal.aborted) return;
+              if (retried) return finish(false);
+              retried = true;
+              retryTimer = setTimeout(() => {
+                if (finished || controller.signal.aborted) return;
+                const retryUrl = new URL(
+                  exhibit.artwork.localImage,
+                  window.location.origin,
+                );
+                retryUrl.searchParams.set("imageRetry", "1");
+                img.src = retryUrl.href;
+              }, 300);
+            };
             img.onload = () => {
               img
                 .decode()
                 .then(() => finish(true))
-                .catch(() => finish(false));
+                .catch(retryOrFinish);
             };
-            img.onerror = () => finish(false);
+            img.onerror = retryOrFinish;
             img.src = exhibit.artwork.localImage;
           });
           if (success)

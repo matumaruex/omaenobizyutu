@@ -6,7 +6,7 @@ import { readHead, readRevision } from "./remote";
 export const initialCatalog = seedData as Catalog;
 const readCachedRevision = unstable_cache(
   readRevision,
-  ["kaiga-data-revision-v1"],
+  ["kaiga-data-revision-v2-image-fallback"],
   { revalidate: false },
 );
 export async function getRevisionCatalog(commit: string) {
@@ -19,7 +19,7 @@ export async function getRevisionCatalog(commit: string) {
 const latest = unstable_cache(
   async () => getRevisionCatalog(await readHead()),
   // A refreshed bundled snapshot must not reuse an older deployment's cache.
-  ["kaiga-data-latest-v1", initialCatalog.commit],
+  ["kaiga-data-latest-v2-image-fallback", initialCatalog.commit],
   { revalidate: 86400 },
 );
 export async function getCatalog() {

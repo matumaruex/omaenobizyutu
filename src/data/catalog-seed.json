@@ -18928,207 +18928,371 @@
     {
       "id": "met-749407",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP-14063-022.jpg",
-      "sha256": "afa86e09e02079cafa1f2342a739ffadc5624e2d3b4a7c0d6dd0a54759728717"
+      "sha256": "afa86e09e02079cafa1f2342a739ffadc5624e2d3b4a7c0d6dd0a54759728717",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP-14063-022.jpg",
+        "sha256": "b8791008becc45daf6d969bab7d87af502022732561adcd40dc14a1a0ac2c630"
+      }
     },
     {
       "id": "met-737735",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP-42601-001.jpg",
-      "sha256": "b3643c73083869cc645489302f49cf858e78f2f7d77f18eb73bb8cd5435b44e7"
+      "sha256": "b3643c73083869cc645489302f49cf858e78f2f7d77f18eb73bb8cd5435b44e7",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP-42601-001.jpg",
+        "sha256": "399f39f3339cbe11c7da04286e474e058c26d06a6d78a4fd5621de966fd698f2"
+      }
     },
     {
       "id": "met-816203",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP-17861-001.jpg",
-      "sha256": "0d1ff0b8a24eb0305b3f0312215c14e9ce46e4eadb5c10880bbe7525f34bd184"
+      "sha256": "0d1ff0b8a24eb0305b3f0312215c14e9ce46e4eadb5c10880bbe7525f34bd184",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP-17861-001.jpg",
+        "sha256": "1fb9cbab1887bb5e52fe95764060c1428dcc93cc6780c9c5e76021bad8dbc6c7"
+      }
     },
     {
       "id": "met-42346",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP-36543-002.jpg",
-      "sha256": "bfcc0d3658b52d3876cea4ebd9fa0c464e9fe887641f86ee464a412cd6ef0652"
+      "sha256": "bfcc0d3658b52d3876cea4ebd9fa0c464e9fe887641f86ee464a412cd6ef0652",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP-36543-002.jpg",
+        "sha256": "2dcae14b98de6a41ea10e1d14e884d73da99c1ab389ce6d5da2d91e766e8901b"
+      }
     },
     {
       "id": "met-73161",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP146993.jpg",
-      "sha256": "701e97ac54f2ff69edf13f151a644e987fb60875d9eadf5eb0c81eea5e344261"
+      "sha256": "701e97ac54f2ff69edf13f151a644e987fb60875d9eadf5eb0c81eea5e344261",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP146993.jpg",
+        "sha256": "be66945ed564b55e95f1686d0dab83761ba0c75087be8239cb25d62ce0b41e8f"
+      }
     },
     {
       "id": "met-74692",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP166102.jpg",
-      "sha256": "1644b0ea3b1469d316395d2f758174ef96fb1e5e9817e9e0530ab16a71108bec"
+      "sha256": "1644b0ea3b1469d316395d2f758174ef96fb1e5e9817e9e0530ab16a71108bec",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP166102.jpg",
+        "sha256": "491a9ad7b0ad64dc00696af0fafe724eefd81ed8c9a42850f09e4458637109bd"
+      }
     },
     {
       "id": "met-37941",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP153147.jpg",
-      "sha256": "ad79c36efb68963212649e501e8c3cc1530b390c1d8c59e3282babbb93d5b9f3"
+      "sha256": "ad79c36efb68963212649e501e8c3cc1530b390c1d8c59e3282babbb93d5b9f3",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP153147.jpg",
+        "sha256": "cbf15e8636dd04e4fbe1c35ed7c9487707e1f033b1248b4673b242db001aafd4"
+      }
     },
     {
       "id": "met-12110",
       "url": "https://images.metmuseum.org/CRDImages/ad/original/DP-34372-001.jpg",
-      "sha256": "c814923c692aabfb40471669b27c7018752ffea60a73a5ad9fe6c27a01d11801"
+      "sha256": "c814923c692aabfb40471669b27c7018752ffea60a73a5ad9fe6c27a01d11801",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ad/web-large/DP-34372-001.jpg",
+        "sha256": "8ae46a195eda5ada69e000430b881fe9ee9bb46f135d119650dca6ccc92ad47f"
+      }
     },
     {
       "id": "met-40429",
       "url": "https://images.metmuseum.org/CRDImages/as/original/15_96_2.JPG",
-      "sha256": "72505eb6b4cb7fe601d3384c2f10ce2c1eb4dfe719aedd8bf2fe62c7e8c92d2f"
+      "sha256": "72505eb6b4cb7fe601d3384c2f10ce2c1eb4dfe719aedd8bf2fe62c7e8c92d2f",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/15_96_2.JPG",
+        "sha256": "1e16b49342f91f413a4a86da56437aff754389d4bc7b27bdcba2d00847c26d9d"
+      }
     },
     {
       "id": "met-55034",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP-43062-001.jpg",
-      "sha256": "e813b3c16a5fe2aaaa0524ecd9235a9f25821bd9369692f08a8a11b0ed16fd4a"
+      "sha256": "e813b3c16a5fe2aaaa0524ecd9235a9f25821bd9369692f08a8a11b0ed16fd4a",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP-43062-001.jpg",
+        "sha256": "6627d9676aabfbb7bfaee71fdbe65cf5e3bfde6d586c61584b44fc8095fe05fb"
+      }
     },
     {
       "id": "met-823278",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP-18172-001.jpg",
-      "sha256": "b24571dace071fc827e9310f62fa2fa02b79eeeb8212fc5976caa4b374964543"
+      "sha256": "b24571dace071fc827e9310f62fa2fa02b79eeeb8212fc5976caa4b374964543",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP-18172-001.jpg",
+        "sha256": "d4a4d0dac34d12f4b3ef87b651dcefc21c673b4b3a81435f8c5ed30dc65fd66d"
+      }
     },
     {
       "id": "met-439333",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-34308-001.jpg",
-      "sha256": "670dc11d913b3d540116b4a7a6aa8e5e6c17e11befa881ab98f55afcef2ec4e5"
+      "sha256": "670dc11d913b3d540116b4a7a6aa8e5e6c17e11befa881ab98f55afcef2ec4e5",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-34308-001.jpg",
+        "sha256": "2d9872e6a948320956786d448e9c6d8d9d4d1c246ebc9d26632610e734f110b9"
+      }
     },
     {
       "id": "met-37852",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP156175.jpg",
-      "sha256": "fd48ebf1e47aa277f02db01a16aa52c124b3b902c9ec25d97ebadd27d28ac5a2"
+      "sha256": "fd48ebf1e47aa277f02db01a16aa52c124b3b902c9ec25d97ebadd27d28ac5a2",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP156175.jpg",
+        "sha256": "a442a9c5d53f31904b64be0d26f877a5df2898bd54b8aad557bc1d445aaab3ee"
+      }
     },
     {
       "id": "met-37907",
       "url": "https://images.metmuseum.org/CRDImages/as/original/52_93_4.JPG",
-      "sha256": "6bbd933f13e8546164022a83865ee0106dbbefc3bdf65961dfd6f6de06362f9c"
+      "sha256": "6bbd933f13e8546164022a83865ee0106dbbefc3bdf65961dfd6f6de06362f9c",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/52_93_4.JPG",
+        "sha256": "d3e11f6a289cdd3187054ff992f3fb81c8c6c7fcd474bec0cf7c45c92a9a2ef7"
+      }
     },
     {
       "id": "met-436530",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DT1494.jpg",
-      "sha256": "605609e76ce0ce1dace376293c478ea2d8cc6f3a93c8b7159ec4c18752dde24c"
+      "sha256": "605609e76ce0ce1dace376293c478ea2d8cc6f3a93c8b7159ec4c18752dde24c",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DT1494.jpg",
+        "sha256": "ced5841afad60fcc6cb4d5fc18750edf8f0f48903babf587b13737a874d4a64f"
+      }
     },
     {
       "id": "met-44702",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP160429.jpg",
-      "sha256": "f862f7c2ed1fae7c85e80630baba8fdc47023b4c652d67f96cfc290f66c9d374"
+      "sha256": "f862f7c2ed1fae7c85e80630baba8fdc47023b4c652d67f96cfc290f66c9d374",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP160429.jpg",
+        "sha256": "ce6678ad388cf40d9a82ee7dce83262c4be454364d0785c8e9ce61a166572748"
+      }
     },
     {
       "id": "met-49454",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP161403.jpg",
-      "sha256": "e3281974971481135579cbddc31a0b9ebb36004fec5aa3622a34696997445ae5"
+      "sha256": "e3281974971481135579cbddc31a0b9ebb36004fec5aa3622a34696997445ae5",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP161403.jpg",
+        "sha256": "0b39d2ddc007e1caec19dd2b12b23573e30d95e962f4fdcda5b047b003608ef3"
+      }
     },
     {
       "id": "met-39551",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP-16766-002.jpg",
-      "sha256": "85bed6af6067e04e889e4aa4348534ba8bf1965a5da19ce7a2b1c357e3fe8b73"
+      "sha256": "85bed6af6067e04e889e4aa4348534ba8bf1965a5da19ce7a2b1c357e3fe8b73",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP-16766-002.jpg",
+        "sha256": "59e2f869d688d6730ff3f0e9e884bb020f3ed2d88a95c96604cb4f96bb587cc4"
+      }
     },
     {
       "id": "met-41154",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DT6291.jpg",
-      "sha256": "05851e43e03e9bf12a7c365549ebe9ca69ab52c0cc83dd1bce2e164db9f9846f"
+      "sha256": "05851e43e03e9bf12a7c365549ebe9ca69ab52c0cc83dd1bce2e164db9f9846f",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DT6291.jpg",
+        "sha256": "49ef8e3e2adde59e11fdfd99c31a4b6c73247c49de30d31a9e7502fda1c8e4e4"
+      }
     },
     {
       "id": "met-10070",
       "url": "https://images.metmuseum.org/CRDImages/ad/original/ap01.7.2.jpg",
-      "sha256": "41eaaf0e926e6b6e8d909c566c78021e9993d06be45e6b761efaa270c0821b08"
+      "sha256": "41eaaf0e926e6b6e8d909c566c78021e9993d06be45e6b761efaa270c0821b08",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ad/web-large/ap01.7.2.jpg",
+        "sha256": "7056e196fdee35b3d383dc86709675f5beb799e2ee42cff669d2c040bdc87c78"
+      }
     },
     {
       "id": "met-11145",
       "url": "https://images.metmuseum.org/CRDImages/ad/original/DP102298.jpg",
-      "sha256": "e96c237ce0074919c78fb9373713baff42b6a4363572a9f2426c17f31ae1c49d"
+      "sha256": "e96c237ce0074919c78fb9373713baff42b6a4363572a9f2426c17f31ae1c49d",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ad/web-large/DP102298.jpg",
+        "sha256": "45836d2b483d2aadf7620af623d36f50d3c246b3f118ce99c81fb8b9d2c9aa3b"
+      }
     },
     {
       "id": "met-435962",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DT2013.jpg",
-      "sha256": "1bbaeb9d8e2f3119f418ae666fe6ef727f1f123626b1535d26c82e360f40f5ba"
+      "sha256": "1bbaeb9d8e2f3119f418ae666fe6ef727f1f123626b1535d26c82e360f40f5ba",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DT2013.jpg",
+        "sha256": "d2d47291ba131dbc602379b12a09debc0a7cc657a04ce1a7458d87f4bf222d43"
+      }
     },
     {
       "id": "met-435967",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DT2014.jpg",
-      "sha256": "0a418b31a586db0e6c46789fe66305fb13449037347331dbc42cdd77212dfe05"
+      "sha256": "0a418b31a586db0e6c46789fe66305fb13449037347331dbc42cdd77212dfe05",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DT2014.jpg",
+        "sha256": "4acef4338cbeca31a7047d3d6ca4a49ef4653e5e0885de6e3aa195c14d699c8d"
+      }
     },
     {
       "id": "met-436840",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP320103.jpg",
-      "sha256": "10e43b46feb716b4e4a9ede64577df40b4e7f23b436b5db12b007a4e130a600b"
+      "sha256": "10e43b46feb716b4e4a9ede64577df40b4e7f23b436b5db12b007a4e130a600b",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP320103.jpg",
+        "sha256": "18f310ea6192e230cd94dd7b2e58e42c78df8639b12a5f8bdbfc47aaa5ac025d"
+      }
     },
     {
       "id": "met-437903",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-416-001.jpg",
-      "sha256": "456a948c4a2816a2218eda8bcaa02dbe2fc45556b2a4312c712daa9ee1efe2fb"
+      "sha256": "456a948c4a2816a2218eda8bcaa02dbe2fc45556b2a4312c712daa9ee1efe2fb",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-416-001.jpg",
+        "sha256": "aa0ab40c399e39bd3e0a3ae9c9bc6d3a28f8be90437b7dd4c152134d6e789f9d"
+      }
     },
     {
       "id": "met-436869",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP124813.jpg",
-      "sha256": "71b1a396630b2e97997701065b84e3b7cb07a19c2a822578f57bbc6e035678a2"
+      "sha256": "71b1a396630b2e97997701065b84e3b7cb07a19c2a822578f57bbc6e035678a2",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP124813.jpg",
+        "sha256": "9454465bee5f984fdec018a9d50a8a774d3bf0e9c1f5d5355b625beeb874b1e1"
+      }
     },
     {
       "id": "met-436582",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-18078-001.jpg",
-      "sha256": "638bfc10490a1d2307798876f3b638527f4aabbe017e6418d0c0b29431c76e9f"
+      "sha256": "638bfc10490a1d2307798876f3b638527f4aabbe017e6418d0c0b29431c76e9f",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-18078-001.jpg",
+        "sha256": "2af8a771e6711a5c25534d71c4a86e5efcedf2ca644c98939aa54899ae8ad92c"
+      }
     },
     {
       "id": "met-437323",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP145952.jpg",
-      "sha256": "adc1229d6c7f9212e4174dafe026877e9e75b5c6817a64c4b44ece2dce75200e"
+      "sha256": "adc1229d6c7f9212e4174dafe026877e9e75b5c6817a64c4b44ece2dce75200e",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP145952.jpg",
+        "sha256": "9a3fa2870cc25a2df4f8292142143c0f7ea0718fb44711c208c40341e5a475eb"
+      }
     },
     {
       "id": "met-764092",
       "url": "https://images.metmuseum.org/CRDImages/ad/original/DP-22602-001.jpg",
-      "sha256": "024be1cf5d5fa27a25d1e1daaca081daa540844d34feefe1ec21881a86d1f4b7"
+      "sha256": "024be1cf5d5fa27a25d1e1daaca081daa540844d34feefe1ec21881a86d1f4b7",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ad/web-large/DP-22602-001.jpg",
+        "sha256": "20d7c10f3d38b5e1c0891749ed3f1ae6b94b1205da88c394d8702b7e023e0cb9"
+      }
     },
     {
       "id": "met-847023",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-21913-001.jpg",
-      "sha256": "a7641d76fb82bbdebbe246f3393f4eced751b6b393a3a3c527e478f251a2ccb2"
+      "sha256": "a7641d76fb82bbdebbe246f3393f4eced751b6b393a3a3c527e478f251a2ccb2",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-21913-001.jpg",
+        "sha256": "96240b2b1f1778fce8c161b326df05cc309207375106e907dfb53586c026725a"
+      }
     },
     {
       "id": "met-439122",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-34306-001.jpg",
-      "sha256": "c67bbb094e52df453f5062f5f10c8cce4957ec0908e9657c9cffbc04b8b7f1d3"
+      "sha256": "c67bbb094e52df453f5062f5f10c8cce4957ec0908e9657c9cffbc04b8b7f1d3",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-34306-001.jpg",
+        "sha256": "26c5a9cd9a3c805b8536db005464a7c58fa6775ec456230898973d0616136298"
+      }
     },
     {
       "id": "met-435702",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-23550-001.jpg",
-      "sha256": "c905acf8e02c24c5b30f90ad040a8afe43b7b8d2c65faf75b81ac3c53b535be2"
+      "sha256": "c905acf8e02c24c5b30f90ad040a8afe43b7b8d2c65faf75b81ac3c53b535be2",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-23550-001.jpg",
+        "sha256": "525c8b861d616b8c55bff075d6808a47a4a4d29de5ddadfb903be5b3b24dd16f"
+      }
     },
     {
       "id": "met-10790",
       "url": "https://images.metmuseum.org/CRDImages/ad/original/co.ap.95.13.1_1.jpg",
-      "sha256": "a6b78d7686294f77c830524bf38f0930d211be739ec9dfff443aeb075b62c6a1"
+      "sha256": "a6b78d7686294f77c830524bf38f0930d211be739ec9dfff443aeb075b62c6a1",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ad/web-large/co.ap.95.13.1_1.jpg",
+        "sha256": "7df5d2a564c7e4bd9196ff22f4790fd6fe9d646e8dbecb8ba1cb06ac67174d50"
+      }
     },
     {
       "id": "met-11116",
       "url": "https://images.metmuseum.org/CRDImages/ad/original/DP-21443-001.jpg",
-      "sha256": "c55c0528f151b95eed3adbff2ea225ff3cf4ac597b69e3abf5b1e91de5146a58"
+      "sha256": "c55c0528f151b95eed3adbff2ea225ff3cf4ac597b69e3abf5b1e91de5146a58",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ad/web-large/DP-21443-001.jpg",
+        "sha256": "a97c07f768b773aa9328e7e3b08b4c4769940030c984a071ebf47cc7c84cc5cc"
+      }
     },
     {
       "id": "met-20888",
       "url": "https://images.metmuseum.org/CRDImages/ad/original/DP-14639-001.jpg",
-      "sha256": "0a3517523297a8bdd19d08e490505314ca891eb3ef251844ec4cb2f0a6e9fd97"
+      "sha256": "0a3517523297a8bdd19d08e490505314ca891eb3ef251844ec4cb2f0a6e9fd97",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ad/web-large/DP-14639-001.jpg",
+        "sha256": "fed1bf829d34c8e95e5374df96c0ef8eb14be699dd7802cba229ba2809625463"
+      }
     },
     {
       "id": "met-37881",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP152278.jpg",
-      "sha256": "c0b536efd3b55732522351464171120dbaebc8019a0e5d12e285c898ff8e53f0"
+      "sha256": "c0b536efd3b55732522351464171120dbaebc8019a0e5d12e285c898ff8e53f0",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP152278.jpg",
+        "sha256": "84fb008cd4d3d23151985aae89bf37ec64463a0b0b6b72a1aeb2706a5fbb0c56"
+      }
     },
     {
       "id": "met-37992",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP152309.jpg",
-      "sha256": "eaff339bea55c126bce518e954ae531d2daec78764b5db13a62cb1581c83dcf9"
+      "sha256": "eaff339bea55c126bce518e954ae531d2daec78764b5db13a62cb1581c83dcf9",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP152309.jpg",
+        "sha256": "378f4892f329bfd147a754456142565c68f2b0b735c78e1c1d82cbf48fe40950"
+      }
     },
     {
       "id": "met-38012",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DT3878.jpg",
-      "sha256": "6ca9aff975f3895582ba5a4d892cf4c6a77406cc39cbf324cb1a764a92334ce9"
+      "sha256": "6ca9aff975f3895582ba5a4d892cf4c6a77406cc39cbf324cb1a764a92334ce9",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DT3878.jpg",
+        "sha256": "44f43050640be3ebbf7b7ed17405535ba7ea68791170aeab92842964077d2194"
+      }
     },
     {
       "id": "met-38017",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP156114.jpg",
-      "sha256": "cc116ac4c1cbed1d352cf356d0b107d5d6997f364d75dbd0573161b85fac9f34"
+      "sha256": "cc116ac4c1cbed1d352cf356d0b107d5d6997f364d75dbd0573161b85fac9f34",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP156114.jpg",
+        "sha256": "15f22ce1d1c147b1f5882300de4619defc109ef97a8b82f02a38325f2ed9c9df"
+      }
     },
     {
       "id": "met-48932",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DT8794.jpg",
-      "sha256": "eb551f7592953b03c9bde9d9985b35dfa8a95df25bfa78d41f95408ff4b89dcf"
+      "sha256": "eb551f7592953b03c9bde9d9985b35dfa8a95df25bfa78d41f95408ff4b89dcf",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DT8794.jpg",
+        "sha256": "4fcfcf75474c6384f5e2bded0f54a57f3afb948f6c486f2f2e7b39a9b6cb0e87"
+      }
     },
     {
       "id": "met-53460",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP-12232-212.jpg",
-      "sha256": "709ffbc551bdc58f0f432f1aea31e1cbf8784f0c1cf8de1f4db6a537d645b0a2"
+      "sha256": "709ffbc551bdc58f0f432f1aea31e1cbf8784f0c1cf8de1f4db6a537d645b0a2",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP-12232-212.jpg",
+        "sha256": "00ca52c34d425eede1a7e3ab4f69d2021afd848158fce670f4b1ba36d15649c3"
+      }
     },
     {
       "id": "met-74983",
@@ -19138,227 +19302,407 @@
     {
       "id": "met-435650",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-13442-001.jpg",
-      "sha256": "69d02a01b480041ad48e9b920e7a9f97899cd16ed9699ff20f6a907f0f65f550"
+      "sha256": "69d02a01b480041ad48e9b920e7a9f97899cd16ed9699ff20f6a907f0f65f550",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-13442-001.jpg",
+        "sha256": "e7702de388c6583db6c3bc40663d2a29996741d2b863600059d867796d4d472e"
+      }
     },
     {
       "id": "met-435727",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-22845-001.jpg",
-      "sha256": "4cffab21d43ae624bd2484f2b514ab40dfe64f633e7d714ceaf17ff5c06e69e9"
+      "sha256": "4cffab21d43ae624bd2484f2b514ab40dfe64f633e7d714ceaf17ff5c06e69e9",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-22845-001.jpg",
+        "sha256": "835bc91fad9832927a17a6addacc064ebb5c49d18f65532daf76f40cd39846f8"
+      }
     },
     {
       "id": "met-435978",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-16591-001.jpg",
-      "sha256": "7ff1efb81f2c8dde34465e53e639c4c74fa00adcbba715b939b6a34464aa488e"
+      "sha256": "7ff1efb81f2c8dde34465e53e639c4c74fa00adcbba715b939b6a34464aa488e",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-16591-001.jpg",
+        "sha256": "75eed9a98a7ff1c07d747931a83c1de2209d5ff261373f2400fc3fc7f56dbba3"
+      }
     },
     {
       "id": "met-437035",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-23271-001.jpg",
-      "sha256": "3dc08b2a1e941c85a8c0f884aa34e49a7bea09d5fcaf9a5da6cb164b1e57bc58"
+      "sha256": "3dc08b2a1e941c85a8c0f884aa34e49a7bea09d5fcaf9a5da6cb164b1e57bc58",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-23271-001.jpg",
+        "sha256": "78c649640c0c47891ba01ba06516757d68795d8722736a4bb2c90260c3d4f232"
+      }
     },
     {
       "id": "met-439553",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP159526.jpg",
-      "sha256": "ac5d640c7e54b5195e7807f07d352a18c933307289e9fdfff6e87f3e0abb5891"
+      "sha256": "ac5d640c7e54b5195e7807f07d352a18c933307289e9fdfff6e87f3e0abb5891",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP159526.jpg",
+        "sha256": "b3651d78e6692e7e6ac965d5887bbdb5353449a221a439b9f8f09038e0197c3e"
+      }
     },
     {
       "id": "met-441352",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-14274-001.jpg",
-      "sha256": "6e81b3fd742717663ca046d37ca9455ce33a8d62d085f8c0905d881d6ea68283"
+      "sha256": "6e81b3fd742717663ca046d37ca9455ce33a8d62d085f8c0905d881d6ea68283",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-14274-001.jpg",
+        "sha256": "66009ad96cf8f71984e7903a0b3c9d77d58b670d0b7c14766d582f4d63930fb1"
+      }
     },
     {
       "id": "met-898196",
       "url": "https://images.metmuseum.org/CRDImages/ad/original/DP-29949-003.jpg",
-      "sha256": "cc7c689708a31afedb578f4dd978e9ddc289e4d1ffffe7ea7d818ede339abdbb"
+      "sha256": "cc7c689708a31afedb578f4dd978e9ddc289e4d1ffffe7ea7d818ede339abdbb",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ad/web-large/DP-29949-003.jpg",
+        "sha256": "c94134b6aa0a02ce4fb32697d5e20823b8e6e438c213ff238d02885d52805317"
+      }
     },
     {
       "id": "met-436105",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-13139-001.jpg",
-      "sha256": "eaff5a04103361fed9fba6f10ea7bed80ccdc595d664b6997c6bd32f0eee06a6"
+      "sha256": "eaff5a04103361fed9fba6f10ea7bed80ccdc595d664b6997c6bd32f0eee06a6",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-13139-001.jpg",
+        "sha256": "7d8d840424e3747c14b203b67192fff726c897bb05cf9d3f7fa227e1ee4510de"
+      }
     },
     {
       "id": "met-11122",
       "url": "https://images.metmuseum.org/CRDImages/ad/original/DP-20821-001.jpg",
-      "sha256": "67fd3b2bb4e07f41dc1991c0e538981ba187ab6e3c08722636f6c347f0611b70"
+      "sha256": "67fd3b2bb4e07f41dc1991c0e538981ba187ab6e3c08722636f6c347f0611b70",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ad/web-large/DP-20821-001.jpg",
+        "sha256": "02654950ebb27b6ca47d7e84cf3a9072bd55ea5f034c5f3c7061e44366e159b9"
+      }
     },
     {
       "id": "met-435621",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-14201-049.jpg",
-      "sha256": "f3449f53ed30246749d4cd59495747631ffe34de7eb17d43db67e87f53d52304"
+      "sha256": "f3449f53ed30246749d4cd59495747631ffe34de7eb17d43db67e87f53d52304",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-14201-049.jpg",
+        "sha256": "f1ed331cc7b492262b9fd79c09f9abe12361a6056116fa50bdf78250e0337db2"
+      }
     },
     {
       "id": "met-12127",
       "url": "https://images.metmuseum.org/CRDImages/ad/original/DP-29006-001.jpg",
-      "sha256": "ecab5a2ec286266f190149823b54cbbfb591f8fad7066c1ab86ef21f94fb9aeb"
+      "sha256": "ecab5a2ec286266f190149823b54cbbfb591f8fad7066c1ab86ef21f94fb9aeb",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ad/web-large/DP-29006-001.jpg",
+        "sha256": "7f0d41b1840f760132821ff644d500d5caa658e81a0103216346ee46da0050ea"
+      }
     },
     {
       "id": "met-436322",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-1014-001.jpg",
-      "sha256": "21f54f6847a0896938cc8a4d123807dac39f8e766b995c0c05f206c9c5a5c4f1"
+      "sha256": "21f54f6847a0896938cc8a4d123807dac39f8e766b995c0c05f206c9c5a5c4f1",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-1014-001.jpg",
+        "sha256": "c2292c4f022dd15e21f0b38c642921bf6f3593c765ef50aac5c98d64eb8f05f1"
+      }
     },
     {
       "id": "met-435809",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP119115.jpg",
-      "sha256": "3d2a611f7787bee1a38ba1e9976535ea5497c2e4a26cd52ae2142c5f74dc6a49"
+      "sha256": "3d2a611f7787bee1a38ba1e9976535ea5497c2e4a26cd52ae2142c5f74dc6a49",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP119115.jpg",
+        "sha256": "98dc6d6e23c008b23056108d04d9143b8c7f73fe6fa2a940fd09663290135e25"
+      }
     },
     {
       "id": "met-53410",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP-12232-279.jpg",
-      "sha256": "208ab8ef4ac5f3004568606c93d509cda4455edef8ea690a615bc55a254abd09"
+      "sha256": "208ab8ef4ac5f3004568606c93d509cda4455edef8ea690a615bc55a254abd09",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP-12232-279.jpg",
+        "sha256": "0a206e1c3a4117a62b11c984b02e83c27b50619f63877a4b4bd6fb7429da172f"
+      }
     },
     {
       "id": "met-676034",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP-14823-002.jpg",
-      "sha256": "2eec55edbbfd31e20172a5b0b1905d5ef608fe3f5842b9d2a5bea94101b518c3"
+      "sha256": "2eec55edbbfd31e20172a5b0b1905d5ef608fe3f5842b9d2a5bea94101b518c3",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP-14823-002.jpg",
+        "sha256": "ba5e5d079c064da9200079a433aaae775cad695b33e040d92068281660c294a1"
+      }
     },
     {
       "id": "met-39540",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP-19468-002.jpg",
-      "sha256": "ecbe855281af51fb29ad09e0159b4650777ecba28491e66f887579dd143d4cb8"
+      "sha256": "ecbe855281af51fb29ad09e0159b4650777ecba28491e66f887579dd143d4cb8",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP-19468-002.jpg",
+        "sha256": "112510922b621373797164f8a607370e09ce465a628269356e5bf091ebc0ebf3"
+      }
     },
     {
       "id": "met-40086",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP154090.jpg",
-      "sha256": "2ba5d31803f54c802f6e50f99ea36055953d31110496885fd8c8243899c5bbf1"
+      "sha256": "2ba5d31803f54c802f6e50f99ea36055953d31110496885fd8c8243899c5bbf1",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP154090.jpg",
+        "sha256": "0b9be1da775f9bf72aa7aa3c3cccab06edcb9b60dabbfd96ea574a302af6f6ee"
+      }
     },
     {
       "id": "met-49001",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP-36542-002.jpg",
-      "sha256": "c597c33d05f3384b79625c6d69e0c5bc49167d63cee6e92dbf8122b2063dcccd"
+      "sha256": "c597c33d05f3384b79625c6d69e0c5bc49167d63cee6e92dbf8122b2063dcccd",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP-36542-002.jpg",
+        "sha256": "963739e61ece17fd91b5718ca1095f4ccc4c3058f4acb793acb380d1fb31a9ca"
+      }
     },
     {
       "id": "met-44699",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP274156.jpg",
-      "sha256": "6808e6c867dbb877eaaf876e772a97ceb95a528e49838b268e8a9c97af633c66"
+      "sha256": "6808e6c867dbb877eaaf876e772a97ceb95a528e49838b268e8a9c97af633c66",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP274156.jpg",
+        "sha256": "6a99d586265561c2625e4fcdeb1597383197c8d1e211c08e773fae59df074f35"
+      }
     },
     {
       "id": "met-829379",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP-20030-002.jpg",
-      "sha256": "abcb07b17901b1c0cb4fd709ec4f84ea598aca0aa28fc39ab32e31c3bd82e147"
+      "sha256": "abcb07b17901b1c0cb4fd709ec4f84ea598aca0aa28fc39ab32e31c3bd82e147",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP-20030-002.jpg",
+        "sha256": "2ba231d9236bed78ff9c5906ec6d311f6633560429dd7bda101335c2f305f8f1"
+      }
     },
     {
       "id": "met-37897",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP156141.jpg",
-      "sha256": "e61f60c399fc0a2971fb098d5ab1cd5c15dca1a86519be876d99d9e753ec207b"
+      "sha256": "e61f60c399fc0a2971fb098d5ab1cd5c15dca1a86519be876d99d9e753ec207b",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP156141.jpg",
+        "sha256": "9c833991e7e9411f11102629fe0daf7fc313db2dba1af440176970d0b65ee1a7"
+      }
     },
     {
       "id": "met-11160",
       "url": "https://images.metmuseum.org/CRDImages/ad/original/ap97.5.jpg",
-      "sha256": "1cf99ef2a8eb1b213f61c542d8668e31e0f9305edd8129309e632d789dd5e892"
+      "sha256": "1cf99ef2a8eb1b213f61c542d8668e31e0f9305edd8129309e632d789dd5e892",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ad/web-large/ap97.5.jpg",
+        "sha256": "d586a27559c5fa971ebbbbf2070a8df51beca9b7371eca6a711036f1cb5c501e"
+      }
     },
     {
       "id": "met-436141",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-25445-001.jpg",
-      "sha256": "f14772e6458a2756badde8045d0e42a733be51257f9c2e30df6fa4a85592c7df"
+      "sha256": "f14772e6458a2756badde8045d0e42a733be51257f9c2e30df6fa4a85592c7df",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-25445-001.jpg",
+        "sha256": "ad5538f97e5e201957e9e0d11007e72e729178e4183c6ae1b74542bacfbc8719"
+      }
     },
     {
       "id": "met-437156",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-15282-001.jpg",
-      "sha256": "6825656670d25b88c12aa833984db007876698c7d6fbdbdadeb6d020cf1bbb67"
+      "sha256": "6825656670d25b88c12aa833984db007876698c7d6fbdbdadeb6d020cf1bbb67",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-15282-001.jpg",
+        "sha256": "e4a74cd2cc610370eb7cca52ea8902b18d221a25755a8d8b155595004d0c2a4f"
+      }
     },
     {
       "id": "met-45620",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP276185.jpg",
-      "sha256": "80cbc3248dcab287af2a70299e6bc01f7ca94db921a6d107e117188f3911d1f7"
+      "sha256": "80cbc3248dcab287af2a70299e6bc01f7ca94db921a6d107e117188f3911d1f7",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP276185.jpg",
+        "sha256": "f14b2ba1bd90c5b1271503b7b2c34e76671416aa229cac16898f936d833610f4"
+      }
     },
     {
       "id": "met-906843",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP-34239-002.jpg",
-      "sha256": "00174896b5dd88cb7efb35a3c08514b25e0cd54e4a9ccb7e3c71c14399b72751"
+      "sha256": "00174896b5dd88cb7efb35a3c08514b25e0cd54e4a9ccb7e3c71c14399b72751",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP-34239-002.jpg",
+        "sha256": "f847cadaf7188c985c3f825fb4b5f858e894fbdeb50d22b8c140f367869e9d25"
+      }
     },
     {
       "id": "met-41475",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP-18091-002.jpg",
-      "sha256": "26fb15afad46ed9a3f34eecb0dda8ee51c96026de948012eee96b9eae2348e55"
+      "sha256": "26fb15afad46ed9a3f34eecb0dda8ee51c96026de948012eee96b9eae2348e55",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP-18091-002.jpg",
+        "sha256": "69c634bbef88806a8539769e9525297524162db7a606615560967334c7ead077"
+      }
     },
     {
       "id": "met-10497",
       "url": "https://images.metmuseum.org/CRDImages/ad/original/DP-12550-001.jpg",
-      "sha256": "40c454b6cf712c6ef70cca067fbe551c069d4b9130d06716db05452d16d515c4"
+      "sha256": "40c454b6cf712c6ef70cca067fbe551c069d4b9130d06716db05452d16d515c4",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ad/web-large/DP-12550-001.jpg",
+        "sha256": "917a5ac37897c7d10bbe2116cc1ababa7f6cff94e1a85eec4f4f243a2aa1fc06"
+      }
     },
     {
       "id": "met-10480",
       "url": "https://images.metmuseum.org/CRDImages/ad/original/ap02.23.jpg",
-      "sha256": "6f2db5f896bdfad3b860c81686cd93ec10fd839401561517388f9dd73d45aaf9"
+      "sha256": "6f2db5f896bdfad3b860c81686cd93ec10fd839401561517388f9dd73d45aaf9",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ad/web-large/ap02.23.jpg",
+        "sha256": "4af423882d684c4ba45a1f226e835a2f7e80841cee92e5c5cf88dda3b49b9b92"
+      }
     },
     {
       "id": "met-10946",
       "url": "https://images.metmuseum.org/CRDImages/ad/original/DT81.jpg",
-      "sha256": "7350d69e3d59f12b8d75d83a38adb13cc3365c86ad4591fc1a75c0115aa0020c"
+      "sha256": "7350d69e3d59f12b8d75d83a38adb13cc3365c86ad4591fc1a75c0115aa0020c",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ad/web-large/DT81.jpg",
+        "sha256": "d62982654bc5ef1e2fa71445b4d1ac81db98d89f46e9997709d83a236218992b"
+      }
     },
     {
       "id": "met-435838",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-41688-001.jpg",
-      "sha256": "029aa86bde3cbc64a96bed248723401f13e68a586724486fc2d419916d4f72f3"
+      "sha256": "029aa86bde3cbc64a96bed248723401f13e68a586724486fc2d419916d4f72f3",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-41688-001.jpg",
+        "sha256": "b37cab886a39c21a1bc125c14937e45725c3fee6f9f219078eec94b7506cdf32"
+      }
     },
     {
       "id": "met-438754",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP142735.jpg",
-      "sha256": "68c02c4570a653ee54728b47a88bcf96fdb94d41876538307f34ce5b9c75c62b"
+      "sha256": "68c02c4570a653ee54728b47a88bcf96fdb94d41876538307f34ce5b9c75c62b",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP142735.jpg",
+        "sha256": "4bd0a518c5b579ffaee9bfc6e8a5cd4bfe56a2dcdfa99f0c4a5b8dd68b54a0f2"
+      }
     },
     {
       "id": "met-437023",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DT242200.jpg",
-      "sha256": "003895f62aaba483b88eafdf6646b5a77bb56b7af7adefb72490c7a42d4d72d6"
+      "sha256": "003895f62aaba483b88eafdf6646b5a77bb56b7af7adefb72490c7a42d4d72d6",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DT242200.jpg",
+        "sha256": "94f447083119dfab5a48f21359aa87f5886be861dcee55260ea4c10e72d27d0c"
+      }
     },
     {
       "id": "met-438427",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-26972-001.jpg",
-      "sha256": "85366a05c9f1126a362dcd1ca85abcd91511c2980f6f4d7efde605d458122e85"
+      "sha256": "85366a05c9f1126a362dcd1ca85abcd91511c2980f6f4d7efde605d458122e85",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-26972-001.jpg",
+        "sha256": "cb8a9bf2325db9cba255ac242400f9919fa4e8c1550800e00deca438355456ea"
+      }
     },
     {
       "id": "met-829381",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP-20032-002.jpg",
-      "sha256": "c508c8b67e901922d1b9f79ee835c3d9ac03f7e71454d34c0170dd1b97e692db"
+      "sha256": "c508c8b67e901922d1b9f79ee835c3d9ac03f7e71454d34c0170dd1b97e692db",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP-20032-002.jpg",
+        "sha256": "f2f9039ae70b28b1f999547d770abc7d62b096e3fc9e3b13fe93c386824c1219"
+      }
     },
     {
       "id": "met-44863",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP221127.jpg",
-      "sha256": "62799e0da2a2cb5f26d91a388225e62637734a8a5de6a978c0f1cbcda86bd7f8"
+      "sha256": "62799e0da2a2cb5f26d91a388225e62637734a8a5de6a978c0f1cbcda86bd7f8",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP221127.jpg",
+        "sha256": "c62381935c13838af0f073ea60b127ac6b9f74b1a08c3681d240def6a496b458"
+      }
     },
     {
       "id": "met-40020",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP-36009-002.jpg",
-      "sha256": "7c2bea08d70764420247db576bdae5a7d170622ba6546e9a5f551b073e4bc6c8"
+      "sha256": "7c2bea08d70764420247db576bdae5a7d170622ba6546e9a5f551b073e4bc6c8",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP-36009-002.jpg",
+        "sha256": "6ace84fbe600abd172fa9ba166af4dca515957dd65ebbb5eef85c65402856bd9"
+      }
     },
     {
       "id": "met-437033",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-20393-001.jpg",
-      "sha256": "0824d6015915bdc18c166f9370f9c961a7efa5899fe8b645ca01a47f56c209fb"
+      "sha256": "0824d6015915bdc18c166f9370f9c961a7efa5899fe8b645ca01a47f56c209fb",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-20393-001.jpg",
+        "sha256": "f69354e39dbc545fa507e4298bde3ff1871d9bd1797e15f0f382ee756f457fc8"
+      }
     },
     {
       "id": "met-435765",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DT7240.jpg",
-      "sha256": "e2f32e87c8aef4f2059d94d440ff90c125d47ff6a795b5836c8ddd028008e69e"
+      "sha256": "e2f32e87c8aef4f2059d94d440ff90c125d47ff6a795b5836c8ddd028008e69e",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DT7240.jpg",
+        "sha256": "6ac843a4806c72a5b192867d00a95b136a5808a446ffff3ee0d3b47b67bf903a"
+      }
     },
     {
       "id": "met-459070",
       "url": "https://images.metmuseum.org/CRDImages/rl/original/DP-19531-096.jpg",
-      "sha256": "27dd8d6b29bdd0d0e7afa0a174a7ec5dcd74dc05d0dbc8b9dd737327688a8681"
+      "sha256": "27dd8d6b29bdd0d0e7afa0a174a7ec5dcd74dc05d0dbc8b9dd737327688a8681",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/rl/web-large/DP-19531-096.jpg",
+        "sha256": "255a415ac644d234891f12404db04b645e448760be78ed7ae963c5425609a8bc"
+      }
     },
     {
       "id": "met-437897",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP143196.jpg",
-      "sha256": "571cd0d3dab0413ebf2e7667e042411730f9afd202dec61b4cb3cfb4c2d201d7"
+      "sha256": "571cd0d3dab0413ebf2e7667e042411730f9afd202dec61b4cb3cfb4c2d201d7",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP143196.jpg",
+        "sha256": "8fcbc30cb609e0747f05382621e8f3d127d1c29ae4e51c900440d272cbd76a52"
+      }
     },
     {
       "id": "met-831188",
       "url": "https://images.metmuseum.org/CRDImages/md/original/DP-22753-001.jpg",
-      "sha256": "5daf9176914f32e12561f47f7eb54db966ee730eadfed830a9e9c6e323f31ebd"
+      "sha256": "5daf9176914f32e12561f47f7eb54db966ee730eadfed830a9e9c6e323f31ebd",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/md/web-large/DP-22753-001.jpg",
+        "sha256": "a0a0984d9bea70051c44cfe4630fe79efb31d688dc3ad3f7ae4c58f5dc655591"
+      }
     },
     {
       "id": "met-435673",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP316906.jpg",
-      "sha256": "a41c341d212f95caf8b3ee23e9d32d5f3316974abaf4ee6a49dba6254980e0aa"
+      "sha256": "a41c341d212f95caf8b3ee23e9d32d5f3316974abaf4ee6a49dba6254980e0aa",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP316906.jpg",
+        "sha256": "c9bdc8840b56701131d8daf1ed4cf5af69b98baada43d7bbb34999b05547c117"
+      }
     },
     {
       "id": "met-435977",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DT2008.jpg",
-      "sha256": "35edd23f6c47d178e0439ec6743664d7bd63ec1989fd5873a46472ed008ec8e7"
+      "sha256": "35edd23f6c47d178e0439ec6743664d7bd63ec1989fd5873a46472ed008ec8e7",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DT2008.jpg",
+        "sha256": "a43de7bd780ba62b10d53b50f76bf850ac0a023262e5562290197add772b51b6"
+      }
     },
     {
       "id": "met-435752",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-16481-001.jpg",
-      "sha256": "6dadad3ae75ecb845c643d0990302b1d395fe47a4fe7aa6ae099e70afff60747"
+      "sha256": "6dadad3ae75ecb845c643d0990302b1d395fe47a4fe7aa6ae099e70afff60747",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-16481-001.jpg",
+        "sha256": "f8308d1843f8efcea134c5c008551e3db83b334e5165f313905c0b51d43df404"
+      }
     },
     {
       "id": "met-74984",
@@ -19368,432 +19712,776 @@
     {
       "id": "met-436721",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-26164-001.jpg",
-      "sha256": "69fe6aae9e565c621b05515ed4205044b216be63a5bcff6d7fe87163deb97623"
+      "sha256": "69fe6aae9e565c621b05515ed4205044b216be63a5bcff6d7fe87163deb97623",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-26164-001.jpg",
+        "sha256": "8d57c311f2ccd4aa9bcbb2fac52e1caa96625f48294705eb23b696c093cab572"
+      }
     },
     {
       "id": "met-438952",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-34305-001.jpg",
-      "sha256": "ef3bdcae674d534e4581216f249c915998cf06bf6244db2a1d03f2183877b608"
+      "sha256": "ef3bdcae674d534e4581216f249c915998cf06bf6244db2a1d03f2183877b608",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-34305-001.jpg",
+        "sha256": "2b85ba0cbe34329a58e5d8cbece0e98471a35e7eececffa7578ebd214d6c94ec"
+      }
     },
     {
       "id": "met-437227",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP146509.jpg",
-      "sha256": "142010545a0a1155deee36e87764ec688165a08f7734db098620dfcdbe985249"
+      "sha256": "142010545a0a1155deee36e87764ec688165a08f7734db098620dfcdbe985249",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP146509.jpg",
+        "sha256": "73873485a02e1000c8d4ef8de983a59cad24e92172e90bb3a1cf4d00e96ee709"
+      }
     },
     {
       "id": "met-435714",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP145405.jpg",
-      "sha256": "93329f04eaff5b7be527b44adf84a8519026c028385f46626642ba99dc1e6887"
+      "sha256": "93329f04eaff5b7be527b44adf84a8519026c028385f46626642ba99dc1e6887",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP145405.jpg",
+        "sha256": "8335b04ee642961d681505327ed1fb58e3dac70eba41e15b511c066bfebf5b6b"
+      }
     },
     {
       "id": "met-435743",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP337751.jpg",
-      "sha256": "a5e009d6e8d5df9e1526cfd62dd0ffff25659488bb31e0e1e92b4afe11626497"
+      "sha256": "a5e009d6e8d5df9e1526cfd62dd0ffff25659488bb31e0e1e92b4afe11626497",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP337751.jpg",
+        "sha256": "3499d3511f8cf49d5341c630f7eb49946923d2ac4e32b506c0e20a2051b9b266"
+      }
     },
     {
       "id": "met-36141",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DT8800.jpg",
-      "sha256": "bee269abbf7278578f501db5d437edc9ef6d9c129882d2c366034dba018f9bb8"
+      "sha256": "bee269abbf7278578f501db5d437edc9ef6d9c129882d2c366034dba018f9bb8",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DT8800.jpg",
+        "sha256": "49103e03335d367539bdb0121412bb62f221f969a226b6b7befa43511f280714"
+      }
     },
     {
       "id": "met-770595",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-15505-001.jpg",
-      "sha256": "7dfb3f5b091fec90adba21d2df2b5320a20107de975f7c24093b34c6c56dba67"
+      "sha256": "7dfb3f5b091fec90adba21d2df2b5320a20107de975f7c24093b34c6c56dba67",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-15505-001.jpg",
+        "sha256": "82fd8fb52c9a3ce6925cd32b4cfb9ca7a25c145e2343f69f58539c17d24f39ea"
+      }
     },
     {
       "id": "met-52988",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP352201.jpg",
-      "sha256": "5c0de283dacc8394d462f92ce4c2b05e650cb7c6ea937d7403fb4a4e8323b2e3"
+      "sha256": "5c0de283dacc8394d462f92ce4c2b05e650cb7c6ea937d7403fb4a4e8323b2e3",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP352201.jpg",
+        "sha256": "2d778d70628997c5b5c1b9c5168dbb4463d75e57df9f1277f40a963e826455ae"
+      }
     },
     {
       "id": "met-74846",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP153226.JPG",
-      "sha256": "d6c2f05e457ca71b4c784d7b89dc9489718f45322c1599718c9f003687b098d9"
+      "sha256": "d6c2f05e457ca71b4c784d7b89dc9489718f45322c1599718c9f003687b098d9",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP153226.JPG",
+        "sha256": "20d126471e858cb741761d620b481e93c38a4efd3f1461643209c421ea128df2"
+      }
     },
     {
       "id": "met-37872",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP156127.jpg",
-      "sha256": "e800cbdcadc572a70d10aba1c8290f273a74d029c48a6e5a5121e462785b7537"
+      "sha256": "e800cbdcadc572a70d10aba1c8290f273a74d029c48a6e5a5121e462785b7537",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP156127.jpg",
+        "sha256": "8ae925f1a2c7d9cc2f1ff57a7f35e77577a49cf549d03ca1c0794d07f59283d1"
+      }
     },
     {
       "id": "met-77799",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP-12232-078.jpg",
-      "sha256": "446149b96945f8f5ee1452851c54bfa431ef00def76e4fb5190f19a7e94e88c4"
+      "sha256": "446149b96945f8f5ee1452851c54bfa431ef00def76e4fb5190f19a7e94e88c4",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP-12232-078.jpg",
+        "sha256": "26faddb8832dc4661f2b32d3fccc1658997dc0064eb2aa07cb9ae24d12e40510"
+      }
     },
     {
       "id": "met-436053",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-19502-001.jpg",
-      "sha256": "e203b010bcb650f91e9360420a9a91063fdb6586b2c6674c88464d286c0ec095"
+      "sha256": "e203b010bcb650f91e9360420a9a91063fdb6586b2c6674c88464d286c0ec095",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-19502-001.jpg",
+        "sha256": "0a126d7e802c5fde7f713b2c41ae10d679e582d6e3de9c01de6a68aeb07947a5"
+      }
     },
     {
       "id": "met-13132",
       "url": "https://images.metmuseum.org/CRDImages/ad/original/ap00.6.jpg",
-      "sha256": "7999982bea6c8e08c0146dbd049826b27818bb313f0d45cc3c27ed1042f0baa5"
+      "sha256": "7999982bea6c8e08c0146dbd049826b27818bb313f0d45cc3c27ed1042f0baa5",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ad/web-large/ap00.6.jpg",
+        "sha256": "6e634f199ebd7472939160d3fde69f8321602a4733c435bfc5e4d226c53993fd"
+      }
     },
     {
       "id": "met-435762",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-20589-001.jpg",
-      "sha256": "d382be06bcd489a5b50699dac0836f03f16d483ccc740111e404663432f926b5"
+      "sha256": "d382be06bcd489a5b50699dac0836f03f16d483ccc740111e404663432f926b5",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-20589-001.jpg",
+        "sha256": "6bc134ad6ab255b5f19b74816989d5b5402f08e70e300ae79f4b6ee8bc528899"
+      }
     },
     {
       "id": "met-435879",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DT1492.jpg",
-      "sha256": "5091bf674f0c9b4d9dea6bc43040a44bece3706dbae78d3e96639ee3cfbe1e27"
+      "sha256": "5091bf674f0c9b4d9dea6bc43040a44bece3706dbae78d3e96639ee3cfbe1e27",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DT1492.jpg",
+        "sha256": "f632b40f095b3bed549e1b7c33f8610b7964ca6ecaaa74cdf4fbed956612d96f"
+      }
     },
     {
       "id": "met-438848",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP157664.jpg",
-      "sha256": "8e922e0919756abc83d9faa0352a617b5b41af1ed3c6187001c708ef62ca5eea"
+      "sha256": "8e922e0919756abc83d9faa0352a617b5b41af1ed3c6187001c708ef62ca5eea",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP157664.jpg",
+        "sha256": "213bb6469ba2400cc548b92e78eebd29124e4291ad848cb5ea22efffe65523c3"
+      }
     },
     {
       "id": "met-40063",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP153502.jpg",
-      "sha256": "605a8d6294f747463ea7f71588a4be0632a67207ce793dc8354d239a7b367076"
+      "sha256": "605a8d6294f747463ea7f71588a4be0632a67207ce793dc8354d239a7b367076",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP153502.jpg",
+        "sha256": "66d3491fcf296b8e49697e3efe197d5922d27842f14c190038f4c887fd524491"
+      }
     },
     {
       "id": "met-77204",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP333860.jpg",
-      "sha256": "40fbda6f1c83cb5eaa49194907b2bae436f39925bfb7847d23affc10ee3d9fed"
+      "sha256": "40fbda6f1c83cb5eaa49194907b2bae436f39925bfb7847d23affc10ee3d9fed",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP333860.jpg",
+        "sha256": "240fe8bca46634ad0c11115e1d8553629f844597615f87c16e25786e9edd1468"
+      }
     },
     {
       "id": "met-853216",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP-24433-002.jpg",
-      "sha256": "8f002e11e86d69714d65a26a342e983776d56b56b316b35dfceb444f7a13cb0d"
+      "sha256": "8f002e11e86d69714d65a26a342e983776d56b56b316b35dfceb444f7a13cb0d",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP-24433-002.jpg",
+        "sha256": "4cfeabae47279cd01cfb49cfc3a05a224ed647261475864c76f25c8f81be9c0f"
+      }
     },
     {
       "id": "met-10819",
       "url": "https://images.metmuseum.org/CRDImages/ad/original/DT86.jpg",
-      "sha256": "093e4cf1022b9dfb5d4500bc19af5391d7f6667a55b4d250d362f530f699f999"
+      "sha256": "093e4cf1022b9dfb5d4500bc19af5391d7f6667a55b4d250d362f530f699f999",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ad/web-large/DT86.jpg",
+        "sha256": "bc17d4cff2e963d3e0c103499a97caa7f3718bf55fda89423afc925c8b5bc207"
+      }
     },
     {
       "id": "met-10154",
       "url": "https://images.metmuseum.org/CRDImages/ad/original/DT82.jpg",
-      "sha256": "b0159f218c5363e2e6108eb01dde44cf96b10c3e25dc4b431d7d335daf942a2e"
+      "sha256": "b0159f218c5363e2e6108eb01dde44cf96b10c3e25dc4b431d7d335daf942a2e",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ad/web-large/DT82.jpg",
+        "sha256": "ac37c808a5d9924bb72cc6e77ba2b7ded8a46177d85bd04d2ad58bfc981a5d37"
+      }
     },
     {
       "id": "met-10159",
       "url": "https://images.metmuseum.org/CRDImages/ad/original/DT73.jpg",
-      "sha256": "dd4dcecfcfd9e3bae55abda6a2d1ebf2ba9e45395b700014d3438f1e388db54f"
+      "sha256": "dd4dcecfcfd9e3bae55abda6a2d1ebf2ba9e45395b700014d3438f1e388db54f",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ad/web-large/DT73.jpg",
+        "sha256": "96a4ded6f2f5cd6a3b46263d7b99d05ba07a7c2d4be4938af595c906ceb39ab2"
+      }
     },
     {
       "id": "met-436724",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/ep87.8.13.R.jpg",
-      "sha256": "e237055708f110e75df0f7496bbf463b0327b8870b7987053a4ea7976e76c7ef"
+      "sha256": "e237055708f110e75df0f7496bbf463b0327b8870b7987053a4ea7976e76c7ef",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/ep87.8.13.R.jpg",
+        "sha256": "952aafa5314cc8582430575be476272a19cced1ead3d5ad62fffb6c9cec08ad9"
+      }
     },
     {
       "id": "met-37906",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DT8229.jpg",
-      "sha256": "c040bfeef109bf61d90e5e3e437dab7041f65c7ddf3f088f8032025bad38cb19"
+      "sha256": "c040bfeef109bf61d90e5e3e437dab7041f65c7ddf3f088f8032025bad38cb19",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DT8229.jpg",
+        "sha256": "b450cc6c0f88acd20cdbb8bf5553a7a66c54842f8064972f5265391f65d1d3fa"
+      }
     },
     {
       "id": "met-437749",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP146455.jpg",
-      "sha256": "bf5f362d8565cbd5312ee58f2402a29453674bfd4a88bc42fd4291f07bc6da5f"
+      "sha256": "bf5f362d8565cbd5312ee58f2402a29453674bfd4a88bc42fd4291f07bc6da5f",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP146455.jpg",
+        "sha256": "aaddf85236bba80068674b4a4d974b2d6cf9b9a32976c73000cf8f60ffe7547d"
+      }
     },
     {
       "id": "met-39543",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP-13657-002.jpg",
-      "sha256": "c3b97702262f2746127e778d46b3097b9ce9b82fce23b39b2d70eb14cdeabc13"
+      "sha256": "c3b97702262f2746127e778d46b3097b9ce9b82fce23b39b2d70eb14cdeabc13",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP-13657-002.jpg",
+        "sha256": "8c86c6e4775577496e21074bd93415f5ea4768c8b6610e7b3e4a7d9d346ed1ac"
+      }
     },
     {
       "id": "met-45417",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP-26930-002.jpg",
-      "sha256": "7a09e5543c776c4c3d00a2bd2bf3ffcc52c2185fb42fbce77b67a2d18839bd9a"
+      "sha256": "7a09e5543c776c4c3d00a2bd2bf3ffcc52c2185fb42fbce77b67a2d18839bd9a",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP-26930-002.jpg",
+        "sha256": "32094f743c27ff2cca6392542d227c70edc4a79315f1656975ad928683e03e85"
+      }
     },
     {
       "id": "met-44841",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP-15580-019.jpg",
-      "sha256": "35596d20a51bdfcc996c47f989028cb9429e0aa2cdf8d64489f284a0774bdfd0"
+      "sha256": "35596d20a51bdfcc996c47f989028cb9429e0aa2cdf8d64489f284a0774bdfd0",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP-15580-019.jpg",
+        "sha256": "b33b8c233751bd2b0c5bb88498a6f29982cd1c05299a1fd6249e3459558b0931"
+      }
     },
     {
       "id": "met-45595",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP317450.jpg",
-      "sha256": "30918e465165f046f5adff6df6ae04e09f5632e6484361db9e1fcd123e14785e"
+      "sha256": "30918e465165f046f5adff6df6ae04e09f5632e6484361db9e1fcd123e14785e",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP317450.jpg",
+        "sha256": "c6f741aff4786300f9ba7be5bd476001ea2d8742671bfebbbbea0aa2f3d39466"
+      }
     },
     {
       "id": "met-45524",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP276191.jpg",
-      "sha256": "a81f04f3fa9c787632ec64286e042586e5dab83627bc4e4c5d32d8711402ca9b"
+      "sha256": "a81f04f3fa9c787632ec64286e042586e5dab83627bc4e4c5d32d8711402ca9b",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP276191.jpg",
+        "sha256": "4b63d225c1e8dd739a85de434519e2dad112393a387ed079af57c31f1043e674"
+      }
     },
     {
       "id": "met-670929",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP-12232-277.jpg",
-      "sha256": "c77c5798f197d8559000dc4b1c54cdd27bef0a6ac5e90ee9d766a8f626f211ab"
+      "sha256": "c77c5798f197d8559000dc4b1c54cdd27bef0a6ac5e90ee9d766a8f626f211ab",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP-12232-277.jpg",
+        "sha256": "1e32a5994f09df009ca455e8e51b466d1200e0661842e77782644b382d23c321"
+      }
     },
     {
       "id": "met-11140",
       "url": "https://images.metmuseum.org/CRDImages/ad/original/DP-20820-001.jpg",
-      "sha256": "c000f7b10174eba275d642466b60046872ded1d8541119e9f5ae6aac88ca5fbc"
+      "sha256": "c000f7b10174eba275d642466b60046872ded1d8541119e9f5ae6aac88ca5fbc",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ad/web-large/DP-20820-001.jpg",
+        "sha256": "2d6000f74d77c3cb23d7f243d79f9b80031ddc289286a33be84da16cbd92bd50"
+      }
     },
     {
       "id": "met-44984",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP251147.jpg",
-      "sha256": "539fca38f77aead9a8af87f3947b94f011dd98bc4c82f011889d5bb5798979b7"
+      "sha256": "539fca38f77aead9a8af87f3947b94f011dd98bc4c82f011889d5bb5798979b7",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP251147.jpg",
+        "sha256": "870de9830f333187f63d7abea7595d3bfb6686b1826e9a23990ff72779572881"
+      }
     },
     {
       "id": "met-829407",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP-25830-002.jpg",
-      "sha256": "04232e612e5f3ad85551a0a0584be0b9ca7534722daa0319accd639704413962"
+      "sha256": "04232e612e5f3ad85551a0a0584be0b9ca7534722daa0319accd639704413962",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP-25830-002.jpg",
+        "sha256": "5fce015d2fb4a203cee037426532da7a72fbf681c83fe8186bb1bec9aa85258d"
+      }
     },
     {
       "id": "met-438545",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DT235903.jpg",
-      "sha256": "f55313e2d5cc8104df83142a0ebda10c5e66459ed9799b971aa8728df41c5336"
+      "sha256": "f55313e2d5cc8104df83142a0ebda10c5e66459ed9799b971aa8728df41c5336",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DT235903.jpg",
+        "sha256": "1f594fb9557dc31dfe5396ac599cb14724a18831bb3c14541d074b12beff71c6"
+      }
     },
     {
       "id": "met-437887",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DT2137.jpg",
-      "sha256": "9a4246f7979cb6f99ddb92931058b29a8c86e73d08c947811b95b80419c8cc68"
+      "sha256": "9a4246f7979cb6f99ddb92931058b29a8c86e73d08c947811b95b80419c8cc68",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DT2137.jpg",
+        "sha256": "f511938c041368219359e12c27b4d66b8ff313f559eb7a3f02291694f2c157e7"
+      }
     },
     {
       "id": "met-436329",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-23204-001.jpg",
-      "sha256": "97690c8f3b539a50242b60f67531c9fddb972f9202c986cd011bf0f867e4d769"
+      "sha256": "97690c8f3b539a50242b60f67531c9fddb972f9202c986cd011bf0f867e4d769",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-23204-001.jpg",
+        "sha256": "8801de9f32132a3c66dbade4025515016c8fdcb51feeb0c76d1249b020aa1a36"
+      }
     },
     {
       "id": "met-73188",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP-29285-002.jpg",
-      "sha256": "dd2da1eff2b23c845bca20d87dcd68d1e983a108914acedb85901456d135fb19"
+      "sha256": "dd2da1eff2b23c845bca20d87dcd68d1e983a108914acedb85901456d135fb19",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP-29285-002.jpg",
+        "sha256": "73f98c8fc6eae5d5efed94fbbca108623f09600a442e6781c196ce1e234d285a"
+      }
     },
     {
       "id": "met-40451",
       "url": "https://images.metmuseum.org/CRDImages/as/original/18_124_3_O3_sf.jpg",
-      "sha256": "75831c244112111d210d2a58f825a468ed93fe873504e526cecc63cea1513684"
+      "sha256": "75831c244112111d210d2a58f825a468ed93fe873504e526cecc63cea1513684",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/18_124_3_O3_sf.jpg",
+        "sha256": "e84aa23f25034a1213bbddc0c682beb15b5847f0f7f61874f112608b51dd3861"
+      }
     },
     {
       "id": "met-40432",
       "url": "https://images.metmuseum.org/CRDImages/as/original/15_96_6.JPG",
-      "sha256": "cd64b0c269ac6507a87023dbfbb66769161362752794c618c0abfb080d0d0c3c"
+      "sha256": "cd64b0c269ac6507a87023dbfbb66769161362752794c618c0abfb080d0d0c3c",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/15_96_6.JPG",
+        "sha256": "38791425c58bcf5c2e5b1a49ab93e2d31f9cc9456a20a8738ffc9d6b38b3af16"
+      }
     },
     {
       "id": "met-74448",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP161547.jpg",
-      "sha256": "e1127783eef103f3f6306ec206ee82e0bfaf2c371c362a77e3dbfb5c385bd80d"
+      "sha256": "e1127783eef103f3f6306ec206ee82e0bfaf2c371c362a77e3dbfb5c385bd80d",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP161547.jpg",
+        "sha256": "40c6ee4be44442bf70027df41c6ae070ac03e1fc1d44ff67d64c1fb399633fc6"
+      }
     },
     {
       "id": "met-35968",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP354272.jpg",
-      "sha256": "ed54b69ed7ba75df02012352617e8e280d88265811b736937c2bf6fcb4c05b71"
+      "sha256": "ed54b69ed7ba75df02012352617e8e280d88265811b736937c2bf6fcb4c05b71",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP354272.jpg",
+        "sha256": "c4eb5769182d500f8b08f85cb6158e4dd44ce3de387a104adbb8ca55f9de8f38"
+      }
     },
     {
       "id": "met-38056",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP153173.jpg",
-      "sha256": "1f3fd2e69670543b5e1ec77fec7a35a7b30670fa97d18f202f06070dce218106"
+      "sha256": "1f3fd2e69670543b5e1ec77fec7a35a7b30670fa97d18f202f06070dce218106",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP153173.jpg",
+        "sha256": "97f0b83af47d371e6ae0d251e900e245602e8d511e6806eba407f7309b99055f"
+      }
     },
     {
       "id": "met-435997",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DT11964.jpg",
-      "sha256": "a7423d26059451c1eb6b9879794755db8447956b887f6e4608e54fc19184de3c"
+      "sha256": "a7423d26059451c1eb6b9879794755db8447956b887f6e4608e54fc19184de3c",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DT11964.jpg",
+        "sha256": "09b5378249e2ed40628858d276b5c551a897b8a89996076f38ca7d2c91b9e2bd"
+      }
     },
     {
       "id": "met-436453",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-20748-001.jpg",
-      "sha256": "36563c7d806b0819347c4e5f1870f34ad58f76f4b666f126a8ab61e368c91ab1"
+      "sha256": "36563c7d806b0819347c4e5f1870f34ad58f76f4b666f126a8ab61e368c91ab1",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-20748-001.jpg",
+        "sha256": "5d213ef3604452e020a85ff1bd7ce470f97cd4b6196f6e108e5ea3d5ffd0abbb"
+      }
     },
     {
       "id": "met-435844",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-687-001.jpg",
-      "sha256": "82d57c6e26834154dd2c76717f300dfab12a77da8d8d4d917b73674108dd3683"
+      "sha256": "82d57c6e26834154dd2c76717f300dfab12a77da8d8d4d917b73674108dd3683",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-687-001.jpg",
+        "sha256": "4fcfc9c757f22dc2196d6f91596ea917d431500496775d88d1d612b4aec61c1c"
+      }
     },
     {
       "id": "met-437881",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP353257.jpg",
-      "sha256": "d14901b9c2124bd767cc1a4ca6286092eeedc3067a627449bd94869489bcefce"
+      "sha256": "d14901b9c2124bd767cc1a4ca6286092eeedc3067a627449bd94869489bcefce",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP353257.jpg",
+        "sha256": "13120aa067755f1f50d2b900417807ef9da3f8b2b63a1bbea428fe3f2d8d00a9"
+      }
     },
     {
       "id": "met-437394",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-30758-001.jpg",
-      "sha256": "55dc9232dd6b412cea4964f19e98a56f6bd1fa7213e4e947834413cf65d8776a"
+      "sha256": "55dc9232dd6b412cea4964f19e98a56f6bd1fa7213e4e947834413cf65d8776a",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-30758-001.jpg",
+        "sha256": "06e64703d92fed63c6238d15ed32d582792397b238458bf1893530eb8d91e3f4"
+      }
     },
     {
       "id": "met-437878",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP355525.jpg",
-      "sha256": "0f60071c28366b8f470fa3859375dbfece993bfaf9e96189a4028df9f945c366"
+      "sha256": "0f60071c28366b8f470fa3859375dbfece993bfaf9e96189a4028df9f945c366",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP355525.jpg",
+        "sha256": "09e22e9cdaca4642cd88b33cec827ac96d426f16b05028069fa78921e7f1ec27"
+      }
     },
     {
       "id": "met-436576",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-17641-001.jpg",
-      "sha256": "81af4b595f0e75c7ad0285956abd040d2551e419c6300eb77a5430545897b709"
+      "sha256": "81af4b595f0e75c7ad0285956abd040d2551e419c6300eb77a5430545897b709",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-17641-001.jpg",
+        "sha256": "edabb7d6591afaa63186c4b61e24508225723b8bf4bda825cef0ca2d6297b279"
+      }
     },
     {
       "id": "met-436947",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-25466-001.jpg",
-      "sha256": "3d9bc5daa64d9e6bd183cc076b4365cd361a150c3e43abfcfbbbfe17907b6dd1"
+      "sha256": "3d9bc5daa64d9e6bd183cc076b4365cd361a150c3e43abfcfbbbfe17907b6dd1",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-25466-001.jpg",
+        "sha256": "eb3ef8e65748596a08b28ae89c4ef778c38293c0e9b27d6ba72193129c067dd5"
+      }
     },
     {
       "id": "met-436839",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-27910-001.jpg",
-      "sha256": "408b6ed786d8a1bb24a9f407c0a0fa8bf6f4211c2d30dd0f4d14b9bea9047d18"
+      "sha256": "408b6ed786d8a1bb24a9f407c0a0fa8bf6f4211c2d30dd0f4d14b9bea9047d18",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-27910-001.jpg",
+        "sha256": "ffe6f83849174c52dc450d604d8cca1e40108f7d556f081d28c26228ffc7761f"
+      }
     },
     {
       "id": "met-11417",
       "url": "https://images.metmuseum.org/CRDImages/ad/original/DP215410.jpg",
-      "sha256": "f421242b2362d204ea8718d8eff36e04fb1cba04f7b0e32cc077b2b5a4dbfc46"
+      "sha256": "f421242b2362d204ea8718d8eff36e04fb1cba04f7b0e32cc077b2b5a4dbfc46",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ad/web-large/DP215410.jpg",
+        "sha256": "115e1188c8f215a15dc1eebad137a3f5d527f7299585cb060ea9be7c05b81d63"
+      }
     },
     {
       "id": "met-436535",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-42549-001.jpg",
-      "sha256": "b46d02a42fd3bb13b022cefc5beaa997b1d7a28cd7b53e4413d940aa0dc4014d"
+      "sha256": "b46d02a42fd3bb13b022cefc5beaa997b1d7a28cd7b53e4413d940aa0dc4014d",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-42549-001.jpg",
+        "sha256": "af0e3486621c210b54932d055294051b5601aa3362af4b84ab97e2831f8163bc"
+      }
     },
     {
       "id": "met-437588",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP147902.jpg",
-      "sha256": "4423251848a6acef1d5c7969c6d40eff28d19efada8e9180f49713c117bc2640"
+      "sha256": "4423251848a6acef1d5c7969c6d40eff28d19efada8e9180f49713c117bc2640",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP147902.jpg",
+        "sha256": "d742081ae49244ebd4a2b38cfa7a4c7e6ce7e95442b00ecf1ae8d6703a0671b8"
+      }
     },
     {
       "id": "met-436005",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DT1973.jpg",
-      "sha256": "796e854b59bbde36d3ece1fd3ba216f6dad116fe86ef313fd4070acd77d6a743"
+      "sha256": "796e854b59bbde36d3ece1fd3ba216f6dad116fe86ef313fd4070acd77d6a743",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DT1973.jpg",
+        "sha256": "0e88957ab1b738cde293d468eb690c2c2ecd9ceefa2b9d2e0c586a5d53125193"
+      }
     },
     {
       "id": "met-437549",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP145911.jpg",
-      "sha256": "2bfc95b0b39160712be721ed004a5dd77148ae30ae4f225d6eaa578b102c742b"
+      "sha256": "2bfc95b0b39160712be721ed004a5dd77148ae30ae4f225d6eaa578b102c742b",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP145911.jpg",
+        "sha256": "eb8134b5fb9d1d60cde3618c34c9bb06d026496530b2decfa9f06fdd1b4c7fdb"
+      }
     },
     {
       "id": "met-435739",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-411-01.jpg",
-      "sha256": "7b4be0a1fd00251b41baa146836c12712dcae35197272291718e7e6d13caaa06"
+      "sha256": "7b4be0a1fd00251b41baa146836c12712dcae35197272291718e7e6d13caaa06",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-411-01.jpg",
+        "sha256": "e864277a1e83e914d3ce7498dfa6f6513a8140bca1c284f4a82a000305cd7bb3"
+      }
     },
     {
       "id": "met-436622",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP145901.jpg",
-      "sha256": "7b8f35d027f9dc44105783fc39b47f85aec50d15a1f2c607abb20fb512278db9"
+      "sha256": "7b8f35d027f9dc44105783fc39b47f85aec50d15a1f2c607abb20fb512278db9",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP145901.jpg",
+        "sha256": "9f28cc7ba2b547f0c20e8a38ff5915c4077693b762a6984bf3e110e6fcb7ce8d"
+      }
     },
     {
       "id": "met-435888",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP356133.jpg",
-      "sha256": "c15576dff884e40c6cd1661d62af1e12f9682ab95960babf52aeda767ea9bf95"
+      "sha256": "c15576dff884e40c6cd1661d62af1e12f9682ab95960babf52aeda767ea9bf95",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP356133.jpg",
+        "sha256": "9c04c27454acf325b1c392d25cf406ae0a5dd4eef730090f89c7a63d87222ce1"
+      }
     },
     {
       "id": "met-436579",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-12952-001.jpg",
-      "sha256": "1f4b11f001fd2e80ed2510c416c65332c6288466b4354708f8c1890d6b913ca1"
+      "sha256": "1f4b11f001fd2e80ed2510c416c65332c6288466b4354708f8c1890d6b913ca1",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-12952-001.jpg",
+        "sha256": "7383ebba2887b5d1db1a54030da1c2b3a11f5713042ac27c25b465f3ef2ee5e6"
+      }
     },
     {
       "id": "met-436678",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP145400.jpg",
-      "sha256": "de19f5dd0ce794947ba7431520aa589b1989b20825ce7292175f179e15d7e7cc"
+      "sha256": "de19f5dd0ce794947ba7431520aa589b1989b20825ce7292175f179e15d7e7cc",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP145400.jpg",
+        "sha256": "b41029324adca4230ba4bd3d2872809111f9f6b49c4d6f7cde1132ba9066667a"
+      }
     },
     {
       "id": "met-438817",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-20101-001.jpg",
-      "sha256": "10059dd5a1da4ea6bf30e778c0d1a334e1ea104018415a93e4c79525a73bdeaf"
+      "sha256": "10059dd5a1da4ea6bf30e778c0d1a334e1ea104018415a93e4c79525a73bdeaf",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-20101-001.jpg",
+        "sha256": "e06ff1c9490053cf3f9c8351d0f939febf9ef92b8059a809ba541d16ebfccde0"
+      }
     },
     {
       "id": "met-436838",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-14286-015.jpg",
-      "sha256": "6249f1e1d8d17a25aec80e2004eb5b33e3d7edf1e336de9b0a242f4e61278d70"
+      "sha256": "6249f1e1d8d17a25aec80e2004eb5b33e3d7edf1e336de9b0a242f4e61278d70",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-14286-015.jpg",
+        "sha256": "94eece912b3e590f9a02087492fdea3b7d6c0449b7f529685b8c463dbfa8b7ae"
+      }
     },
     {
       "id": "met-437329",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-29324-001.jpg",
-      "sha256": "acfb86fe97d1bc8fd27b60a9e401acac220a99c2b58fb9be7368f56a6900f243"
+      "sha256": "acfb86fe97d1bc8fd27b60a9e401acac220a99c2b58fb9be7368f56a6900f243",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-29324-001.jpg",
+        "sha256": "8570199520ff50999bdfc2104393a7c896634d8b70fdd91e166eb315e64c5270"
+      }
     },
     {
       "id": "met-438779",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP131218.jpg",
-      "sha256": "7745ed2201663abdffc91f8da1b6b40f3310d8e3f5dc5d6b645e161363b6299c"
+      "sha256": "7745ed2201663abdffc91f8da1b6b40f3310d8e3f5dc5d6b645e161363b6299c",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP131218.jpg",
+        "sha256": "cb7f98e988cd97a474b2b6f041e578ff1e4eba715780bed50b43d4496c53031f"
+      }
     },
     {
       "id": "met-438629",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP169443.jpg",
-      "sha256": "0d304baeee8a9eb0c9045fb610fa1deb3e0b9a2317b2a98596f0b1815f687e3e"
+      "sha256": "0d304baeee8a9eb0c9045fb610fa1deb3e0b9a2317b2a98596f0b1815f687e3e",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP169443.jpg",
+        "sha256": "1ecd6087464b806ebcb3a4d69f42bf651b5db08478201b717d0df0e50eb38c8b"
+      }
     },
     {
       "id": "met-437990",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DT1944.jpg",
-      "sha256": "8768f6fbcce5bc8d10594c6f75e6dd05e39e09c3b1fb02257ce2c491654a4116"
+      "sha256": "8768f6fbcce5bc8d10594c6f75e6dd05e39e09c3b1fb02257ce2c491654a4116",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DT1944.jpg",
+        "sha256": "6d8008dfb1a932d433824a16faa1bb8c0cfab4f4d655a2dfe9394842e448c93e"
+      }
     },
     {
       "id": "met-437842",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-22991-001.jpg",
-      "sha256": "a6f0a422551af1b52e0b6ba8e0231c72c81161a3172f26db1834752902c40518"
+      "sha256": "a6f0a422551af1b52e0b6ba8e0231c72c81161a3172f26db1834752902c40518",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-22991-001.jpg",
+        "sha256": "191f40f5c5bc81dc8d2628f6b08a23f628f7b944cbc600d85962f40a748ac840"
+      }
     },
     {
       "id": "met-437439",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-14936-053.jpg",
-      "sha256": "71eed2e4b1243650051cb8480db73114b53e5ff0958cb11c85bfbad4ec83ee83"
+      "sha256": "71eed2e4b1243650051cb8480db73114b53e5ff0958cb11c85bfbad4ec83ee83",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-14936-053.jpg",
+        "sha256": "2cae0316183c843278e175fa072160b9336c185c08df11e0be9ce43ecbdea1ef"
+      }
     },
     {
       "id": "met-436952",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DT1931.jpg",
-      "sha256": "9e3b58d785c9f8f5f196bfb6d04b92aea844b3798bd3a30c52d2bb7ccc11f919"
+      "sha256": "9e3b58d785c9f8f5f196bfb6d04b92aea844b3798bd3a30c52d2bb7ccc11f919",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DT1931.jpg",
+        "sha256": "db61325282a57cf16b74e95ab01d6ceeb1c687a48e463926d540d392071c5842"
+      }
     },
     {
       "id": "met-436449",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DT1952.jpg",
-      "sha256": "b4d895bf46ad5a6c2ce66993c3de6f5a11623312f27f1bc4029a05711a377241"
+      "sha256": "b4d895bf46ad5a6c2ce66993c3de6f5a11623312f27f1bc4029a05711a377241",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DT1952.jpg",
+        "sha256": "6781dbc3f2380670d926f257908abda83978d68f31878bc8ad52692c029e0c87"
+      }
     },
     {
       "id": "met-459016",
       "url": "https://images.metmuseum.org/CRDImages/rl/original/DP267397.jpg",
-      "sha256": "054284b4a8e2e5d6cc89696f5ec6a9d7d3d8f44df0d23f08069fcc9d08ac1bf8"
+      "sha256": "054284b4a8e2e5d6cc89696f5ec6a9d7d3d8f44df0d23f08069fcc9d08ac1bf8",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/rl/web-large/DP267397.jpg",
+        "sha256": "f65b9803f1a77f3174edb8f87fac2439feccbf959fa36c0acc7a8610ff30facd"
+      }
     },
     {
       "id": "met-437490",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP240360.jpg",
-      "sha256": "4a5b21d087c1c827c792b89b0c37c689e1c72b0779cc1a3b8bea92a1de69a36a"
+      "sha256": "4a5b21d087c1c827c792b89b0c37c689e1c72b0779cc1a3b8bea92a1de69a36a",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP240360.jpg",
+        "sha256": "0c82c176da7b2e1d784fe145968eac34401eba6a2299e04994f0a24eed152acc"
+      }
     },
     {
       "id": "met-436791",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-19433-001.jpg",
-      "sha256": "f294a91e54d1e073bbabf9c5d5ce4d8576febe145dff2ce5d278fc47dfb43d15"
+      "sha256": "f294a91e54d1e073bbabf9c5d5ce4d8576febe145dff2ce5d278fc47dfb43d15",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-19433-001.jpg",
+        "sha256": "b5a9e794cdef4aef1ae7c120ea85cb0208e8bf4b45414f0c59a369eb63b32bb9"
+      }
     },
     {
       "id": "met-435640",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DT7219.jpg",
-      "sha256": "8359a768462a719d77a7dfec2e4dec05dec48b18e23dd14a3db2e1b43f2fcb8c"
+      "sha256": "8359a768462a719d77a7dfec2e4dec05dec48b18e23dd14a3db2e1b43f2fcb8c",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DT7219.jpg",
+        "sha256": "b23ef7b4884a20af0a3ce15bda573a58abfcccc53b65f00002e04256acea986d"
+      }
     },
     {
       "id": "met-437422",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DT10776.jpg",
-      "sha256": "fdf6d58d61dc8ad86b528f928fd6d792e8d914a7d0e77e1a1c1c8f503d69c32b"
+      "sha256": "fdf6d58d61dc8ad86b528f928fd6d792e8d914a7d0e77e1a1c1c8f503d69c32b",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DT10776.jpg",
+        "sha256": "f7ce24f236ed393a267098d3b12581b76f8007217e6311f04010e9127e5332d6"
+      }
     },
     {
       "id": "met-459131",
       "url": "https://images.metmuseum.org/CRDImages/rl/original/DT3003.jpg",
-      "sha256": "5d19d31a2a213a80e81bffe2c195a1e9b3ae810c0b3428a69ae94685fd73c502"
+      "sha256": "5d19d31a2a213a80e81bffe2c195a1e9b3ae810c0b3428a69ae94685fd73c502",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/rl/web-large/DT3003.jpg",
+        "sha256": "e9b7c295921c67383d3117d5ad50ae3b79be2a29ceb4c28eea53d79310bd647d"
+      }
     },
     {
       "id": "met-437286",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP335085.jpg",
-      "sha256": "4d499c5ae3290d7efc127a840d4b939eeb72863161c15014fe3fb4f6c4cd0933"
+      "sha256": "4d499c5ae3290d7efc127a840d4b939eeb72863161c15014fe3fb4f6c4cd0933",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP335085.jpg",
+        "sha256": "9a1d34d0402333f300f781ffa3fc1598f0b0ca183d9bc4c0a6eabadfe1fb455e"
+      }
     },
     {
       "id": "met-459110",
       "url": "https://images.metmuseum.org/CRDImages/rl/original/DP-17279-001.jpg",
-      "sha256": "2d315d901465f1a2a6f7b288b4fb99451c108e4e83d179b633fa1e468eb6a590"
+      "sha256": "2d315d901465f1a2a6f7b288b4fb99451c108e4e83d179b633fa1e468eb6a590",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/rl/web-large/DP-17279-001.jpg",
+        "sha256": "520a9fe1669f66eb45719f0b6a3803bbc36083dc18934afcb624cef3b892a65f"
+      }
     },
     {
       "id": "met-437438",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-33709-001.jpg",
-      "sha256": "fb4fea68024aaa07760184288520faeef9b200bd9ee144d29e84cd37c05dd3da"
+      "sha256": "fb4fea68024aaa07760184288520faeef9b200bd9ee144d29e84cd37c05dd3da",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-33709-001.jpg",
+        "sha256": "5749f0db81ef337d715fc6e4fa19b0c98502aaa5f3304d5e3c384fdc813053f8"
+      }
     },
     {
       "id": "met-437638",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DT11094.jpg",
-      "sha256": "9f4e7d8afbc794a72707e1da089b5db1896306fff7fbf01fcb7ae0c96caad7ca"
+      "sha256": "9f4e7d8afbc794a72707e1da089b5db1896306fff7fbf01fcb7ae0c96caad7ca",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DT11094.jpg",
+        "sha256": "76149a7b3c65f0afa84c8a7c74dd444e01fb8fe98936fddd4a273352ccd6023a"
+      }
     },
     {
       "id": "met-437083",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP134149.jpg",
-      "sha256": "29ffff30e531abf1995a8dac0cebe4030d21f6a459287420f81a6fc4f0f3c374"
+      "sha256": "29ffff30e531abf1995a8dac0cebe4030d21f6a459287420f81a6fc4f0f3c374",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP134149.jpg",
+        "sha256": "881b2643f377fa3231fea4662a6ab849612761f722bb289160a8d4c121add8ff"
+      }
     },
     {
       "id": "met-436801",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DT1459.jpg",
-      "sha256": "45fa890f6d70b6a1aa4d22a120fe4c86deb752a4290740154385e177a1656400"
+      "sha256": "45fa890f6d70b6a1aa4d22a120fe4c86deb752a4290740154385e177a1656400",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DT1459.jpg",
+        "sha256": "67398447bbb4e2a600733670701033eba98ddeae57c269d40438262a2abb64c2"
+      }
     },
     {
       "id": "met-459079",
       "url": "https://images.metmuseum.org/CRDImages/rl/original/DP164856.jpg",
-      "sha256": "602767639dbefaf84e4c85e0b11c1bed202f34145eed09551071a91ad8dfa3ee"
+      "sha256": "602767639dbefaf84e4c85e0b11c1bed202f34145eed09551071a91ad8dfa3ee",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/rl/web-large/DP164856.jpg",
+        "sha256": "e27e01817e256354154de36355d3bebab8f6bbcd7fb737de605f2d6310d3a38b"
+      }
     },
     {
       "id": "met-436808",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP169403.jpg",
-      "sha256": "557f02524244ef10df5c837a388f8177ce66cb89ec882683b2dda472ca6cf2bb"
+      "sha256": "557f02524244ef10df5c837a388f8177ce66cb89ec882683b2dda472ca6cf2bb",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP169403.jpg",
+        "sha256": "3fcea46f39391ea953693ce0f10489f703cc44c8a8f86e6be85458062e3153cc"
+      }
     },
     {
       "id": "met-74996",
@@ -19803,372 +20491,668 @@
     {
       "id": "met-437284",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-24048-001.jpg",
-      "sha256": "75a2ce2514dc802caa9914ba993a51e3f778a9ed29015d3a9a6b3b40229964e1"
+      "sha256": "75a2ce2514dc802caa9914ba993a51e3f778a9ed29015d3a9a6b3b40229964e1",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-24048-001.jpg",
+        "sha256": "8194c9cae4fc8fdaeab7ed674e8c15514145b32eebb76846d3798aced1392ee9"
+      }
     },
     {
       "id": "met-437042",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-23076-001.jpg",
-      "sha256": "ea12b1a5bcac51b9d5477fa1a3b35bcec0d9d3cb1b28e867341a05d0a6479f72"
+      "sha256": "ea12b1a5bcac51b9d5477fa1a3b35bcec0d9d3cb1b28e867341a05d0a6479f72",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-23076-001.jpg",
+        "sha256": "0f7c974a2cd598f48aaca3990fae91c45e81f1c23066c9493178f1f49e78e045"
+      }
     },
     {
       "id": "met-436186",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP283310.jpg",
-      "sha256": "8dbaa4a3ea0be0cb46d5b1b9208330156993866af63cf4e31fde85b5c924bcc6"
+      "sha256": "8dbaa4a3ea0be0cb46d5b1b9208330156993866af63cf4e31fde85b5c924bcc6",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP283310.jpg",
+        "sha256": "ea15964fae5b5dae8d7b85ea1218f01671e6aa928c7eeef22551861fd3b57a2d"
+      }
     },
     {
       "id": "met-435883",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-14936-049.jpg",
-      "sha256": "d4f072b4e2f9c458924e69a1f2f744b1ea242a34fd3f84ed6a5cd7fc9de521b4"
+      "sha256": "d4f072b4e2f9c458924e69a1f2f744b1ea242a34fd3f84ed6a5cd7fc9de521b4",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-14936-049.jpg",
+        "sha256": "73c7a84e394476da68951c8dedeae4e7ef516d1484b9efc8a444443d2639ca91"
+      }
     },
     {
       "id": "met-816519",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-23243-001.jpg",
-      "sha256": "cc5b348cd3c5d4389aa9f1d014eadddc1d8d76f3891d0531a0af23fb6b2e28a0"
+      "sha256": "cc5b348cd3c5d4389aa9f1d014eadddc1d8d76f3891d0531a0af23fb6b2e28a0",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-23243-001.jpg",
+        "sha256": "473a88428f4ec51e06c7e919d3a6587fa83c424db45dec8920b7a7d38977427a"
+      }
     },
     {
       "id": "met-436805",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP145932.jpg",
-      "sha256": "03b2929026bd439a42fc70058e4079cd074f99a77e8b27a1f568a8c97b382342"
+      "sha256": "03b2929026bd439a42fc70058e4079cd074f99a77e8b27a1f568a8c97b382342",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP145932.jpg",
+        "sha256": "7008152a66555eb37a84fbf648832ba05835619ce13b994a382f344f271518d1"
+      }
     },
     {
       "id": "met-670896",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP-12232-053.jpg",
-      "sha256": "ad1ea3450fa2335bd9a65e6ff7b2e1fe4b041c2a9def0daccff82c7bf400eafd"
+      "sha256": "ad1ea3450fa2335bd9a65e6ff7b2e1fe4b041c2a9def0daccff82c7bf400eafd",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP-12232-053.jpg",
+        "sha256": "c4953f077172b96ff2dd11a551edd700c7f1e6c67d54e4e3ad50676212f32375"
+      }
     },
     {
       "id": "met-78149",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP-12232-322.jpg",
-      "sha256": "fea623f69a9ad94b35c3fdc82d0048782c604ec2a9e5f3fee2ffa5edebd750d0"
+      "sha256": "fea623f69a9ad94b35c3fdc82d0048782c604ec2a9e5f3fee2ffa5edebd750d0",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP-12232-322.jpg",
+        "sha256": "fd0e68ccdc091459bd097a176b9111a732796e33d28cbc771114e0075bc334bc"
+      }
     },
     {
       "id": "met-916604",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP-39976-002.jpg",
-      "sha256": "afc421b1e4b4af80fc00b831af39ff717a5e6915881a0764709359fa8d227f08"
+      "sha256": "afc421b1e4b4af80fc00b831af39ff717a5e6915881a0764709359fa8d227f08",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP-39976-002.jpg",
+        "sha256": "f76d3a54a2619986072e82a2feb11e89f1bfc89e4a0484fc59542e52c3713c23"
+      }
     },
     {
       "id": "met-36000",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP153851.jpg",
-      "sha256": "e68e2c759cfd5a66c774991b283e89c9a4e93d57091fcbf3d3dec339f58b5399"
+      "sha256": "e68e2c759cfd5a66c774991b283e89c9a4e93d57091fcbf3d3dec339f58b5399",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP153851.jpg",
+        "sha256": "b3b3b41ceb676960e79a218f69201ac300f400c9d62a2cbc71d7a15d11193969"
+      }
     },
     {
       "id": "met-57280",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP-24996-001.jpg",
-      "sha256": "7d266746f3b8702ae57f2934816ae37a674d165de16badecbb36e8c0cee70bac"
+      "sha256": "7d266746f3b8702ae57f2934816ae37a674d165de16badecbb36e8c0cee70bac",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP-24996-001.jpg",
+        "sha256": "5fd5cf52456fd9045107f0f75fdddda1a7d3345f285922061825d87a71cf8a13"
+      }
     },
     {
       "id": "met-45805",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP162915.jpg",
-      "sha256": "233ab55ebcf1e789ee1256ede0429644ea64792c2e77e8809328797bb6b7b7f2"
+      "sha256": "233ab55ebcf1e789ee1256ede0429644ea64792c2e77e8809328797bb6b7b7f2",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP162915.jpg",
+        "sha256": "d49a9cc63d5f70a663c3b9cbc0b63db00913c58caedf129cd7ec6a9fdd8ba8c4"
+      }
     },
     {
       "id": "met-670902",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP-12232-285.jpg",
-      "sha256": "b85291d510d1f9c1fa23407afbe0774a5a15709c83b832c08ebb0a14d03baafb"
+      "sha256": "b85291d510d1f9c1fa23407afbe0774a5a15709c83b832c08ebb0a14d03baafb",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP-12232-285.jpg",
+        "sha256": "a7f3974b4d163327d53a1690e9c8be68d8f039189d779a8b71d1b57d87e39d55"
+      }
     },
     {
       "id": "met-437757",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP146510.jpg",
-      "sha256": "cd8796d544b6cb51fb43e10757662189b95e98943adad528b8288916b29b104f"
+      "sha256": "cd8796d544b6cb51fb43e10757662189b95e98943adad528b8288916b29b104f",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP146510.jpg",
+        "sha256": "e99809e2c03e4cf7366fed753eb49976f164578d2d5b238fa89d7aa6e4f23801"
+      }
     },
     {
       "id": "met-437412",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP146474.jpg",
-      "sha256": "55d9093f991bb23c34b2521da24a2843e06edaf7be8d12032253629d8675971d"
+      "sha256": "55d9093f991bb23c34b2521da24a2843e06edaf7be8d12032253629d8675971d",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP146474.jpg",
+        "sha256": "6bb6533ea808648cb4aef0272f6ce7d176f62de475ef043c50acbc591cf6a7b2"
+      }
     },
     {
       "id": "met-437246",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP123936.jpg",
-      "sha256": "115acff18ec63c9dee059b9659b3abe86391bed978d61e557166215df634c8e2"
+      "sha256": "115acff18ec63c9dee059b9659b3abe86391bed978d61e557166215df634c8e2",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP123936.jpg",
+        "sha256": "00e71621ff0b1b53f465a702909764e5b132c0b39157158c7c3ea31b914d78eb"
+      }
     },
     {
       "id": "met-437802",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-17536-001.jpg",
-      "sha256": "67ac4d2753886858abee57dc9b5d152f77877fa528ed87ae9e6c42adc9d8fc37"
+      "sha256": "67ac4d2753886858abee57dc9b5d152f77877fa528ed87ae9e6c42adc9d8fc37",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-17536-001.jpg",
+        "sha256": "244147af1f8b19fe8c37cdd5c869a6b56f0ef33769031a6af382820e0e4c2eaf"
+      }
     },
     {
       "id": "met-435972",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DT10697.jpg",
-      "sha256": "1a89b92f3ae418a5ba30c97d7d1bf70684394b281a36900d8994d471a8e2cb2c"
+      "sha256": "1a89b92f3ae418a5ba30c97d7d1bf70684394b281a36900d8994d471a8e2cb2c",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DT10697.jpg",
+        "sha256": "13d4b232bc2e5e42913504ae59100dce2e66aa4b3e6b8c7a264026326cf5a964"
+      }
     },
     {
       "id": "met-857030",
       "url": "https://images.metmuseum.org/CRDImages/as/original/LC-TR_286a_d_2021_sr1-001.jpg",
-      "sha256": "905d2a9fa639af4cd0f98f44b516018f0c904eb536696871e4bcf55e3a216101"
+      "sha256": "905d2a9fa639af4cd0f98f44b516018f0c904eb536696871e4bcf55e3a216101",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/LC-TR_286a_d_2021_sr1-001.jpg",
+        "sha256": "340abd20a374190afd576ea7e4f68df97f81fd65de1edeaf54f1c3ee4fbad4d4"
+      }
     },
     {
       "id": "met-437429",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DT1140.jpg",
-      "sha256": "969596fc82615e5334abad426ff7f0efbdf4ede4d0ab97213e1a7511de14c6fd"
+      "sha256": "969596fc82615e5334abad426ff7f0efbdf4ede4d0ab97213e1a7511de14c6fd",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DT1140.jpg",
+        "sha256": "3b270ba5d1678d0df19eda1fd2c040586d1910282a03de820a947cb5af00bbb7"
+      }
     },
     {
       "id": "met-888924",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-25141-001.jpg",
-      "sha256": "862df6866843845048d09dc537948e4593e3030ef4f556fe6115ce3a113ce11b"
+      "sha256": "862df6866843845048d09dc537948e4593e3030ef4f556fe6115ce3a113ce11b",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-25141-001.jpg",
+        "sha256": "e7f09ce33523672ca1e4c7557473ec7e159f161285f868598ed8b5a6e053ec38"
+      }
     },
     {
       "id": "met-437479",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP264408.jpg",
-      "sha256": "aa8a96903fa69dc88a56c46cc139f73a0a55f1ebb60b5bf314687b91f0f79e59"
+      "sha256": "aa8a96903fa69dc88a56c46cc139f73a0a55f1ebb60b5bf314687b91f0f79e59",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP264408.jpg",
+        "sha256": "9730de0339411bc7bc9be3d8438b2dcd792148e7d6e5b591ddf78ff440885617"
+      }
     },
     {
       "id": "met-438130",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DT209325.jpg",
-      "sha256": "c965c2bf20920a6b662328b3ac8511b3bba1a0378dd65bceadfbf5bf1859d5d5"
+      "sha256": "c965c2bf20920a6b662328b3ac8511b3bba1a0378dd65bceadfbf5bf1859d5d5",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DT209325.jpg",
+        "sha256": "4801d7c34edd5c3d8caef96691963ef0825a2c420850fa0396a4246e2207689d"
+      }
     },
     {
       "id": "met-436502",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-22842-001.jpg",
-      "sha256": "a76e00046346849d284e777072cff343a60faefa218178663071a08a10dc74b8"
+      "sha256": "a76e00046346849d284e777072cff343a60faefa218178663071a08a10dc74b8",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-22842-001.jpg",
+        "sha256": "bcc9315a5eccf1e557920d8527bab11e4a9cbb7d6a8910a29ad23ff9f0ad6e94"
+      }
     },
     {
       "id": "met-45647",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP235481.jpg",
-      "sha256": "2ad9291c7f9b709aa617ec688a3ad67937bab46e271e8d89d816fd2e42b52072"
+      "sha256": "2ad9291c7f9b709aa617ec688a3ad67937bab46e271e8d89d816fd2e42b52072",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP235481.jpg",
+        "sha256": "92f43d742c26c3d41287a233a23789403d486993fabf0b8c3630cfd173b58866"
+      }
     },
     {
       "id": "met-823663",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP-19667-002.jpg",
-      "sha256": "87b70e8711e19b221aa259683bc6cc33006c18905bd7d35781c9d65328486df1"
+      "sha256": "87b70e8711e19b221aa259683bc6cc33006c18905bd7d35781c9d65328486df1",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP-19667-002.jpg",
+        "sha256": "7c7edd61c5ccebe054a051a70a9a131b688a06b9da328f9755388b7ac74c8c8e"
+      }
     },
     {
       "id": "met-816515",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-21344-001.jpg",
-      "sha256": "89980c701e6615a6d4b9abdbf86772268382a3a3a6bf2a07c4eb9ceee48cc459"
+      "sha256": "89980c701e6615a6d4b9abdbf86772268382a3a3a6bf2a07c4eb9ceee48cc459",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-21344-001.jpg",
+        "sha256": "c878c1b82428f127f32f5d07cbf210445f4e014fb1faebfc5f157efd8e4b800f"
+      }
     },
     {
       "id": "met-438127",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-19651-001.jpg",
-      "sha256": "ad8855804e447722603614d0ec3f9b6d2700c497b15af0eeb60871ace0b092af"
+      "sha256": "ad8855804e447722603614d0ec3f9b6d2700c497b15af0eeb60871ace0b092af",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-19651-001.jpg",
+        "sha256": "db5c617b039da8b36f4d0cefe4cd2fb5a92494735610967c89573e5d088429c7"
+      }
     },
     {
       "id": "met-437354",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP170905.jpg",
-      "sha256": "efe6ff1e45115f42cf291b8e70948c2ce5a5b2cc7608cf6189d554b22f51da79"
+      "sha256": "efe6ff1e45115f42cf291b8e70948c2ce5a5b2cc7608cf6189d554b22f51da79",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP170905.jpg",
+        "sha256": "e3674f018d5518f07ec8d11c089e067cb739b3dcd999216f3c5c1b20e54389b0"
+      }
     },
     {
       "id": "met-436065",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP146486.jpg",
-      "sha256": "3605f1b0c5d7f985f14117de2c2b3b5d2e6a95bcec41fcc399fea64bb2c0652c"
+      "sha256": "3605f1b0c5d7f985f14117de2c2b3b5d2e6a95bcec41fcc399fea64bb2c0652c",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP146486.jpg",
+        "sha256": "76db9554984e1660215d6944970aa385fe84935fbb11ee3fa12e2d4c15eec36c"
+      }
     },
     {
       "id": "met-436217",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP324600.jpg",
-      "sha256": "07920c2c6cf9d1be24979ba1231fc908172369a5c5f20b8956c8c54b3dd3ea0f"
+      "sha256": "07920c2c6cf9d1be24979ba1231fc908172369a5c5f20b8956c8c54b3dd3ea0f",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP324600.jpg",
+        "sha256": "c9ce89b190e77d709f4cd144ec21c825e8f616c106c841a8b6b98357c40788e6"
+      }
     },
     {
       "id": "met-57282",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP-24998-001.jpg",
-      "sha256": "31284bb12e1f64aea9119529863665120a6fd6bef9e7286a7491dc304a32d93d"
+      "sha256": "31284bb12e1f64aea9119529863665120a6fd6bef9e7286a7491dc304a32d93d",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP-24998-001.jpg",
+        "sha256": "58881accd8d6a74eb0a1dd744afd767843048c8357184677c85520d58a09c7e2"
+      }
     },
     {
       "id": "met-437949",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP146935.jpg",
-      "sha256": "dbebf1ca67acce6b85187d56ce1146e544851f186ac4fa3c1e19598696c9c1cb"
+      "sha256": "dbebf1ca67acce6b85187d56ce1146e544851f186ac4fa3c1e19598696c9c1cb",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP146935.jpg",
+        "sha256": "1f700a2e41f086db7895c5ed06f1b6e9ed0af18364affc4ec442d604858d3575"
+      }
     },
     {
       "id": "met-57171",
       "url": "https://images.metmuseum.org/CRDImages/as/original/LC-1985_396_3_001.jpg",
-      "sha256": "00f32c1aa87c02f32c977934afb4dbdf07aaa1a152f8b6fec3562958560c1ebf"
+      "sha256": "00f32c1aa87c02f32c977934afb4dbdf07aaa1a152f8b6fec3562958560c1ebf",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/LC-1985_396_3_001.jpg",
+        "sha256": "227176bd96c548e39b1ca5923efa648b3272042e08a14c286439e9c505f7a48a"
+      }
     },
     {
       "id": "met-45217",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP105850.jpg",
-      "sha256": "582f2ca3bcfa16fc3adaa4dc128faca5371d3dce1d5a1f13ab1e11b5d64a6b8c"
+      "sha256": "582f2ca3bcfa16fc3adaa4dc128faca5371d3dce1d5a1f13ab1e11b5d64a6b8c",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP105850.jpg",
+        "sha256": "b3d0a69d9b5a7a54ed82eaf9edbf5542c5c12510e10c706c5bf980919f0cf78c"
+      }
     },
     {
       "id": "met-45656",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DT4560.jpg",
-      "sha256": "4bff7718f6294337acb04fe59833e5ebd13261cec4047c573a6ba6457a11d6b6"
+      "sha256": "4bff7718f6294337acb04fe59833e5ebd13261cec4047c573a6ba6457a11d6b6",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DT4560.jpg",
+        "sha256": "8f920a61333f38e9bf8b11c87df6d50840454196dfbe6449d3d97fd36f4ed2a1"
+      }
     },
     {
       "id": "met-45697",
       "url": "https://images.metmuseum.org/CRDImages/as/original/LC-29_100_451_jps-003.jpg",
-      "sha256": "b3a5e042227917484a45c5522f9a0ca555006df3725b2d38c462583b0348b6c9"
+      "sha256": "b3a5e042227917484a45c5522f9a0ca555006df3725b2d38c462583b0348b6c9",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/LC-29_100_451_jps-003.jpg",
+        "sha256": "53e8277d0f938ee1608f841e0390c955fc0d6a7fbf67f97a69228d56e824ae6a"
+      }
     },
     {
       "id": "met-436692",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP169219.jpg",
-      "sha256": "04f230eee3ef61c7b106aac1c0244846bbbf9e73fefb3b4f9290b1c884dd02ca"
+      "sha256": "04f230eee3ef61c7b106aac1c0244846bbbf9e73fefb3b4f9290b1c884dd02ca",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP169219.jpg",
+        "sha256": "80cad2b17dbb7abbc9d84b9c5c7054bcc7b956587c8a6585b9f0016e6fd5c89c"
+      }
     },
     {
       "id": "met-438815",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-35674-001.jpg",
-      "sha256": "8ac32539a3c7a6a78f31963c2e04e7f11952fffed9002d6cc21158fb64f18317"
+      "sha256": "8ac32539a3c7a6a78f31963c2e04e7f11952fffed9002d6cc21158fb64f18317",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-35674-001.jpg",
+        "sha256": "d3c623ea906147346f7df865a1817032afd1d748b27ba1f45aa0535c69ebe9e4"
+      }
     },
     {
       "id": "met-20129",
       "url": "https://images.metmuseum.org/CRDImages/ad/original/DP219245.jpg",
-      "sha256": "2d94595609ecf8e7ad640b5566534240afab641628741d7735021c1fe0a2d44c"
+      "sha256": "2d94595609ecf8e7ad640b5566534240afab641628741d7735021c1fe0a2d44c",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ad/web-large/DP219245.jpg",
+        "sha256": "7ac70c1245430c1161da23b24c86b1016b581fe1447f6accb0c593af9eb23ab7"
+      }
     },
     {
       "id": "met-670921",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP-12232-216.jpg",
-      "sha256": "288ee427b68d9ed5c52a0887af43ba82cc4b07b3c7bfad2f7e0cf48ebe62e36e"
+      "sha256": "288ee427b68d9ed5c52a0887af43ba82cc4b07b3c7bfad2f7e0cf48ebe62e36e",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP-12232-216.jpg",
+        "sha256": "89c87c33db91110dcb102adcd0c5b132c167063521a6e2c2f2529a1fb24911ed"
+      }
     },
     {
       "id": "met-436534",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP346475.jpg",
-      "sha256": "4680a3bd8eed94d21200f9d7d6410865873fac387dba5b6cd65bee75a1fe59a4"
+      "sha256": "4680a3bd8eed94d21200f9d7d6410865873fac387dba5b6cd65bee75a1fe59a4",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP346475.jpg",
+        "sha256": "76e8b89371d4c4cc29abd13cde101bb3c786391cb9ea95ccea9390029f6c2413"
+      }
     },
     {
       "id": "met-437170",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DT224403.jpg",
-      "sha256": "174049b3f6a8799f517e865f4d0bcf4969ef6c93ab6a4ab6aae22ab14fac896b"
+      "sha256": "174049b3f6a8799f517e865f4d0bcf4969ef6c93ab6a4ab6aae22ab14fac896b",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DT224403.jpg",
+        "sha256": "d09f3008865b94524cc0d19b17abb4c12dc225d54600bd41892654e6b28cd6cf"
+      }
     },
     {
       "id": "met-436866",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DT209324.jpg",
-      "sha256": "bcac368124d4ab056a1adbb37747a99ecfa0714d411b1283a7a94e205bc4f85c"
+      "sha256": "bcac368124d4ab056a1adbb37747a99ecfa0714d411b1283a7a94e205bc4f85c",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DT209324.jpg",
+        "sha256": "41ca722fd6803211b31d26487da994d377435d3e83d53e59fa2bf816264c6fda"
+      }
     },
     {
       "id": "met-437508",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP323414.jpg",
-      "sha256": "7a1eccfc37ce6a974a11d3f792d1dc762a666b25a4a846c37c1faf76d8feda98"
+      "sha256": "7a1eccfc37ce6a974a11d3f792d1dc762a666b25a4a846c37c1faf76d8feda98",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP323414.jpg",
+        "sha256": "2f8038678b67243e55bfccc205612f63b35582ce852b92ee9243d747aad9b723"
+      }
     },
     {
       "id": "met-435627",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-23288-001.jpg",
-      "sha256": "0e6b80bea7aa56e9528bc05046c1a612373ef23016049d917fc93a851698f552"
+      "sha256": "0e6b80bea7aa56e9528bc05046c1a612373ef23016049d917fc93a851698f552",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-23288-001.jpg",
+        "sha256": "f60e1cf1a63551f4489867a99b2e0dc48f1c45c8df25267e2a552bc0b3dd90c7"
+      }
     },
     {
       "id": "met-440729",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP232138.jpg",
-      "sha256": "914b099f8ad8312969c9b5fa5e8d16db860896ac53258df008f0d7d13bb58102"
+      "sha256": "914b099f8ad8312969c9b5fa5e8d16db860896ac53258df008f0d7d13bb58102",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP232138.jpg",
+        "sha256": "eeb03ed76ce44bdf5f0012e6cfaed26f24bec15ba8b9793354bc82722686cb9c"
+      }
     },
     {
       "id": "met-436086",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-19626-001.jpg",
-      "sha256": "0a84f4a554b2293b75de73e56c8b267327068a0e61c86e1326649d7bf424491a"
+      "sha256": "0a84f4a554b2293b75de73e56c8b267327068a0e61c86e1326649d7bf424491a",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-19626-001.jpg",
+        "sha256": "68c6d443bb28f00cdd61ae11e746c9fd2bcb22dfd07d6e10acbc064a1dd347d1"
+      }
     },
     {
       "id": "met-438738",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-20613-001.jpg",
-      "sha256": "cffcd8c5a0e525891558d4ebb1e4d9c2e9e5fd8d352336481183f23c557e87a9"
+      "sha256": "cffcd8c5a0e525891558d4ebb1e4d9c2e9e5fd8d352336481183f23c557e87a9",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-20613-001.jpg",
+        "sha256": "707964df27f2487489d97b15c411781289c5f52afd19385e1301c4c8f43e4531"
+      }
     },
     {
       "id": "met-437308",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DT1863.jpg",
-      "sha256": "5f841e6d2662667008248089867fcc553d147390c067fd8bcc5d8d0eb2f8e219"
+      "sha256": "5f841e6d2662667008248089867fcc553d147390c067fd8bcc5d8d0eb2f8e219",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DT1863.jpg",
+        "sha256": "f1922fba205301800b6e2c9b54bc892bf8b86f8386607844f37a880303c2f04a"
+      }
     },
     {
       "id": "met-670765",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP375602.jpg",
-      "sha256": "9d490e5c5af2b21140ffc29979a0bc07f99030cccfd4c62460e581db7d8ee56b"
+      "sha256": "9d490e5c5af2b21140ffc29979a0bc07f99030cccfd4c62460e581db7d8ee56b",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP375602.jpg",
+        "sha256": "10c62cde14bd4b4bdce3f4f1a7179e38a2c354c74e56872bfb723c69b3c994f5"
+      }
     },
     {
       "id": "met-437985",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-17401-001.jpg",
-      "sha256": "759862384a04271ec66e8c9fdb7b4e099bc16b96b88f77fdea4c1ae86c0dde6d"
+      "sha256": "759862384a04271ec66e8c9fdb7b4e099bc16b96b88f77fdea4c1ae86c0dde6d",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-17401-001.jpg",
+        "sha256": "bb514b05d82db9507932db3ab9cb4da8fbc0f5c63c5bbacbed4c4a71f6a08b97"
+      }
     },
     {
       "id": "met-437547",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP146453.jpg",
-      "sha256": "713d84650631b41107f940089e480375798bf97ebedf9c5eccec8120d0923400"
+      "sha256": "713d84650631b41107f940089e480375798bf97ebedf9c5eccec8120d0923400",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP146453.jpg",
+        "sha256": "b6f671407bbc65eb25c675768dbf097b12e879bafdfdd3c46cc95ffe50063ce2"
+      }
     },
     {
       "id": "met-437915",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP146460.jpg",
-      "sha256": "1af73ba4c84bf005f51fe6d5eb6377b414e603ce9349b89be18a1a3bf8796ee3"
+      "sha256": "1af73ba4c84bf005f51fe6d5eb6377b414e603ce9349b89be18a1a3bf8796ee3",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP146460.jpg",
+        "sha256": "4794030b2906cdd0015ee2417a0005404065a4d7499d1f573b2b1b5ec272c99a"
+      }
     },
     {
       "id": "met-435807",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-15904-001.jpg",
-      "sha256": "d6c4c23df1e5f3031a1b9912453b9e57b360b0a45b50895abdf1cf3779398eac"
+      "sha256": "d6c4c23df1e5f3031a1b9912453b9e57b360b0a45b50895abdf1cf3779398eac",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-15904-001.jpg",
+        "sha256": "3f43329e6e4eb8176b5046ef6146757912a0ffd22f6c62406425c16d851a58d8"
+      }
     },
     {
       "id": "met-436305",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-25893-001.jpg",
-      "sha256": "feae219a2ea0f9d289dbdbddb2c483e9a38815589d40e886d218668d822b4690"
+      "sha256": "feae219a2ea0f9d289dbdbddb2c483e9a38815589d40e886d218668d822b4690",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-25893-001.jpg",
+        "sha256": "b4bda435e9242d01ef50f9fe2e3c5be7e722b35d4e0fa528f7c3d02fe1472e2b"
+      }
     },
     {
       "id": "met-438123",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-18528-001.jpg",
-      "sha256": "bd39f20020725971c15b3677248545102d57e8e18db622e12696d00828200a76"
+      "sha256": "bd39f20020725971c15b3677248545102d57e8e18db622e12696d00828200a76",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-18528-001.jpg",
+        "sha256": "bfbbb50e9fd8d91fc0d3e520a84984867d671f8e051989c7323379da2461c185"
+      }
     },
     {
       "id": "met-437168",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DT8855.jpg",
-      "sha256": "56950a2d10b473cd5e7caf9863bc60bb881cfa646e5992a209c795589c78af18"
+      "sha256": "56950a2d10b473cd5e7caf9863bc60bb881cfa646e5992a209c795589c78af18",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DT8855.jpg",
+        "sha256": "57cd3c33af672a3d17962088660066eb155be6edb72c7cfc2b065b36c7b0ca42"
+      }
     },
     {
       "id": "met-687513",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP370255.jpg",
-      "sha256": "3210d2353d83efeae5c65af640b09157e3a8af38ca6a84f6dbc59b129ee8e63d"
+      "sha256": "3210d2353d83efeae5c65af640b09157e3a8af38ca6a84f6dbc59b129ee8e63d",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP370255.jpg",
+        "sha256": "b9731499cc4739e9a8e3103c9a5e586cd1953ab44b2b8c961b8743faaab0f1ce"
+      }
     },
     {
       "id": "met-435619",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DT200598.jpg",
-      "sha256": "92afb0c6c42ed25ae087601723c9e28e75d9a1e7856b92d7bcb99c998698d32a"
+      "sha256": "92afb0c6c42ed25ae087601723c9e28e75d9a1e7856b92d7bcb99c998698d32a",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DT200598.jpg",
+        "sha256": "41a159545714ae5b7316bd69adcc192592360c8b7c33261786496832b9a8c313"
+      }
     },
     {
       "id": "met-436680",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP145953.jpg",
-      "sha256": "7f6e51314abe56227c0be8e83ff1b3a8341c69e909233177afcd10c63555b01e"
+      "sha256": "7f6e51314abe56227c0be8e83ff1b3a8341c69e909233177afcd10c63555b01e",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP145953.jpg",
+        "sha256": "c918c49d2bbbabbbc43decbec754cfa9d688455c474f535e44da977cc756daf7"
+      }
     },
     {
       "id": "met-435851",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP296427.jpg",
-      "sha256": "af35ff47553ce437b24b7439ca2ac4afee30764d67ca78693ed55ededc801f4e"
+      "sha256": "af35ff47553ce437b24b7439ca2ac4afee30764d67ca78693ed55ededc801f4e",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP296427.jpg",
+        "sha256": "79ccb719c78aea700f231af0db4e91bbcdb371a89b0bc4f8437a436ae3f07339"
+      }
     },
     {
       "id": "met-436078",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-15425-001.jpg",
-      "sha256": "ca7a02ead5bb7bdb1e277bcb4aa017d791819dd4e155d30936ac7cd8c0292897"
+      "sha256": "ca7a02ead5bb7bdb1e277bcb4aa017d791819dd4e155d30936ac7cd8c0292897",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-15425-001.jpg",
+        "sha256": "54a09936040cd75b20ceb6a8e2ea23fac387e6dead24e302329017fa483fa955"
+      }
     },
     {
       "id": "met-436176",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP-14343-001.jpg",
-      "sha256": "650125b53da28b7a1ae918e7c8e8165d6abd8c3a262b94823a999d4425e78a4d"
+      "sha256": "650125b53da28b7a1ae918e7c8e8165d6abd8c3a262b94823a999d4425e78a4d",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-14343-001.jpg",
+        "sha256": "93ad02bd69d9400d4bc50183e38c3295e7ec26161e05495d8753f3e84d319390"
+      }
     },
     {
       "id": "met-436174",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DT1910.jpg",
-      "sha256": "32a867627ef07c553929550fbc41f553b01cb2a5101f994e37d8e625c9709f0d"
+      "sha256": "32a867627ef07c553929550fbc41f553b01cb2a5101f994e37d8e625c9709f0d",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DT1910.jpg",
+        "sha256": "52b649f154d8a9dc158bbd99a715cb08e9af235c9ebfea7bc0dd7bfc2a63d6fc"
+      }
     },
     {
       "id": "met-49475",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP161448.jpg",
-      "sha256": "5a814de24eb59269ffcf1089448e73c7e7866fea2528080b1e6771fd240352f7"
+      "sha256": "5a814de24eb59269ffcf1089448e73c7e7866fea2528080b1e6771fd240352f7",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP161448.jpg",
+        "sha256": "459effc1194621c01d1998b60e8b8e6685721a92f2410cc86e724417c6fce240"
+      }
     },
     {
       "id": "met-74673",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP166088.jpg",
-      "sha256": "a9356c438ca37077accde7278ce454e43db751b5126236050c000da187ea3250"
+      "sha256": "a9356c438ca37077accde7278ce454e43db751b5126236050c000da187ea3250",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP166088.jpg",
+        "sha256": "bba3350f0979b45a02868dbe160a62f749679dad46de6e538301a1fc49734e42"
+      }
     },
     {
       "id": "met-45739",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP276289.jpg",
-      "sha256": "a04045ed902aa33d61e477f3cb55b6283f9325bc70fa7269385295af46d52aeb"
+      "sha256": "a04045ed902aa33d61e477f3cb55b6283f9325bc70fa7269385295af46d52aeb",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP276289.jpg",
+        "sha256": "59314436fdebd01498329bbad36dc1820865d9ff8300b3f2bc16909f4bcdcee9"
+      }
     },
     {
       "id": "met-44638",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP160432.jpg",
-      "sha256": "d973c55eadb2582bcf1c5224139661d1377c6abd1200bae0972d59243ec14522"
+      "sha256": "d973c55eadb2582bcf1c5224139661d1377c6abd1200bae0972d59243ec14522",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP160432.jpg",
+        "sha256": "f50dd0380a496ebdc8e46e35d11295892dfdce5b1a1e780fff74f0e21d30b0ac"
+      }
     },
     {
       "id": "met-37905",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP156152.jpg",
-      "sha256": "e4f0c9d7485bdfe6390b254dde8801aa1ad1c6d107123c6760a80f41787d8153"
+      "sha256": "e4f0c9d7485bdfe6390b254dde8801aa1ad1c6d107123c6760a80f41787d8153",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP156152.jpg",
+        "sha256": "4693c30c6e7ddc851e3e529f79759a6e77b403f447961ad733550f73cfc39a6b"
+      }
     },
     {
       "id": "met-48984",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP260447.jpg",
-      "sha256": "ce690d548fea328fadd92718042b3837555e1ed1ea1bc522639af4cbb0e700ae"
+      "sha256": "ce690d548fea328fadd92718042b3837555e1ed1ea1bc522639af4cbb0e700ae",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP260447.jpg",
+        "sha256": "23b9af9a4dd0bfb8eb3cf032189cebeff474bf8354a92f72604ed43094357732"
+      }
     },
     {
       "id": "met-436123",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DT1911.jpg",
-      "sha256": "a1bde9d7d65d4805505ea5955ff0c9ed6318dd80feccd1936123ccdfd37a0972"
+      "sha256": "a1bde9d7d65d4805505ea5955ff0c9ed6318dd80feccd1936123ccdfd37a0972",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DT1911.jpg",
+        "sha256": "82e9fed7f4cceb420be9ff8912874b01c9cd59e296f76678e019ad5b6fd31480"
+      }
     },
     {
       "id": "met-37851",
       "url": "https://images.metmuseum.org/CRDImages/as/original/DP156174.jpg",
-      "sha256": "0551b90f119888039730660919bba89b2552fb42fe9cf57db552c605453ccb0a"
+      "sha256": "0551b90f119888039730660919bba89b2552fb42fe9cf57db552c605453ccb0a",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/as/web-large/DP156174.jpg",
+        "sha256": "ae0b445128e6a6af87563d8dc06cb1ba752e9d57bebd2b8c1b773a9137923311"
+      }
     },
     {
       "id": "met-436956",
       "url": "https://images.metmuseum.org/CRDImages/ep/original/DP241909.jpg",
-      "sha256": "d384686625cbc5743f1c9412a72f30db31bd28cf53449ef3d199377777191c36"
+      "sha256": "d384686625cbc5743f1c9412a72f30db31bd28cf53449ef3d199377777191c36",
+      "fallback": {
+        "url": "https://images.metmuseum.org/CRDImages/ep/web-large/DP241909.jpg",
+        "sha256": "c5763d9a36e205da8fac405059a545cae3226c933a487a82da32b40925d0b561"
+      }
     }
   ]
 }

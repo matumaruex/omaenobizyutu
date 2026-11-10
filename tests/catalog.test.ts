@@ -220,3 +220,29 @@ describe("the GitHub DB is the only artwork catalog", () => {
     }
   });
 });
+
+it("retains the independently registered standard image for high-resolution recovery", () => {
+  const { raw, registry } = source();
+  const original = {
+    url: "https://images.metmuseum.org/original.jpg",
+    sha256: "a".repeat(64),
+    byte_length: 123,
+    width: 100,
+    height: 200,
+    verification: "complete_jpeg_sha256_and_downscale_match",
+  };
+  Object.assign(raw.artworks[0].image, { high_resolution: original });
+  Object.assign(registry.records[0].image_source, {
+    high_resolution: original,
+  });
+  const result = normalizeCatalog(raw, registry, catalog.commit);
+  expect(result.images[0]).toMatchObject({
+    url: original.url,
+    sha256: original.sha256,
+    fallback: {
+      url: raw.artworks[0].image.display_url,
+      sha256: raw.artworks[0].image.sha256,
+    },
+  });
+  expect(result.artworks[0].localImage).toContain(original.sha256.slice(0, 16));
+});

@@ -122,15 +122,19 @@ export function normalizeCatalog(
       throw Error("IMAGE_REGISTRY_MISMATCH");
     const high = a.image.high_resolution;
     const sourceHigh = im.high_resolution;
-    if (Boolean(high) !== Boolean(sourceHigh)) throw Error("HIGH_RES_IMAGE_REGISTRY_MISMATCH");
-    if (high && sourceHigh && (
-      high.url !== sourceHigh.url ||
-      high.sha256 !== sourceHigh.sha256 ||
-      high.byte_length !== sourceHigh.byte_length ||
-      high.width !== sourceHigh.width ||
-      high.height !== sourceHigh.height ||
-      high.verification !== sourceHigh.verification
-    )) throw Error("HIGH_RES_IMAGE_REGISTRY_MISMATCH");
+    if (Boolean(high) !== Boolean(sourceHigh))
+      throw Error("HIGH_RES_IMAGE_REGISTRY_MISMATCH");
+    if (
+      high &&
+      sourceHigh &&
+      (high.url !== sourceHigh.url ||
+        high.sha256 !== sourceHigh.sha256 ||
+        high.byte_length !== sourceHigh.byte_length ||
+        high.width !== sourceHigh.width ||
+        high.height !== sourceHigh.height ||
+        high.verification !== sourceHigh.verification)
+    )
+      throw Error("HIGH_RES_IMAGE_REGISTRY_MISMATCH");
     // Use original-resolution JPEG for every image consumer, including
     // the exhibition room, selection list and full artwork view.
     // Historical web-size JPEG remains in the source record for audits.
@@ -141,9 +145,10 @@ export function normalizeCatalog(
     // display alias resolves known alternate spellings without collapsing
     // workshop pieces or disputed attributions into the named painter.
     const artist = f.artist_canonical ?? f.artist;
-    const artistKey = f.artist === "Unidentified artist"
-      ? `unidentified:${a.id}`
-      : `artist:${artist.normalize("NFC")}`;
+    const artistKey =
+      f.artist === "Unidentified artist"
+        ? `unidentified:${a.id}`
+        : `artist:${artist.normalize("NFC")}`;
     const localImage = `/api/artwork/${a.id}?revision=${commit}&v=${display.sha256.slice(0, 16)}`;
     catalog.artworks.push({
       id: a.id,
@@ -185,6 +190,9 @@ export function normalizeCatalog(
       id: a.id,
       url: display.url,
       sha256: display.sha256,
+      ...(high && high.url !== a.image.display_url
+        ? { fallback: { url: a.image.display_url, sha256: im.sha256 } }
+        : {}),
     });
   }
   return catalog;

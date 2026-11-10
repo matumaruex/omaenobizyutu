@@ -85,6 +85,8 @@ export interface CatalogImage {
   id: string;
   url: string;
   sha256: string;
+  /** Independently hash-verified standard image of this same work. */
+  fallback?: { url: string; sha256: string };
 }
 export interface Catalog {
   commit: string;

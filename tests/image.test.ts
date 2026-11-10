@@ -47,7 +47,7 @@ it("rejects mismatched bytes and unknown IDs", async () => {
       })
     ).status,
   ).toBe(404);
-  expect(mock).toHaveBeenCalledTimes(1);
+  expect(mock).toHaveBeenCalledTimes(2);
 });
 it("refuses redirects outside allowed image hosts", async () => {
   const mock = vi.fn(
@@ -86,4 +86,32 @@ it("exposes safe upstream diagnostics without response text or URLs", async () =
   expect(JSON.stringify(vi.mocked(console.warn).mock.calls)).not.toContain(
     "private provider text",
   );
+});
+
+it("caches a verified standard fallback briefly so original quality can recover", async () => {
+  const image = seed.images.find((a) => a.id === "met-37907")!;
+  const originalFallback = image.fallback;
+  const bytes = readFileSync("tests/fixtures/aic-27992.jpg");
+  const sha256 = seed.images.find((a) => a.id === "aic-27992")!.sha256;
+  image.fallback = { url: "https://images.metmuseum.org/standard.jpg", sha256 };
+  vi.spyOn(console, "info").mockImplementation(() => {});
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async () => new Response(bytes)),
+  );
+  try {
+    const r = await GET(
+      new Request(
+        `http://localhost/api/artwork/met-37907?revision=${seed.commit}&v=${image.sha256.slice(0, 16)}`,
+      ),
+      { params: Promise.resolve({ id: image.id }) },
+    );
+    expect(r.status).toBe(200);
+    expect(r.headers.get("X-Artwork-Quality")).toBe("standard");
+    expect(r.headers.get("Cache-Control")).toBe("public, max-age=60");
+    expect(r.headers.get("CDN-Cache-Control")).toBe("public, s-maxage=60");
+    expect(Buffer.from(await r.arrayBuffer())).toEqual(bytes);
+  } finally {
+    image.fallback = originalFallback;
+  }
 });
