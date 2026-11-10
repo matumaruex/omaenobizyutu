@@ -678,40 +678,115 @@ svg {
   text-underline-offset: 4px;
 }
 
+@font-face {
+  font-family: "Entrance Mincho";
+  src: url("/fonts/entrance-mincho.woff") format("woff");
+  font-weight: 400;
+  font-display: swap;
+}
 .entrance {
+  --entrance-white: #f5f3e8;
+  --entrance-inset: clamp(30px, 9.3vw, 140px);
   position: absolute;
   inset: 0;
   z-index: 4;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 46px;
-  background:
-    radial-gradient(ellipse at 70% 12%, #ffffff 0, #ffffff00 58%),
-    linear-gradient(145deg, #f9f7f1, #eee9de);
-  color: #554c3d;
+  overflow: hidden;
+  color: var(--entrance-white);
+  background-color: #93ae82;
+  /* Display only the blank upper portion of the first approved mockup.
+     Keeping the original pixels avoids another generation changing its green. */
+  background-image: url("/textures/entrance-green.webp");
+  background-size: auto max(450%, 178vw);
+  background-position: center top;
+  background-repeat: no-repeat;
+  opacity: 1;
+  visibility: visible;
+  transition:
+    opacity 0.65s ease,
+    visibility 0s;
+}
+.is-entered .entrance {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 0.65s ease,
+    visibility 0s 0.65s;
 }
 .entrance h1 {
-  font-family: var(--serif);
-  font-size: clamp(25px, 4vw, 34px);
-  font-weight: 400;
-  letter-spacing: 0.26em;
-  padding-left: 0.26em;
+  position: absolute;
+  left: var(--entrance-inset);
+  top: 26%;
   margin: 0;
+  font-family: "Entrance Mincho", var(--serif);
+  font-size: clamp(52px, 13vw, 108px);
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: 0.04em;
+}
+.entrance h1 span {
+  display: block;
+  /* A translucent chalk layer lets a little pigment show through the type. */
+  color: var(--entrance-white);
+  background-image:
+    linear-gradient(#f5f3e8f5, #f5f3e8f5), url("/textures/entrance-green.webp");
+  background-size:
+    auto,
+    360px 1600px;
+  background-position:
+    center,
+    left top;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 .entrance-button {
+  position: absolute;
+  left: var(--entrance-inset);
+  bottom: 19%;
   display: flex;
   align-items: center;
-  gap: 26px;
-  border-bottom: 1px solid #c7baa3;
-  padding: 15px 5px;
-  font-size: 12px;
-  letter-spacing: 0.12em;
+  gap: 24px;
+  min-height: 48px;
+  padding: 12px 0 18px;
+  font-family: "Entrance Mincho", var(--serif);
+  font-size: clamp(22px, 4.5vw, 28px);
+  letter-spacing: 0.08em;
 }
-.entrance-button:hover {
-  color: var(--accent);
-  border-color: var(--accent);
+.entrance-button::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 54px;
+  height: 1px;
+  background: currentColor;
+  transition: width 0.25s ease;
+}
+.entrance-button:hover::after {
+  width: 100%;
+}
+.entrance button:focus-visible {
+  outline-color: var(--entrance-white);
+}
+.entrance .icon-button {
+  color: var(--entrance-white);
+  width: 44px;
+  height: 44px;
+  margin-left: -12px;
+}
+.entrance .icon-button:hover {
+  background: #f5f3e818;
+}
+@media (max-height: 500px) {
+  .entrance h1 {
+    top: 12%;
+    font-size: clamp(40px, 10svh, 56px);
+  }
+  .entrance-button {
+    bottom: 22%;
+    font-size: 20px;
+  }
 }
 .feeling-panel {
   position: absolute;
@@ -777,7 +852,8 @@ svg {
 
 .entrance-tools {
   position: absolute;
-  bottom: max(24px, env(safe-area-inset-bottom));
+  bottom: max(4.5%, env(safe-area-inset-bottom));
+  left: var(--entrance-inset);
   display: flex;
   gap: 12px;
 }

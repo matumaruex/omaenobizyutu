@@ -338,26 +338,32 @@ export default function Museum() {
           </div>
         )}
       </div>
-      {!entered && (
-        <section className="entrance" aria-labelledby="entrance-heading">
-          <h1 id="entrance-heading">お前の美術館</h1>
-          <button className="entrance-button" onClick={() => setEntered(true)}>
-            部屋に入る <ArrowRight size={16} />
+      <section
+        className="entrance"
+        aria-labelledby="entrance-heading"
+        aria-hidden={entered}
+        inert={entered}
+      >
+        <h1 id="entrance-heading" aria-label="お前の美術館">
+          <span>お前の</span>
+          <span>美術館</span>
+        </h1>
+        <button className="entrance-button" onClick={() => setEntered(true)}>
+          部屋に入る <ArrowRight size={16} />
+        </button>
+        <div className="entrance-tools">
+          <button
+            className="icon-button"
+            onClick={() => {
+              document.exitPointerLock?.();
+              setSettings(true);
+            }}
+            aria-label="表示設定"
+          >
+            <SlidersHorizontal size={18} />
           </button>
-          <div className="entrance-tools">
-            <button
-              className="icon-button"
-              onClick={() => {
-                document.exitPointerLock?.();
-                setSettings(true);
-              }}
-              aria-label="表示設定"
-            >
-              <SlidersHorizontal size={18} />
-            </button>
-          </div>
-        </section>
-      )}
+        </div>
+      </section>
       {entered && (
         <>
           <button className="leave-room" onClick={leaveRoom}>
