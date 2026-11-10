@@ -67,6 +67,17 @@ export default function ArtworkView({
             <p>
               {art.artist} · {art.date}
             </p>
+            {art.visitorExplanation?.text ? (
+              <section className="artwork-description" aria-label="鑑賞者向け解説">
+                {art.visitorExplanation.text
+                  .split(/\n\s*\n/)
+                  .filter(Boolean)
+                  .map((paragraph, index) => (
+                    <p key={index}>{paragraph}</p>
+                  ))}
+              </section>
+            ) : (
+              <>
             <section
               className="artwork-description"
               aria-label="描かれているもの"
@@ -107,6 +118,8 @@ export default function ArtworkView({
                   </p>
                 )}
               </section>
+            )}
+              </>
             )}
             <button
               className="disclosure"
@@ -154,6 +167,17 @@ export default function ArtworkView({
                 >
                   美術館の作品ページ <ExternalLink size={13} />
                 </a>
+                {art.visitorExplanation?.sourceUrls.map((url, index) => (
+                  <a
+                    key={url + ":" + index}
+                    href={url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="source-link"
+                  >
+                    鑑賞解説の出典 {index + 1} <ExternalLink size={13} />
+                  </a>
+                ))}
                 {explanation?.scholarly_interpretation.source_url && (
                   <a
                     href={explanation.scholarly_interpretation.source_url}

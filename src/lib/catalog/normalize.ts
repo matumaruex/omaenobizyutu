@@ -46,6 +46,13 @@ const rawSchema = z.object({
           live_image_checked: z.literal(true),
           high_resolution: highResolution.optional(),
         }),
+        visitor_explanation: z
+          .object({
+            language: z.literal("ja"),
+            text: z.string().trim().min(1).max(20000),
+            source_urls: z.array(https).max(30).default([]),
+          })
+          .optional(),
         curation: z.object({
           emotion_categories: z.object({
             primary: z.array(text).max(2),
@@ -151,6 +158,12 @@ export function normalizeCatalog(
       museum: a.source.museum,
       medium: f.type,
       facts: c.meaning_basis.visual_clues,
+      visitorExplanation: a.visitor_explanation
+        ? {
+            text: a.visitor_explanation.text,
+            sourceUrls: a.visitor_explanation.source_urls,
+          }
+        : undefined,
       credit: f.accession_number || "",
       imageSource: im.official_image_page || a.source.artwork_url,
       imageLicense: im.license_url,

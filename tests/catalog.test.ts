@@ -67,6 +67,22 @@ describe("the GitHub DB is the only artwork catalog", () => {
     ).toBe(true);
     expect(result.images).toHaveLength(300);
   });
+  it("preserves audited visitor text without sending it to AI selection", () => {
+    const { raw, registry } = source();
+    Object.assign(raw.artworks[0], {
+      visitor_explanation: {
+        language: "ja",
+        text: "第1段落。\n\n第2段落。",
+        source_urls: ["https://www.artic.edu/artworks/869"],
+      },
+    });
+    const result = normalizeCatalog(raw, registry, catalog.commit);
+    expect(result.artworks[0].visitorExplanation).toEqual({
+      text: "第1段落。\n\n第2段落。",
+      sourceUrls: ["https://www.artic.edu/artworks/869"],
+    });
+    expect(JSON.stringify(result.selection[0])).not.toContain("第1段落");
+  });
   it("reflects additions, edits and removals from the same source", () => {
     const { raw, registry } = source();
     raw.artworks.shift();

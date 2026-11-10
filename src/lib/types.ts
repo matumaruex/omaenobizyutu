@@ -14,6 +14,8 @@ export interface Artwork {
   museum: string;
   medium: string;
   facts: string;
+  /** Visitor text checked against source material, separate from AI selection. */
+  visitorExplanation?: { text: string; sourceUrls: string[] };
   /** Original DB explanation, distinct from the model's selection reason. */
   interpretation?: CatalogMaterial["meaning"];
   credit: string;
