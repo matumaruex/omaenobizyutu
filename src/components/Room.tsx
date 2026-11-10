@@ -10,7 +10,7 @@ import {
   FRAME,
   roomVerticalFov,
 } from "@/lib/layout";
-import { createRoomTextures } from "@/lib/room-materials";
+import { createRoomTextures, applyRoomWood } from "@/lib/room-materials";
 import type { Exhibit } from "@/lib/types";
 
 interface Props {
@@ -65,15 +65,15 @@ function Architecture({ textures }: { textures: RoomTextures }) {
           <mesh position={[0, -ROOM.height / 2 + 0.018, 0.004]}>
             <planeGeometry args={[span, 0.022]} />
             <meshBasicMaterial
-              color="#aca697"
+              color="#b9a083"
               transparent
-              opacity={0.36}
+              opacity={0.22}
               toneMapped={false}
             />
           </mesh>
           <mesh position={[0, -ROOM.height / 2 + 0.05, 0.008]}>
             <planeGeometry args={[span, 0.038]} />
-            <meshBasicMaterial color="#eeece3" toneMapped={false} />
+            <meshBasicMaterial color="#dec8ac" toneMapped={false} />
           </mesh>
         </group>
       ))}
@@ -81,7 +81,7 @@ function Architecture({ textures }: { textures: RoomTextures }) {
         <circleGeometry
           args={[ROOM.floorRadius, ROOM.wallCount, Math.PI / ROOM.wallCount]}
         />
-        <meshBasicMaterial color="#e6e4dc" toneMapped={false} />
+        <meshBasicMaterial map={textures.ceiling} toneMapped={false} />
       </mesh>
     </group>
   );
@@ -160,7 +160,7 @@ function Painting({
         <boxGeometry args={[outerWidth, outerHeight, 0.085]} />
         <meshStandardMaterial
           ref={remember}
-          color="#9a8b75"
+          color="#e7dccb"
           roughness={0.85}
           transparent
           opacity={0}
@@ -389,10 +389,18 @@ function Controls({
 }
 export default function Room(props: Props) {
   const textures = useMemo(createRoomTextures, []);
-  useEffect(
-    () => () => Object.values(textures).forEach((t) => t.dispose()),
-    [textures],
-  );
+  useEffect(() => {
+    // One local asset supplies all three surfaces. Keep a warm fallback while
+    // loading; paint the existing maps rather than remounting the gallery.
+    const image = new Image();
+    image.onload = () => applyRoomWood(textures, image);
+    image.src = "/textures/room-pale-ash.webp";
+    return () => {
+      image.onload = null;
+      image.src = "";
+      Object.values(textures).forEach((t) => t.dispose());
+    };
+  }, [textures]);
   return (
     <Canvas
       className="room-canvas"
