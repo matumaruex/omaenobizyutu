@@ -331,30 +331,6 @@ svg {
   line-height: 1.7;
   margin: 19px 0 28px;
 }
-.guide-step {
-  display: flex;
-  align-items: flex-start;
-  gap: 23px;
-  margin: 25px 0;
-}
-.guide-step > span {
-  font-family: Georgia, serif;
-  font-size: 12px;
-  color: #a7b19b;
-  padding-top: 3px;
-}
-.guide-step h3 {
-  font-size: 12px;
-  font-weight: 400;
-  letter-spacing: 0.05em;
-  margin: 0 0 7px;
-}
-.guide-step p {
-  font-size: 11px;
-  color: #948a79;
-  line-height: 2;
-  margin: 6px 0;
-}
 .license-note {
   font-size: 9px;
   color: #a09583;
@@ -655,9 +631,6 @@ svg {
   }
   .dialog {
     max-height: 91svh;
-  }
-  .guide-step {
-    gap: 18px;
   }
   .artwork-dialog .dialog-inner {
     padding: 48px 20px 24px;

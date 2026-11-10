@@ -3,7 +3,6 @@ import dynamic from "next/dynamic";
 import { Component, useCallback, useEffect, useRef, useState } from "react";
 import {
   ArrowRight,
-  CircleHelp,
   Compass,
   LoaderCircle,
   SlidersHorizontal,
@@ -67,7 +66,6 @@ export default function Museum() {
   const [exhibition, setExhibition] = useState<Exhibition | null>(null),
     [exhibits, setExhibits] = useState<Exhibit[]>([]);
   const [selected, setSelected] = useState<string | null>(null),
-    [help, setHelp] = useState(false),
     [settings, setSettings] = useState(false),
     [list, setList] = useState(false);
   const [phase, setPhase] = useState<
@@ -123,7 +121,6 @@ export default function Museum() {
     entered &&
     !formOpen &&
     !selected &&
-    !help &&
     !settings &&
     !list &&
     !reviewOpen &&
@@ -352,16 +349,6 @@ export default function Museum() {
               className="icon-button"
               onClick={() => {
                 document.exitPointerLock?.();
-                setHelp(true);
-              }}
-              aria-label="美術館の楽しみ方"
-            >
-              <CircleHelp size={19} />
-            </button>
-            <button
-              className="icon-button"
-              onClick={() => {
-                document.exitPointerLock?.();
                 setSettings(true);
               }}
               aria-label="表示設定"
@@ -554,45 +541,6 @@ export default function Museum() {
           exhibit={viewed}
           onClose={() => setSelected(null)}
         />
-      )}
-      {help && (
-        <Dialog title="美術館の楽しみ方" onClose={() => setHelp(false)}>
-          <span className="eyebrow">A QUIET GUIDE</span>
-          <h2>絵と、今のあなたと。</h2>
-          <div className="guide-step">
-            <span>01</span>
-            <div>
-              <h3>気持ちを、ことばに。</h3>
-              <p>
-                短くても、まとまらなくても。今の気持ちを書くと、8つの絵画が、八角形の部屋の壁に現れます。
-              </p>
-            </div>
-          </div>
-          <div className="guide-step">
-            <span>02</span>
-            <div>
-              <h3>ゆっくり、見回す。</h3>
-              <p>
-                部屋の中央から、ドラッグやスワイプで自由に見回せます。歩行や床タップの操作はありません。
-              </p>
-              <p>
-                絵をクリック・タップすると、大きく鑑賞できます。PCの矢印キーでも向きを変えられます。
-              </p>
-            </div>
-          </div>
-          <div className="guide-step">
-            <span>03</span>
-            <div>
-              <h3>気になる一枚と、向き合う。</h3>
-              <p>
-                作品をクリック・タップすると拡大します。情報と選定理由は、読みたいときだけ。閉じると元の場所へ戻ります。
-              </p>
-            </div>
-          </div>
-          <p className="license-note">
-            展示の作成時に入力文と候補作品の資料をXiaomi MiMoに送信します。
-          </p>
-        </Dialog>
       )}
       {settings && (
         <Dialog title="表示設定" onClose={() => setSettings(false)}>
