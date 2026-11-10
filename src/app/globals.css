@@ -357,7 +357,7 @@ svg {
   height: 17px;
 }
 .artwork-dialog {
-  width: min(1100px, calc(100% - 32px));
+  width: min(1100px, calc(100% - 24px));
   background: var(--gallery-surface);
   border-color: var(--gallery-line);
   box-shadow: 0 24px 80px #463b2433;
@@ -396,12 +396,14 @@ svg {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 57svh;
-  min-height: 250px;
   padding: 12px 0;
 }
 .artwork-stage img {
-  max-height: 100%;
+  display: block;
+  width: auto;
+  height: auto;
+  /* Leave room for closing and opening the explanation on short screens too. */
+  max-height: min(70svh, calc(90svh - 190px));
   max-width: 100%;
   object-fit: contain;
   box-shadow: 0 10px 32px #44382116;
@@ -633,11 +635,7 @@ svg {
     max-height: 91svh;
   }
   .artwork-dialog .dialog-inner {
-    padding: 48px 20px 24px;
-  }
-  .artwork-stage {
-    height: 47svh;
-    min-height: 180px;
+    padding: 52px 12px 20px;
   }
   .artwork-grid {
     grid-template-columns: repeat(2, 1fr);

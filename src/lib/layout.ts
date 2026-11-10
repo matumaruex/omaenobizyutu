@@ -8,14 +8,14 @@ export const ROOM = {
   floorRadius: wallDistance / Math.cos(Math.PI / EXHIBITION_SIZE),
   height: 4.1,
   eye: 1.8,
-  horizontalFov: 90,
+  horizontalFov: 75,
   lookLimit: 1.2,
 };
 export const FRAME = { mat: 0.075, rail: 0.026 };
 export const FRAME_BORDER = (FRAME.mat + FRAME.rail) * 2;
 
 // Three.js takes a vertical FOV. Preserve the horizontal composition on phones:
-// the viewport edges pass through the centers of the neighboring wall facets.
+// show roughly one third of each neighboring facet with less edge stretching.
 // A minimum vertical field keeps tall frames visible on very wide screens.
 export function roomVerticalFov(aspect: number) {
   return Math.max(

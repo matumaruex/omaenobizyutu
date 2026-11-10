@@ -106,7 +106,7 @@ describe("discovery from the center of an octagonal room", () => {
     }
   });
 
-  it("reveals half of both adjacent walls on phones and after viewport rotation", () => {
+  it("reveals neighboring thirds with reduced wide-angle stretching, including after rotation", () => {
     for (const aspect of [
       320 / 740,
       390 / 844,
@@ -134,8 +134,19 @@ describe("discovery from the center of an octagonal room", () => {
             ROOM.eye,
             neighbor.position[2],
           ).project(camera);
-          expect(Math.abs(projected.x)).toBeLessThanOrEqual(1 + 1e-10);
-          if (aspect <= 1.44) expect(Math.abs(projected.x)).toBeCloseTo(1);
+          if (aspect <= 1.44) {
+            // Neighbor centers stay just outside the view rather than filling
+            // the edges with strongly stretched half-paintings.
+            expect(Math.abs(projected.x)).toBeGreaterThan(1.2);
+            expect(Math.abs(projected.x)).toBeLessThan(1.4);
+          }
+          const third = new Vector3((-offset * ROOM.wallWidth) / 6, 0, 0)
+            .applyEuler(new Euler(...neighbor.rotation))
+            .add(
+              new Vector3(neighbor.position[0], ROOM.eye, neighbor.position[2]),
+            )
+            .project(camera);
+          expect(Math.abs(third.x)).toBeLessThan(1);
         }
       }
       for (const art of seed.artworks) {

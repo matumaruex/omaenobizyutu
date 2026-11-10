@@ -400,7 +400,7 @@ export default function Room(props: Props) {
       camera={{
         position: [0, ROOM.eye, 0],
         rotation: [0, 0, 0],
-        fov: 90,
+        fov: ROOM.horizontalFov,
         near: 0.1,
         far: 65,
       }}
