@@ -1016,3 +1016,70 @@ svg {
   padding-left: 1.4rem;
   line-height: 1.9;
 }
+
+.feeling-input-modes {
+  display: flex;
+  gap: 12px;
+  margin: 4px 18px 12px 0;
+}
+.feeling-input-modes button {
+  min-height: 44px;
+  padding: 5px 0;
+  background: none;
+  border-bottom: 1px solid transparent;
+  font-size: 12px;
+  color: var(--muted);
+}
+.feeling-input-modes button[aria-pressed="true"] {
+  color: var(--ink);
+  border-color: #82755f;
+}
+.feeling-choices {
+  border: 0;
+  padding: 0;
+  margin: 0 0 16px;
+  min-width: 0;
+}
+.feeling-choices legend {
+  font-family: var(--serif);
+  font-size: 15px;
+  margin-bottom: 10px;
+}
+.feeling-choice-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.feeling-choice-grid button {
+  min-height: 44px;
+  padding: 8px 4px;
+  border: 1px solid #cfc6b7;
+  border-radius: 3px;
+  background: #faf7ef;
+  font-size: 12px;
+  color: var(--ink);
+}
+.feeling-choice-grid button[aria-pressed="true"] {
+  background: #dce1cf;
+  border-color: #728163;
+}
+.feeling-choice-unknown {
+  grid-column: 1 / -1;
+}
+.feeling-form .form-bottom {
+  position: sticky;
+  bottom: -32px;
+  padding: 12px 0;
+  background: #fbf9f3;
+  z-index: 1;
+}
+@media (max-width: 760px) {
+  .feeling-form .form-bottom {
+    bottom: -22px;
+  }
+}
+
+.feeling-form-choices textarea {
+  min-height: 64px;
+  margin: 8px 0 12px;
+}

@@ -16,6 +16,11 @@ import HistoryView from "./HistoryView";
 import UsageView, { UsageDetails } from "./UsageView";
 import type { AccountingResult } from "@/lib/usage/types";
 import { createRecentExhibitionsStore } from "@/lib/recent-exhibitions";
+import {
+  FEELING_CHOICES,
+  UNKNOWN_FEELING,
+  feelingInput,
+} from "@/lib/feeling-choices";
 const Room = dynamic(() => import("./Room"), {
   ssr: false,
   loading: () => (
@@ -44,6 +49,12 @@ export default function Museum() {
   const [entered, setEntered] = useState(false);
   const [formOpen, setFormOpen] = useState(false),
     [text, setText] = useState("");
+  const [chooseFeeling, setChooseFeeling] = useState(false);
+  const [feelingChoices, setFeelingChoices] = useState<string[]>([]);
+  const inputText = chooseFeeling
+    ? feelingInput(feelingChoices, text)
+    : text.trim();
+  const canSubmit = inputText.length > 0 && inputText.length <= 800;
   const [aiAvailable, setAIAvailable] = useState<boolean | null>(null);
   const [reviewEnabled, setReviewEnabled] = useState(false);
   const [inspectionAvailable, setInspectionAvailable] = useState(false);
@@ -131,6 +142,8 @@ export default function Museum() {
     document.exitPointerLock?.();
     setFormOpen(true);
     setText("");
+    setFeelingChoices([]);
+    setChooseFeeling(false);
     setError("");
   }
   function leaveRoom() {
@@ -143,6 +156,8 @@ export default function Museum() {
     setEntered(false);
     setFormOpen(false);
     setText("");
+    setFeelingChoices([]);
+    setChooseFeeling(false);
     setError("");
     setPhase("idle");
     setSelected(null);
@@ -155,10 +170,9 @@ export default function Museum() {
   }
   async function createExhibition(e: React.FormEvent) {
     e.preventDefault();
-    if (!text.trim() || busy || submitting.current) return;
+    if (!canSubmit || busy || submitting.current) return;
     submitting.current = true;
     abort.current?.abort();
-    const inputText = text.trim();
     const controller = new AbortController();
     abort.current = controller;
     setError("");
@@ -291,6 +305,8 @@ export default function Museum() {
         })),
       });
       setText("");
+      setFeelingChoices([]);
+      setChooseFeeling(false);
       setFormOpen(false);
       setPhase("ready");
       recentExhibitions.current!.remember(loaded.map((a) => a.id));
@@ -385,22 +401,100 @@ export default function Museum() {
                   MiMoの接続設定が完了していません。
                 </p>
               )}
-              <form className="feeling-form" onSubmit={createExhibition}>
-                <label htmlFor="feeling">今の気持ちを教えてください</label>
+              <form
+                className={`feeling-form${chooseFeeling ? " feeling-form-choices" : ""}`}
+                onSubmit={createExhibition}
+              >
+                <div
+                  className="feeling-input-modes"
+                  aria-label="気持ちの入力方法"
+                >
+                  <button
+                    type="button"
+                    aria-pressed={!chooseFeeling}
+                    disabled={busy}
+                    onClick={() => setChooseFeeling(false)}
+                  >
+                    自分の言葉で書く
+                  </button>
+                  <button
+                    type="button"
+                    aria-pressed={chooseFeeling}
+                    disabled={busy}
+                    onClick={() => setChooseFeeling(true)}
+                  >
+                    近い感覚から選ぶ
+                  </button>
+                </div>
+                {chooseFeeling && (
+                  <fieldset className="feeling-choices" disabled={busy}>
+                    <legend>近いものを、ふたつまで</legend>
+                    <div className="feeling-choice-grid">
+                      {[...FEELING_CHOICES, UNKNOWN_FEELING].map((choice) => {
+                        const selected = feelingChoices.includes(choice);
+                        const unknown = choice === UNKNOWN_FEELING;
+                        return (
+                          <button
+                            key={choice}
+                            type="button"
+                            aria-pressed={selected}
+                            className={
+                              unknown ? "feeling-choice-unknown" : undefined
+                            }
+                            disabled={
+                              !selected &&
+                              !unknown &&
+                              feelingChoices.length >= 2
+                            }
+                            onClick={() =>
+                              setFeelingChoices((current) =>
+                                selected
+                                  ? current.filter((value) => value !== choice)
+                                  : unknown
+                                    ? [choice]
+                                    : [
+                                        ...current.filter(
+                                          (value) => value !== UNKNOWN_FEELING,
+                                        ),
+                                        choice,
+                                      ],
+                              )
+                            }
+                          >
+                            {choice}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </fieldset>
+                )}
+                <label htmlFor="feeling">
+                  {chooseFeeling
+                    ? "言葉を足す（任意）"
+                    : "今の気持ちを教えてください"}
+                </label>
                 <textarea
                   id="feeling"
                   value={text}
                   onChange={(e) => setText(e.target.value)}
                   maxLength={800}
+                  placeholder={chooseFeeling ? "選ぶだけでも大丈夫" : undefined}
                   disabled={busy}
                   rows={2}
                 />
+                {inputText.length > 800 && (
+                  <p className="form-error" role="status">
+                    選んだ感覚と言葉を合わせて800文字以内にしてください。
+                  </p>
+                )}
                 <div className="form-bottom">
-                  <span>{text.length > 0 ? `${text.length} / 800` : ""}</span>
+                  <span>
+                    {inputText.length > 0 ? `${inputText.length} / 800` : ""}
+                  </span>
                   <button
                     type="submit"
                     className="create-button"
-                    disabled={!text.trim() || busy}
+                    disabled={!canSubmit || busy}
                   >
                     {busy ? (
                       <>

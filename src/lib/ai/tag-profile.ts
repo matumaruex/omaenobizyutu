@@ -1,3 +1,4 @@
+import { UNKNOWN_FEELING_INPUT } from "../feeling-choices";
 import { z } from "zod";
 import type { CatalogMaterial } from "../types";
 
@@ -22,6 +23,7 @@ export const TAG_SYSTEM = `あなたは鑑賞者の文章を読む係です。fe
 ひらがな、口語、省略、語の区切り、複数の相反する気持ちを柔軟に読む。単語の出現数では判断しない。感情語がそのまま書かれていなくても、近い意味の登録タグを選ぶ。
 日常の口語として語を区切る。「きぶん」等の語の一部を前の語に結びつけ、文語の否定「なき」へ勝手に読み替えない。明確に否定された感情はtagsへ入れずnegatedTagsへ記す。現在の気分と望む気分を区別する。
 疲労や虚無は安心と同一視せず、一覧に適切なタグがなければtagsは空でもよい。喪失・死別など入力にない事情、診断、助言、回復の筋書きを補わない。タグは作品検索の手掛かりで、本人の心理の確定ではない。
+「近い感覚」は大まかなカテゴリ選択で、「・」で並んだ言葉すべての断定ではない。補足の「自分の言葉」があれば優先し、否定や希望する状態を読み分ける。「まだわからない」だけならtagsとnegatedTagsは空にする。
 読み方の例（実際の出力ではavailableTagsにある名前だけを使う）:
 「なんだか気が重い」→tags:["悲しみ"],negatedTags:[]
 「気がかりはないけど、ただだるい」→tags:[],negatedTags:["不安"]
@@ -50,4 +52,14 @@ export function validateTagProfile(
   if (new Set(all).size !== all.length || all.some((tag) => !allowed.has(tag)))
     throw Error("INVALID_TAG_PROFILE");
   return parsed;
+}
+
+// An unspecified feeling must not acquire an invented emotional profile.
+export function profileForFeeling(
+  text: string,
+  profile: TagProfile,
+): TagProfile {
+  return text.trim() === UNKNOWN_FEELING_INPUT
+    ? { tags: [], negatedTags: [] }
+    : profile;
 }

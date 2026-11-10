@@ -623,3 +623,21 @@ describe("real SDK request contract, with all upstream HTTP mocked", () => {
     expect(mock).not.toHaveBeenCalled();
   });
 });
+
+it.each([
+  ["近い感覚：まだわからない", []],
+  [
+    "近い感覚：まだわからない\n自分の言葉：嬉しいけれど不安もある",
+    ["喜び", "不安"],
+  ],
+])(
+  "keeps two calls and avoids invented tags only for unspecified feeling: %s",
+  async (text, tags) => {
+    const mock = vi.fn(async (_url, init) => respondTo(init));
+    vi.stubGlobal("fetch", mock);
+    const result = await selectWithAI(text as string);
+    expect(mock).toHaveBeenCalledTimes(2);
+    expect(result.verification.search?.detectedCategories).toEqual(tags);
+    expect(result.selections).toHaveLength(8);
+  },
+);
