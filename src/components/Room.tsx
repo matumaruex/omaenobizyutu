@@ -26,13 +26,13 @@ type RoomTextures = ReturnType<typeof createRoomTextures>;
 const paintingSlots = exhibitionSlots(ROOM.wallCount);
 const wallTints = [
   "#ffffff",
-  "#faf9f6",
-  "#f6f4ef",
-  "#f8f6f1",
-  "#fbf9f4",
-  "#f9f7f2",
-  "#f7f5f0",
-  "#fcfbf7",
+  "#fafcfd",
+  "#f4f8fa",
+  "#f7fafc",
+  "#fbfcfd",
+  "#f8fafc",
+  "#f5f8fa",
+  "#fcfdfe",
 ];
 function Architecture({ textures }: { textures: RoomTextures }) {
   const span = ROOM.wallWidth;
@@ -65,7 +65,7 @@ function Architecture({ textures }: { textures: RoomTextures }) {
           <mesh position={[0, -ROOM.height / 2 + 0.018, 0.004]}>
             <planeGeometry args={[span, 0.022]} />
             <meshBasicMaterial
-              color="#b9a083"
+              color="#314d59"
               transparent
               opacity={0.22}
               toneMapped={false}
@@ -73,7 +73,7 @@ function Architecture({ textures }: { textures: RoomTextures }) {
           </mesh>
           <mesh position={[0, -ROOM.height / 2 + 0.05, 0.008]}>
             <planeGeometry args={[span, 0.038]} />
-            <meshBasicMaterial color="#dec8ac" toneMapped={false} />
+            <meshBasicMaterial color="#597f90" toneMapped={false} />
           </mesh>
         </group>
       ))}
@@ -160,7 +160,7 @@ function Painting({
         <boxGeometry args={[outerWidth, outerHeight, 0.085]} />
         <meshStandardMaterial
           ref={remember}
-          color="#e7dccb"
+          color="#bba16f"
           roughness={0.85}
           transparent
           opacity={0}

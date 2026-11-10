@@ -49,6 +49,10 @@ test("discover all eight walls from the center without walking or floor-tap move
   await page.emulateMedia({ reducedMotion: "reduce" });
   await setup(page);
   await page.goto("/");
+  // The development indicator can appear mid-capture over the canvas.
+  await page.addStyleTag({
+    content: "nextjs-portal { display:none !important }",
+  });
   await page.getByRole("button", { name: "部屋に入る" }).click();
   await page.getByRole("button", { name: "気持ちを教える" }).click();
   await page.getByLabel("今の気持ちを教えてください").fill("ひとりで寂しい");

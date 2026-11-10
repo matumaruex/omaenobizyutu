@@ -1,6 +1,6 @@
 import * as THREE from "three";
 
-// Baked soft light and one shared local wood image keep surfaces matte without
+// Muted blue walls, pale wood and baked soft light keep surfaces matte without
 // shadow maps, normal maps or post-processing on phones.
 function canvasTexture(
   size: number,
@@ -24,9 +24,10 @@ function paintSurface(
   surface: Surface,
   wood?: HTMLImageElement,
 ) {
-  ctx.fillStyle = surface === "floor" ? "#dbc2a4" : "#e7cfb3";
+  const wall = surface === "wall";
+  ctx.fillStyle = wall ? "#597f90" : "#ead5b9";
   ctx.fillRect(0, 0, size, size);
-  if (wood) {
+  if (wood && !wall) {
     if (surface === "floor") {
       // Wide planks: varied source strips and staggered ends avoid a tiled grid.
       const count = 20;
@@ -56,8 +57,6 @@ function paintSurface(
         ctx.lineTo((i + 1) * width, end);
         ctx.stroke();
       }
-      ctx.fillStyle = "#79532f0d";
-      ctx.fillRect(0, 0, size, size);
     } else {
       ctx.save();
       if (surface === "ceiling") {
@@ -70,17 +69,17 @@ function paintSurface(
       ctx.strokeStyle = "#785b3b1c";
       ctx.lineWidth = 0.8;
       ctx.beginPath();
-      if (surface === "wall") {
-        ctx.moveTo(size / 2, 0);
-        ctx.lineTo(size / 2, size);
-      } else {
-        for (const x of [size / 3, (size * 2) / 3]) {
-          ctx.moveTo(x, 0);
-          ctx.lineTo(x, size);
-        }
+      for (const x of [size / 3, (size * 2) / 3]) {
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, size);
       }
       ctx.stroke();
     }
+  }
+  if (wood && !wall) {
+    // One pale finish for floor and ceiling preserves matching wood tones.
+    ctx.fillStyle = "#fff5df30";
+    ctx.fillRect(0, 0, size, size);
   }
   const light = ctx.createRadialGradient(
     size * 0.52,
@@ -90,24 +89,24 @@ function paintSurface(
     size / 2,
     size * 0.72,
   );
-  light.addColorStop(0, "#fff9ed16");
-  light.addColorStop(0.6, "#fff9ed04");
-  light.addColorStop(1, "#61472e1a");
+  light.addColorStop(0, wall ? "#e1edf21a" : "#fff9ed16");
+  light.addColorStop(0.6, wall ? "#e1edf204" : "#fff9ed04");
+  light.addColorStop(1, wall ? "#243f4c18" : "#61472e12");
   ctx.fillStyle = light;
   ctx.fillRect(0, 0, size, size);
-  if (surface === "wall") {
+  if (wall) {
     const edges = ctx.createLinearGradient(0, 0, 0, size);
-    edges.addColorStop(0, "#61472e1a");
-    edges.addColorStop(0.08, "#61472e00");
-    edges.addColorStop(0.88, "#61472e00");
-    edges.addColorStop(1, "#61472e20");
+    edges.addColorStop(0, "#243f4c1a");
+    edges.addColorStop(0.08, "#243f4c00");
+    edges.addColorStop(0.88, "#243f4c00");
+    edges.addColorStop(1, "#243f4c20");
     ctx.fillStyle = edges;
     ctx.fillRect(0, 0, size, size);
     const corners = ctx.createLinearGradient(0, 0, size, 0);
-    corners.addColorStop(0, "#61472e18");
-    corners.addColorStop(0.1, "#61472e00");
-    corners.addColorStop(0.9, "#61472e00");
-    corners.addColorStop(1, "#61472e10");
+    corners.addColorStop(0, "#243f4c18");
+    corners.addColorStop(0.1, "#243f4c00");
+    corners.addColorStop(0.9, "#243f4c00");
+    corners.addColorStop(1, "#243f4c10");
     ctx.fillStyle = corners;
     ctx.fillRect(0, 0, size, size);
   }
@@ -132,7 +131,7 @@ export function applyRoomWood(
   textures: ReturnType<typeof createRoomTextures>,
   wood: HTMLImageElement,
 ) {
-  for (const surface of ["wall", "floor", "ceiling"] as const) {
+  for (const surface of ["floor", "ceiling"] as const) {
     const canvas = textures[surface].image as HTMLCanvasElement;
     const ctx = canvas.getContext("2d");
     if (!ctx) continue;
