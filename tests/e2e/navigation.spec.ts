@@ -2,14 +2,19 @@ import { test, expect, type Page } from "@playwright/test";
 import seed from "../../src/data/catalog-seed.json";
 import { setup } from "./fixtures";
 const collection = seed.artworks;
-async function turn(page: Page, mobile: boolean, degrees: number) {
+async function turn(
+  page: Page,
+  mobile: boolean,
+  degrees: number,
+  verticalDrift = 0,
+) {
   const box = (await page.locator("canvas").boundingBox())!;
   const dx = (degrees * Math.PI) / 180 / 0.0024;
   const steps = Math.ceil(Math.abs(dx) / (box.width * 0.4));
   const touch = mobile ? await page.context().newCDPSession(page) : null;
   for (let i = 0; i < steps; i++) {
     const start = { x: box.width / 2 - dx / steps / 2, y: box.height * 0.45 };
-    const end = { x: start.x + dx / steps, y: start.y };
+    const end = { x: start.x + dx / steps, y: start.y + verticalDrift / steps };
     if (touch) {
       await touch.send("Input.dispatchTouchEvent", {
         type: "touchStart",
@@ -112,6 +117,13 @@ test("discover all eight walls from the center without walking or floor-tap move
     await page.getByRole("button", { name: "閉じる", exact: true }).click();
   };
   await pick(0);
+  if (mobile) {
+    // A horizontal turn with finger drift keeps the painting near eye level.
+    await turn(page, true, 45, 120);
+    await pick(7);
+    await turn(page, true, -45, -120);
+    await pick(0);
+  }
   // Every 45-degree turn reveals the next wall, with all eight works selectable.
   expect(exhibition.selections).toHaveLength(8);
   for (const index of [7, 6, 5, 4, 3, 2, 1]) {

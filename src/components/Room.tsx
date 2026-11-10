@@ -246,14 +246,15 @@ function Controls({
       }
       return false;
     };
-    const look = (dx: number, dy: number) => {
+    const look = (dx: number, dy: number, pointerType: string) => {
       yaw.current =
         THREE.MathUtils.euclideanModulo(
           yaw.current + dx * 0.0024 + Math.PI,
           Math.PI * 2,
         ) - Math.PI;
       pitch.current = THREE.MathUtils.clamp(
-        pitch.current + dy * 0.0024,
+        // Keep horizontal swipes steady despite incidental vertical finger drift.
+        pitch.current + dy * (pointerType === "touch" ? 0.0006 : 0.0024),
         -ROOM.lookLimit,
         ROOM.lookLimit,
       );
@@ -289,9 +290,9 @@ function Controls({
         if (!drag.moved) {
           if (drag.distance < 8) return;
           drag.moved = true;
-          look(e.clientX - drag.startX, e.clientY - drag.startY);
+          look(e.clientX - drag.startX, e.clientY - drag.startY, e.pointerType);
         } else {
-          look(dx, dy);
+          look(dx, dy, e.pointerType);
         }
       }
     };
