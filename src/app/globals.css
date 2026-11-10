@@ -692,13 +692,11 @@ svg {
   z-index: 4;
   overflow: hidden;
   color: var(--entrance-white);
-  background-color: #93ae82;
-  /* Display only the blank upper portion of the first approved mockup.
-     Keeping the original pixels avoids another generation changing its green. */
-  background-image: url("/textures/entrance-green.webp");
-  background-size: auto max(450%, 178vw);
-  background-position: center top;
-  background-repeat: no-repeat;
+  /* Match the original green's sampled pigment; render grain at native size. */
+  background-color: #81b178;
+  background-image: url("/textures/entrance-green.svg");
+  background-size: 256px 256px;
+  background-repeat: repeat;
   opacity: 1;
   visibility: visible;
   transition:
@@ -729,10 +727,10 @@ svg {
   /* A translucent chalk layer lets a little pigment show through the type. */
   color: var(--entrance-white);
   background-image:
-    linear-gradient(#f5f3e8f5, #f5f3e8f5), url("/textures/entrance-green.webp");
+    linear-gradient(#f5f3e8f5, #f5f3e8f5), url("/textures/entrance-green.svg");
   background-size:
     auto,
-    360px 1600px;
+    256px 256px;
   background-position:
     center,
     left top;
