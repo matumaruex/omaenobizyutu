@@ -692,11 +692,15 @@ svg {
   z-index: 4;
   overflow: hidden;
   color: var(--entrance-white);
-  /* Match the original green's sampled pigment; render grain at native size. */
-  background-color: #81b178;
-  background-image: url("/textures/entrance-green.svg");
-  background-size: 256px 256px;
-  background-repeat: repeat;
+  /* Approved option 1, complete painted texture. A light color correction
+     matches the selected preview; never enlarge a small cropped fragment. */
+  background-color: #81aa80;
+  background-image:
+    linear-gradient(#8e70c811, #8e70c811),
+    url("/textures/entrance-painted-green.webp");
+  background-size: auto, cover;
+  background-position: center;
+  background-repeat: no-repeat;
   opacity: 1;
   visibility: visible;
   transition:
@@ -727,10 +731,11 @@ svg {
   /* A translucent chalk layer lets a little pigment show through the type. */
   color: var(--entrance-white);
   background-image:
-    linear-gradient(#f5f3e8f5, #f5f3e8f5), url("/textures/entrance-green.svg");
+    linear-gradient(#f5f3e8f5, #f5f3e8f5),
+    url("/textures/entrance-painted-green.webp");
   background-size:
     auto,
-    256px 256px;
+    360px auto;
   background-position:
     center,
     left top;
