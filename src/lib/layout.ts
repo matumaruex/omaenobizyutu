@@ -1,16 +1,31 @@
 import type { Artwork, Slot } from "./types";
 import { EXHIBITION_SIZE } from "../config/exhibition";
-const wallDistance = 6.2;
+const wallDistance = 3.6;
 export const ROOM = {
   wallCount: EXHIBITION_SIZE,
   wallDistance,
   wallWidth: 2 * wallDistance * Math.tan(Math.PI / EXHIBITION_SIZE),
   floorRadius: wallDistance / Math.cos(Math.PI / EXHIBITION_SIZE),
   height: 4.1,
-  eye: 1.65,
-  fov: 58,
+  eye: 1.8,
+  horizontalFov: 90,
   lookLimit: 1.2,
 };
+export const FRAME = { mat: 0.075, rail: 0.026 };
+export const FRAME_BORDER = (FRAME.mat + FRAME.rail) * 2;
+
+// Three.js takes a vertical FOV. Preserve the horizontal composition on phones:
+// the viewport edges pass through the centers of the neighboring wall facets.
+// A minimum vertical field keeps tall frames visible on very wide screens.
+export function roomVerticalFov(aspect: number) {
+  return Math.max(
+    50,
+    (2 *
+      Math.atan(Math.tan((ROOM.horizontalFov * Math.PI) / 360) / aspect) *
+      180) /
+      Math.PI,
+  );
+}
 // Shared wall centers and inward-facing rotations keep frames and architecture
 // aligned. The first wall is straight ahead; the rest follow clockwise.
 export const ROOM_WALLS: Slot[] = Array.from(
@@ -44,6 +59,10 @@ export function exhibitionSlots(count: number): Slot[] {
 }
 export function paintingSize(art: Pick<Artwork, "width" | "height">) {
   const ratio = art.width / art.height;
-  const height = Math.min(2.4, 2.8 / ratio);
+  // Fit the framed work to the wall, preserving the original image ratio.
+  // Very tall works use the height limit rather than being cropped or stretched.
+  const maxWidth = ROOM.wallWidth * 0.78 - FRAME_BORDER;
+  const maxHeight = 3 - FRAME_BORDER;
+  const height = Math.min(maxHeight, maxWidth / ratio);
   return { width: height * ratio, height };
 }

@@ -2,7 +2,14 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
-import { exhibitionSlots, paintingSize, ROOM, ROOM_WALLS } from "@/lib/layout";
+import {
+  exhibitionSlots,
+  paintingSize,
+  ROOM,
+  ROOM_WALLS,
+  FRAME,
+  roomVerticalFov,
+} from "@/lib/layout";
 import { createRoomTextures } from "@/lib/room-materials";
 import type { Exhibit } from "@/lib/types";
 
@@ -98,8 +105,7 @@ function Painting({
   const elapsed = useRef(0);
   const size = paintingSize(exhibit.artwork);
   const { width, height } = size;
-  const mat = 0.075;
-  const rail = 0.026;
+  const { mat, rail } = FRAME;
   const outerWidth = width + (mat + rail) * 2;
   const outerHeight = height + (mat + rail) * 2;
   const slot = paintingSlots[index];
@@ -192,6 +198,15 @@ function Painting({
       </mesh>
     </group>
   );
+}
+function RoomCamera() {
+  const { camera, size } = useThree();
+  useEffect(() => {
+    if (!(camera instanceof THREE.PerspectiveCamera)) return;
+    camera.fov = roomVerticalFov(size.width / size.height);
+    camera.updateProjectionMatrix();
+  }, [camera, size.width, size.height]);
+  return null;
 }
 function Controls({
   active,
@@ -385,7 +400,7 @@ export default function Room(props: Props) {
       camera={{
         position: [0, ROOM.eye, 0],
         rotation: [0, 0, 0],
-        fov: ROOM.fov,
+        fov: 90,
         near: 0.1,
         far: 65,
       }}
@@ -395,6 +410,7 @@ export default function Room(props: Props) {
         gl.setClearColor("#f4f1e9");
       }}
     >
+      <RoomCamera />
       <Architecture textures={textures} />
       <Controls active={props.active} onSelect={props.onSelect} />
       {props.exhibits.map((exhibit, index) => (

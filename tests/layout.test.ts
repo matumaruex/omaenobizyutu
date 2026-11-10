@@ -5,6 +5,8 @@ import {
   paintingSize,
   ROOM,
   ROOM_WALLS,
+  roomVerticalFov,
+  FRAME_BORDER,
 } from "../src/lib/layout";
 import seed from "../src/data/catalog-seed.json";
 
@@ -56,7 +58,12 @@ describe("discovery from the center of an octagonal room", () => {
       ).normalize();
       expect(direction.angleTo(nextDirection)).toBeCloseTo(Math.PI / 4);
       for (const aspect of [390 / 664, 1.44]) {
-        const camera = new PerspectiveCamera(ROOM.fov, aspect, 0.1, 65);
+        const camera = new PerspectiveCamera(
+          roomVerticalFov(aspect),
+          aspect,
+          0.1,
+          65,
+        );
         camera.position.set(0, ROOM.eye, 0);
         camera.lookAt(position);
         camera.updateMatrixWorld();
@@ -73,7 +80,7 @@ describe("discovery from the center of an octagonal room", () => {
           new Vector3(...slots[i].position).distanceTo(
             new Vector3(...slots[j].position),
           ),
-        ).toBeGreaterThan(4);
+        ).toBeGreaterThan(ROOM.wallWidth * 0.8);
   });
 
   it("preserves image proportions and fits the whole frame on a portrait phone", () => {
@@ -85,16 +92,77 @@ describe("discovery from the center of an octagonal room", () => {
     ]) {
       const size = paintingSize({ width, height });
       expect(size.width / size.height).toBeCloseTo(width / height);
-      expect(size.width).toBeLessThanOrEqual(2.80001);
-      expect(size.height).toBeLessThanOrEqual(2.40001);
+      expect(size.width + FRAME_BORDER).toBeLessThanOrEqual(
+        ROOM.wallWidth * 0.78 + 1e-10,
+      );
+      expect(size.height + FRAME_BORDER).toBeLessThanOrEqual(3.00001);
       const visibleWidth =
         2 *
         (ROOM.wallDistance - 0.08) *
-        Math.tan((ROOM.fov * Math.PI) / 360) *
+        Math.tan((roomVerticalFov(390 / 664) * Math.PI) / 360) *
         (390 / 664);
-      expect(size.width + 0.202).toBeLessThan(visibleWidth * 0.9);
-      expect(size.width + 0.202).toBeLessThan(ROOM.wallWidth * 0.9);
-      expect(ROOM.eye - (size.height + 0.202) / 2).toBeGreaterThan(0.25);
+      expect(size.width + FRAME_BORDER).toBeLessThan(visibleWidth * 0.9);
+      expect(ROOM.eye - (size.height + FRAME_BORDER) / 2).toBeGreaterThan(0.25);
+    }
+  });
+
+  it("reveals half of both adjacent walls on phones and after viewport rotation", () => {
+    for (const aspect of [
+      320 / 740,
+      390 / 844,
+      430 / 932,
+      1,
+      1.44,
+      844 / 390,
+      3,
+    ]) {
+      const camera = new PerspectiveCamera(
+        roomVerticalFov(aspect),
+        aspect,
+        0.1,
+        65,
+      );
+      camera.position.set(0, ROOM.eye, 0);
+      for (let i = 0; i < 8; i++) {
+        const front = ROOM_WALLS[i];
+        camera.lookAt(front.position[0], ROOM.eye, front.position[2]);
+        camera.updateMatrixWorld();
+        for (const offset of [-1, 1]) {
+          const neighbor = ROOM_WALLS[(i + offset + 8) % 8];
+          const projected = new Vector3(
+            neighbor.position[0],
+            ROOM.eye,
+            neighbor.position[2],
+          ).project(camera);
+          expect(Math.abs(projected.x)).toBeLessThanOrEqual(1 + 1e-10);
+          if (aspect <= 1.44) expect(Math.abs(projected.x)).toBeCloseTo(1);
+        }
+      }
+      for (const art of seed.artworks) {
+        const size = paintingSize(art);
+        const point = new Vector3(
+          (size.width + FRAME_BORDER) / 2,
+          ROOM.eye + (size.height + FRAME_BORDER) / 2,
+          -(ROOM.wallDistance - 0.08),
+        );
+        camera.lookAt(0, ROOM.eye, -ROOM.wallDistance);
+        camera.updateMatrixWorld();
+        point.project(camera);
+        expect(Math.abs(point.x)).toBeLessThan(1);
+        expect(Math.abs(point.y)).toBeLessThan(1);
+      }
+    }
+  });
+
+  it("fills 70–80% of a wall with normal portrait, square and landscape frames", () => {
+    for (const ratio of [0.75, 1, 1.5, 3, 5]) {
+      const size = paintingSize({ width: ratio, height: 1 });
+      expect(
+        (size.width + FRAME_BORDER) / ROOM.wallWidth,
+      ).toBeGreaterThanOrEqual(0.7);
+      expect((size.width + FRAME_BORDER) / ROOM.wallWidth).toBeLessThanOrEqual(
+        0.8,
+      );
     }
   });
 
