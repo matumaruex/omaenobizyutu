@@ -343,7 +343,7 @@ export default function Museum() {
       </div>
       {!entered && (
         <section className="entrance" aria-labelledby="entrance-heading">
-          <h1 id="entrance-heading">余白の美術館</h1>
+          <h1 id="entrance-heading">お前の美術館</h1>
           <button className="entrance-button" onClick={() => setEntered(true)}>
             部屋に入る <ArrowRight size={16} />
           </button>

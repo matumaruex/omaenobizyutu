@@ -1,4 +1,4 @@
-# 余白の美術館
+# お前の美術館
 
 日本語で書いた気持ちを入口に、GitHubの絵画データベースからXiaomi MiMoが作品を選ぶ3D美術館です。作品の参照元は [matumaruex/kaiga-data](https://github.com/matumaruex/kaiga-data) だけです。
 
