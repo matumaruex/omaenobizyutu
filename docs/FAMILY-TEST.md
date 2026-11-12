@@ -1,5 +1,7 @@
 # 家族向けの試験用入口
 
+> **過去の構成記録（2026-11-12追記）:** 利用者が家族用を不要としたため、現在の運用対象ではありません。以下は当時の手順です。通常作業で家族用ブランチの復活・同期・再配信をしないでください。既存の配信や公開例外が削除済みであるという意味ではありません。現在の案内は [開発ガイド](DEVELOPMENT-GUIDE.md)、履歴への接続は [接続・調査の手順](OPERATIONS.md) を参照してください。
+
 `codex/museum-family-test` のPreviewを招待用の入口に使います。鑑賞・感情入力・MiMo選定・作品解説は通常の確認用アプリと同じです。家族用エイリアスだけにVercelの `alias-protection-override` を設定し、試す人のVercel登録・ログインを不要にします。
 
 招待用URL: https://bijutsukan-git-codex-museum-family-test-matumaruexs-projects.vercel.app/
