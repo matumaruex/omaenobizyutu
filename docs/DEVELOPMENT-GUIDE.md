@@ -28,12 +28,15 @@
 
 ## 目的別の説明書
 
+全体の一覧は [説明書の目次](README.md) を参照してください。現在の仕様・操作方法と、過去の検証・旧運用を分けて案内しています。
+
 | やりたいこと | 読む場所 |
 | --- | --- |
 | 履歴へ接続する、実AIを調べる、鍵がないと言われた | [接続・調査の手順](OPERATIONS.md) |
 | 履歴の内容・保存方法を知る | [履歴](HISTORY.md)、`src/lib/usage/ledger.ts` |
 | 呼び出し上限・料金・タイムアウトを調べる | [API使用量](API-USAGE.md)、`src/lib/usage/` |
 | プレビューの場所・配信方法を確認する | [プレビュー](PREVIEW.md) |
+| 入口・展示室の見た目や操作を調べる | [展示室のデザイン](DESIGN.md) |
 | 候補・最終選定を調べる | `src/lib/ai/tag-profile.ts`、`tag-candidates.ts`、`select.ts`、[履歴](HISTORY.md) |
 | 作品DB・画像を調べる | [作品データ](COLLECTION.md)、[画像の再取得](IMAGE-RECOVERY.md)、`src/lib/catalog/`、`src/lib/images/` |
 | 気持ちのカテゴリを調べる | [気持ちの選択肢](FEELING-CHOICES.md) |
