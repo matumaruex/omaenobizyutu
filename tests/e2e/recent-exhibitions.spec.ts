@@ -80,3 +80,36 @@ test("failed images and cancelled selection never become a recent exhibition", a
     ),
   ).toBeNull();
 });
+
+test("twenty exhibitions survive reload and only the oldest expires after display", async ({
+  page,
+}) => {
+  await setup(page);
+  const history = Array.from({ length: 20 }, (_, i) => [`met-${i + 1}`]);
+  await page.addInitScript(
+    ({ key, history }) => {
+      if (localStorage.getItem(key) === null)
+        localStorage.setItem(key, JSON.stringify(history));
+    },
+    { key: RECENT_EXHIBITIONS_KEY, history },
+  );
+  const requests: { recentExhibitions: string[][] }[] = [];
+  await page.route("**/api/exhibition", (route) => {
+    requests.push(route.request().postDataJSON());
+    return route.fulfill({ json: exhibition() });
+  });
+  await page.goto("/");
+  await page.getByRole("button", { name: "部屋に入る" }).click();
+  await page.getByRole("button", { name: "気持ちを教える" }).click();
+  await page.getByLabel("今の気持ちを教えてください").fill("静かな気持ち");
+  await page.getByRole("button", { name: "展示する" }).click();
+  const read = () =>
+    page.evaluate(
+      (key) => JSON.parse(localStorage.getItem(key)!),
+      RECENT_EXHIBITIONS_KEY,
+    );
+  await expect.poll(read).toEqual([ids, ...history.slice(0, 19)]);
+  expect(requests[0].recentExhibitions).toEqual(history);
+  await page.reload();
+  expect(await read()).toEqual([ids, ...history.slice(0, 19)]);
+});

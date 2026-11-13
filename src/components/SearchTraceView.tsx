@@ -9,6 +9,7 @@ export default function SearchTraceView({
   const aiTags =
     search.method === "ai-tags-v1" || search.method === "ai-tags-v2";
   const sampled = search.method === "ai-tags-v2" || Boolean(search.sampling);
+  const extendedHistory = search.sampling?.version === "weighted-exposure-v2";
   const semantic =
     search.method === "ai-semantic-v1" ||
     search.method === "ai-semantic-v2" ||
@@ -29,9 +30,11 @@ export default function SearchTraceView({
             </li>
             <li>
               プログラムが選ばれたタグから均等に候補を集めます。同じ作者は最大2点、全体で最大24点。一致が少ない場合は他の作品も補います。
-              {sampled
-                ? "新しい展示ごとに抽選し、このブラウザの直近5展示で出た作品は少し出にくくします。再登場は可能です。"
-                : "同条件の順序は入力ごとに変えます。"}
+              {extendedHistory
+                ? "新しい展示ごとに抽選し、このブラウザの直近5展示は強め、6〜20展示前は弱めに再登場を調整します。再登場は可能です。"
+                : sampled
+                  ? "新しい展示ごとに抽選し、このブラウザの直近5展示で出た作品は少し出にくくします。再登場は可能です。"
+                  : "同条件の順序は入力ごとに変えます。"}
               語句の一致点では順位を付けません。
             </li>
             <li>
@@ -41,6 +44,11 @@ export default function SearchTraceView({
               {sampled &&
                 "適合度の数字は渡さず、主題・背景・合う理由・注意事項から判断します。"}
             </li>
+            {extendedHistory && (
+              <li>
+                最終MiMoには鑑賞履歴も伝えます。送るのは、最近・以前・繰り返し見た候補の番号だけです。原文と作品の具体的な接点を優先し、十分に合う未鑑賞作品があれば、小さな適合度の差より新しさを優先します。
+              </li>
+            )}
           </ol>
           <p className="small">
             タグ判定と最終選定を各1回のAPI呼び出しとして記録します。一致タグ数は表示用で、候補の順位には使いません。AI内部の推論過程は記録しません。

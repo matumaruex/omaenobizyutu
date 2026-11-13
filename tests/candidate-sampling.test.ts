@@ -63,7 +63,26 @@ describe("candidate rotation without additional model calls", () => {
         Array.from({ length: 100 }, () => ["a"]),
       ),
     ).toBeGreaterThanOrEqual(0.2);
-    expect(exposureWeight("a", [[], [], [], [], [], ["a"]])).toBe(1);
+    expect(exposureWeight("a", [[], [], [], [], [], ["a"]])).toBeCloseTo(0.97);
+    expect(exposureWeight("a", [...Array(19).fill([]), ["a"]])).toBeCloseTo(
+      0.998,
+    );
+    expect(exposureWeight("a", [...Array(20).fill([]), ["a"]])).toBe(1);
+  });
+  it("keeps all scarce matching works eligible even after repeated viewing", () => {
+    const scarce = seed.selection
+      .slice(0, 8)
+      .map((a, i) => ({ ...a, artistKey: `artist-${i}` }));
+    const recent = Array(20).fill(scarce.map((a) => a.id));
+    const result = retrieveByTags(
+      "怒り",
+      { tags: ["怒り"], negatedTags: [] },
+      scarce,
+      { seed: "scarce", recentExhibitions: recent },
+    );
+    expect(new Set(result.chosen.map((a) => a.id))).toEqual(
+      new Set(scarce.map((a) => a.id)),
+    );
   });
   it("ignores numeric strengths and preserves negation and sparse-tag coverage", () => {
     const altered = seed.selection.map((a) => ({

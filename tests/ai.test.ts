@@ -226,7 +226,7 @@ describe("real SDK request contract, with all upstream HTTP mocked", () => {
     const data = await response.json();
     expect(data.verification.search.method).toBe("ai-tags-v2");
     expect(data.verification.search.sampling).toEqual({
-      version: "weighted-exposure-v1",
+      version: "weighted-exposure-v2",
       seed: req.headers.get("Idempotency-Key"),
       recentExhibitions: [[seed.selection[0].id]],
     });
@@ -242,8 +242,47 @@ describe("real SDK request contract, with all upstream HTTP mocked", () => {
     expect(body).not.toContain("recentExhibitions");
     expect(body).not.toContain('"strength"');
   });
+  it("accepts 20 exhibitions and sends only relevant candidate-number exposure on the second call", async () => {
+    const mock = vi.fn(async (_url, init) => respondTo(init));
+    vi.stubGlobal("fetch", mock);
+    const recentExhibitions = Array.from({ length: 20 }, (_, age) =>
+      seed.selection.slice(age * 8, age * 8 + 8).map((a) => a.id),
+    );
+    const req = request(input, { recentExhibitions });
+    const res = await POST(req);
+    expect(res.status).toBe(200);
+    const result = await res.json();
+    expect(result.verification.search.sampling.recentExhibitions).toHaveLength(
+      20,
+    );
+    expect(mock).toHaveBeenCalledTimes(2);
+    const bodies = mock.mock.calls.map(([, init]) =>
+      JSON.parse(String(init?.body)),
+    );
+    const payloads = bodies.map((b) => JSON.parse(b.messages.at(-1).content));
+    expect(payloads[0].recentlyViewedCandidates).toBeUndefined();
+    const candidates = payloads[1].candidates as {
+      candidate: number;
+      id: string;
+    }[];
+    expect(candidates).toHaveLength(24);
+    const recent = new Set(recentExhibitions.slice(0, 5).flat());
+    const older = new Set(recentExhibitions.slice(5).flat());
+    const recentNumbers = candidates
+      .filter((a) => recent.has(a.id))
+      .map((a) => a.candidate);
+    const olderNumbers = candidates
+      .filter((a) => !recent.has(a.id) && older.has(a.id))
+      .map((a) => a.candidate);
+    expect(payloads[1].recentlyViewedCandidates ?? []).toEqual(recentNumbers);
+    expect(payloads[1].earlierViewedCandidates ?? []).toEqual(olderNumbers);
+    expect(recentNumbers.length + olderNumbers.length).toBeGreaterThan(0);
+    expect(payloads[1].frequentlyViewedCandidates).toBeUndefined();
+    expect(payloads[1].recentExhibitions).toBeUndefined();
+    expect(bodies[1].messages[0].content).not.toContain("八角形");
+  });
   it.each([
-    Array(6).fill(["met-1"]),
+    Array(21).fill(["met-1"]),
     [Array(9).fill("met-1")],
     [["文章を作品IDとして送る"]],
     "invalid",

@@ -1,12 +1,13 @@
 import { describe, expect, it } from "vitest";
 import {
+  candidateExposure,
   createRecentExhibitionsStore,
   normalizeRecentExhibitions,
   RECENT_EXHIBITIONS_KEY,
 } from "../src/lib/recent-exhibitions";
 
 describe("browser-local recent exhibitions", () => {
-  it("stores only IDs, keeps the latest five exhibitions, and survives a fresh instance", () => {
+  it("stores only IDs, keeps the latest twenty exhibitions, and survives a fresh instance", () => {
     const values = new Map<string, string>();
     const storage = {
       getItem: (key: string) => values.get(key) ?? null,
@@ -15,10 +16,13 @@ describe("browser-local recent exhibitions", () => {
       },
     };
     const a = createRecentExhibitionsStore(() => storage);
-    for (let i = 1; i <= 7; i++)
+    for (let i = 1; i <= 23; i++)
       a.remember([`met-${i}`, `met-${i}`, "入力文", "aic-12"]);
     expect(a.read()).toEqual(
-      [7, 6, 5, 4, 3].map((i) => [`met-${i}`, "aic-12"]),
+      Array.from({ length: 20 }, (_, i) => 23 - i).map((i) => [
+        `met-${i}`,
+        "aic-12",
+      ]),
     );
     expect(createRecentExhibitionsStore(() => storage).read()).toEqual(
       a.read(),
@@ -63,11 +67,59 @@ describe("browser-local recent exhibitions", () => {
         ["bad", "met-2", "met-2"],
         ...Array(20).fill(["aic-3"]),
       ]),
-    ).toEqual([[], ["met-2"], ["aic-3"], ["aic-3"], ["aic-3"]]);
+    ).toEqual([[], ["met-2"], ...Array(18).fill(["aic-3"])]);
     expect(
       normalizeRecentExhibitions([
         Array.from({ length: 20 }, (_, i) => `met-${i + 1}`),
       ])[0],
     ).toHaveLength(8);
+  });
+});
+
+describe("bounded exposure metadata", () => {
+  it("keeps old five-entry storage and accepts twenty full, longest-ID groups", () => {
+    let raw = JSON.stringify(
+      Array.from({ length: 5 }, (_, i) => [`met-${i + 1}`]),
+    );
+    const storage = {
+      getItem: () => raw,
+      setItem: (_key: string, value: string) => {
+        raw = value;
+      },
+    };
+    const store = createRecentExhibitionsStore(() => storage);
+    expect(store.read()).toHaveLength(5);
+    store.remember(["aic-20"]);
+    expect(store.read().slice(1)).toEqual(
+      Array.from({ length: 5 }, (_, i) => [`met-${i + 1}`]),
+    );
+    const full = Array.from({ length: 20 }, (_, i) =>
+      Array.from(
+        { length: 8 },
+        (_, j) => `met-${1000000000000000 + i * 8 + j}`,
+      ),
+    );
+    raw = JSON.stringify(full);
+    expect(raw.length).toBeLessThanOrEqual(5000);
+    expect(createRecentExhibitionsStore(() => storage).read()).toEqual(full);
+  });
+  it("sends only candidate numbers, separates recent/older and counts exhibitions not duplicate IDs", () => {
+    const history = Array.from({ length: 21 }, () => [] as string[]);
+    history[0] = ["met-1", "met-1", "met-99"];
+    history[4] = ["met-2"];
+    history[5] = ["met-2", "met-3"];
+    history[19] = ["met-2", "met-3", "met-4"];
+    history[20] = ["met-5"];
+    expect(
+      candidateExposure(
+        ["met-4", "met-2", "met-1", "met-3", "met-5", "met-6"],
+        history,
+      ),
+    ).toEqual({
+      recentlyViewedCandidates: [2, 3],
+      earlierViewedCandidates: [1, 4],
+      frequentlyViewedCandidates: [2],
+    });
+    expect(candidateExposure(["met-1"], [])).toEqual({});
   });
 });

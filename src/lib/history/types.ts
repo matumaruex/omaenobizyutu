@@ -2,7 +2,7 @@ import type { Role } from "../types";
 import type { UsageRecord } from "../usage/types";
 export interface SearchTrace {
   sampling?: {
-    version: "weighted-exposure-v1";
+    version: "weighted-exposure-v1" | "weighted-exposure-v2";
     seed: string;
     recentExhibitions: readonly (readonly string[])[];
   };

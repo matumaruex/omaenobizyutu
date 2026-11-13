@@ -1,6 +1,11 @@
 import { createHash } from "node:crypto";
 import type { CatalogMaterial } from "../types";
 import type { TagProfile } from "./tag-profile";
+import {
+  RECENT_EXHIBITIONS_LIMIT,
+  RECENT_STRONG_LIMIT,
+  RECENT_WORKS_LIMIT,
+} from "../recent-exhibitions";
 import { CANDIDATE_COUNT } from "./candidates";
 
 export interface CandidateSampling {
@@ -16,13 +21,19 @@ export function exposureWeight(
   const factors = [0.45, 0.65, 0.8, 0.9, 0.95];
   return Math.max(
     0.2,
-    recent
-      .slice(0, 5)
-      .reduce(
-        (weight, ids, index) =>
-          weight * (ids.slice(0, 8).includes(id) ? factors[index] : 1),
-        1,
-      ),
+    recent.slice(0, RECENT_EXHIBITIONS_LIMIT).reduce((weight, ids, index) => {
+      // Older exhibitions fade gently from 0.97 (sixth) to 0.998 (20th).
+      const factor =
+        index < RECENT_STRONG_LIMIT
+          ? factors[index]
+          : 1 -
+            0.03 *
+              ((RECENT_EXHIBITIONS_LIMIT - index) /
+                (RECENT_EXHIBITIONS_LIMIT - RECENT_STRONG_LIMIT));
+      return (
+        weight * (ids.slice(0, RECENT_WORKS_LIMIT).includes(id) ? factor : 1)
+      );
+    }, 1),
   );
 }
 
