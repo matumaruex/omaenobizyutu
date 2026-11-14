@@ -1,0 +1,787 @@
+"use client";
+import dynamic from "next/dynamic";
+import { Component, useCallback, useEffect, useRef, useState } from "react";
+import {
+  ArrowRight,
+  Compass,
+  LoaderCircle,
+  SlidersHorizontal,
+  X,
+} from "lucide-react";
+import type { Exhibit, Exhibition, SelectionReview } from "@/lib/types";
+import ArtworkView from "./ArtworkView";
+import Dialog from "./Dialog";
+import SelectionReviewView from "./SelectionReviewView";
+import HistoryView from "./HistoryView";
+import UsageView, { UsageDetails } from "./UsageView";
+import type { AccountingResult } from "@/lib/usage/types";
+import { createRecentExhibitionsStore } from "@/lib/recent-exhibitions";
+import {
+  FEELING_CHOICES,
+  UNKNOWN_FEELING,
+  feelingInput,
+} from "@/lib/feeling-choices";
+const Room = dynamic(() => import("./Room"), {
+  ssr: false,
+  loading: () => (
+    <div className="room-loading">
+      空間を準備しています
+      <span className="loading-line" />
+    </div>
+  ),
+});
+class CanvasBoundary extends Component<
+  { children: React.ReactNode; onError: () => void },
+  { failed: boolean }
+> {
+  state = { failed: false };
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  componentDidCatch() {
+    this.props.onError();
+  }
+  render() {
+    return this.state.failed ? null : this.props.children;
+  }
+}
+export default function Museum() {
+  const [entered, setEntered] = useState(false);
+  const [formOpen, setFormOpen] = useState(false),
+    [text, setText] = useState("");
+  const [chooseFeeling, setChooseFeeling] = useState(false);
+  const [feelingChoices, setFeelingChoices] = useState<string[]>([]);
+  const inputText = chooseFeeling
+    ? feelingInput(feelingChoices, text)
+    : text.trim();
+  const canSubmit = inputText.length > 0 && inputText.length <= 800;
+  const [aiAvailable, setAIAvailable] = useState<boolean | null>(null);
+  const [reviewEnabled, setReviewEnabled] = useState(false);
+  const [inspectionAvailable, setInspectionAvailable] = useState(false);
+  const [review, setReview] = useState<SelectionReview | null>(null);
+  const [reviewOpen, setReviewOpen] = useState(false);
+  const [usageOpen, setUsageOpen] = useState<"settings" | "form" | null>(null);
+  const [historyOpen, setHistoryOpen] = useState<"settings" | "form" | null>(
+    null,
+  );
+  const submitting = useRef(false);
+  const recentExhibitions = useRef<ReturnType<
+    typeof createRecentExhibitionsStore
+  > | null>(null);
+  if (!recentExhibitions.current)
+    recentExhibitions.current = createRecentExhibitionsStore();
+  const [lastAccounting, setLastAccounting] = useState<AccountingResult | null>(
+    null,
+  );
+  const [exhibitionVersion, setExhibitionVersion] = useState(0);
+  const [exhibition, setExhibition] = useState<Exhibition | null>(null),
+    [exhibits, setExhibits] = useState<Exhibit[]>([]);
+  const [selected, setSelected] = useState<string | null>(null),
+    [settings, setSettings] = useState(false),
+    [list, setList] = useState(false);
+  const [phase, setPhase] = useState<
+    "idle" | "selecting" | "loading" | "fading" | "ready"
+  >("idle");
+  const [progress, setProgress] = useState({ done: 0, total: 0 }),
+    [error, setError] = useState("");
+  const [lowQuality, setLowQuality] = useState(false),
+    [reducedMotion, setReducedMotion] = useState(false),
+    [webglError, setWebglError] = useState(false);
+  const [roomVisit, setRoomVisit] = useState(0);
+  const abort = useRef<AbortController | null>(null),
+    pendingImages = useRef<HTMLImageElement[]>([]);
+  const mounted = useRef(true);
+  useEffect(() => {
+    mounted.current = true;
+    fetch("/api/config")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (mounted.current) {
+          setAIAvailable(Boolean(d?.aiAvailable));
+          setInspectionAvailable(d?.inspectionAvailable === true);
+        }
+      })
+      .catch(() => {});
+    const media = matchMedia("(prefers-reduced-motion: reduce)");
+    setReducedMotion(media.matches);
+    const change = () => setReducedMotion(media.matches);
+    media.addEventListener("change", change);
+    setLowQuality(matchMedia("(max-width: 760px)").matches);
+    try {
+      const canvas = document.createElement("canvas");
+      if (!canvas.getContext("webgl2")) setWebglError(true);
+    } catch {
+      setWebglError(true);
+    }
+    return () => {
+      mounted.current = false;
+      abort.current?.abort();
+      pendingImages.current.forEach((img) => {
+        img.src = "";
+      });
+      media.removeEventListener("change", change);
+    };
+  }, []);
+  const select = useCallback((id: string) => {
+    document.exitPointerLock?.();
+    setSelected(id);
+  }, []);
+  const failWebgl = useCallback(() => setWebglError(true), []);
+  const busy = ["selecting", "loading", "fading"].includes(phase);
+  const active =
+    entered &&
+    !formOpen &&
+    !selected &&
+    !settings &&
+    !list &&
+    !reviewOpen &&
+    !usageOpen &&
+    !historyOpen &&
+    !busy;
+  function openForm() {
+    document.exitPointerLock?.();
+    setFormOpen(true);
+    setText("");
+    setFeelingChoices([]);
+    setChooseFeeling(false);
+    setError("");
+  }
+  function leaveRoom() {
+    submitting.current = false;
+    setUsageOpen(null);
+    setHistoryOpen(null);
+    setLastAccounting(null);
+    abort.current?.abort();
+    document.exitPointerLock?.();
+    setEntered(false);
+    setFormOpen(false);
+    setText("");
+    setFeelingChoices([]);
+    setChooseFeeling(false);
+    setError("");
+    setPhase("idle");
+    setSelected(null);
+    setList(false);
+    setReview(null);
+    setReviewOpen(false);
+    setExhibition(null);
+    setExhibits([]);
+    setRoomVisit((visit) => visit + 1);
+  }
+  async function createExhibition(e: React.FormEvent) {
+    e.preventDefault();
+    if (!canSubmit || busy || submitting.current) return;
+    submitting.current = true;
+    abort.current?.abort();
+    const controller = new AbortController();
+    abort.current = controller;
+    setError("");
+    setPhase("selecting");
+    try {
+      const response = await fetch("/api/exhibition", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Idempotency-Key": crypto.randomUUID(),
+        },
+        body: JSON.stringify({
+          text: inputText,
+          recentExhibitions: recentExhibitions.current!.read(),
+        }),
+        signal: controller.signal,
+      });
+      const data = await response.json();
+      if (controller.signal.aborted || !mounted.current) return;
+      const accounting = data.verification?.accounting || data.accounting;
+      if (accounting) setLastAccounting(accounting);
+      if (!response.ok)
+        throw new Error(data.error || "選定に接続できませんでした。");
+      const result = data as Exhibition;
+      if (controller.signal.aborted || !mounted.current) return;
+      setReview({ input: inputText, exhibition: result, displayedIds: [] });
+      const candidates = result.selections.flatMap((selection) =>
+        selection.artwork ? [{ ...selection, artwork: selection.artwork }] : [],
+      );
+      setPhase("loading");
+      setProgress({ done: 0, total: candidates.length });
+      // Three concurrent decoded images, never an unbounded texture load.
+      const loaded: Exhibit[] = [];
+      let cursor = 0,
+        done = 0;
+      const load = async () => {
+        while (cursor < candidates.length && !controller.signal.aborted) {
+          const exhibit = candidates[cursor++];
+          const img = new Image();
+          pendingImages.current.push(img);
+          const success = await new Promise<boolean>((resolve) => {
+            let finished = false;
+            let retried = false;
+            let retryTimer: ReturnType<typeof setTimeout> | undefined;
+            const finish = (ok: boolean) => {
+              if (finished) return;
+              finished = true;
+              clearTimeout(timer);
+              clearTimeout(retryTimer);
+              controller.signal.removeEventListener("abort", cancel);
+              img.onload = null;
+              img.onerror = null;
+              resolve(ok);
+            };
+            const cancel = () => {
+              finish(false);
+              img.src = "";
+            };
+            const timer = setTimeout(() => {
+              finish(false);
+              img.src = "";
+            }, 70000);
+            controller.signal.addEventListener("abort", cancel, { once: true });
+            const retryOrFinish = () => {
+              if (finished || controller.signal.aborted) return;
+              if (retried) return finish(false);
+              retried = true;
+              retryTimer = setTimeout(() => {
+                if (finished || controller.signal.aborted) return;
+                const retryUrl = new URL(
+                  exhibit.artwork.localImage,
+                  window.location.origin,
+                );
+                retryUrl.searchParams.set("imageRetry", "1");
+                img.src = retryUrl.href;
+              }, 300);
+            };
+            img.onload = () => {
+              img
+                .decode()
+                .then(() => finish(true))
+                .catch(retryOrFinish);
+            };
+            img.onerror = retryOrFinish;
+            img.src = exhibit.artwork.localImage;
+          });
+          if (success)
+            loaded.push({
+              ...exhibit,
+              artwork: {
+                ...exhibit.artwork,
+                width: img.naturalWidth,
+                height: img.naturalHeight,
+              },
+              image: img,
+            });
+          done++;
+          if (mounted.current && !controller.signal.aborted)
+            setProgress({ done, total: candidates.length });
+        }
+      };
+      await Promise.all([load(), load(), load()]);
+      pendingImages.current = [];
+      if (controller.signal.aborted || !mounted.current) return;
+      loaded.sort(
+        (a, b) =>
+          candidates.findIndex((c) => c.id === a.id) -
+          candidates.findIndex((c) => c.id === b.id),
+      );
+      setReview({
+        input: inputText,
+        exhibition: result,
+        displayedIds: loaded.map((a) => a.id),
+      });
+      const recordId = result.verification.accounting?.record.id;
+      if (recordId) {
+        const reportController = new AbortController();
+        const reportTimer = setTimeout(() => reportController.abort(), 5000);
+        // One small, free report. Do not delay the exhibition or call MiMo again.
+        void fetch(`/api/history/${recordId}/display`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ displayedIds: loaded.map((a) => a.id) }),
+          signal: reportController.signal,
+          keepalive: true,
+        })
+          .catch(() => {})
+          .finally(() => clearTimeout(reportTimer));
+      }
+      if (loaded.length < 4)
+        throw new Error(
+          "作品画像を十分に読み込めませんでした。通信を確認して、もう一度お試しください。",
+        );
+      setPhase("fading");
+      // Wait for the actual transition; reduced-motion users skip this pause.
+      if (exhibits.length && !reducedMotion)
+        await new Promise((resolve) => setTimeout(resolve, 650));
+      if (controller.signal.aborted || !mounted.current) return;
+      setExhibitionVersion((v) => v + 1);
+      setExhibits(loaded);
+      setExhibition({
+        ...result,
+        selections: loaded.map(({ id, role, reason }) => ({
+          id,
+          role,
+          reason,
+        })),
+      });
+      setText("");
+      setFeelingChoices([]);
+      setChooseFeeling(false);
+      setFormOpen(false);
+      setPhase("ready");
+      recentExhibitions.current!.remember(loaded.map((a) => a.id));
+      if (loaded.length < candidates.length)
+        setError(
+          "一部の画像を読み込めなかったため、読み込めた作品だけで展示しました。",
+        );
+    } catch (failure) {
+      if (controller.signal.aborted) return;
+      setError(
+        failure instanceof Error
+          ? failure.message
+          : "展示を作れませんでした。もう一度お試しください。",
+      );
+      setPhase("idle");
+    } finally {
+      if (abort.current === controller) submitting.current = false;
+    }
+  }
+  const viewed = exhibits.find((e) => e.id === selected);
+  return (
+    <main
+      className={`museum ${entered ? "is-entered" : ""} ${reducedMotion ? "reduce-motion" : ""}`}
+    >
+      <div className="room-layer">
+        {!webglError && (
+          <CanvasBoundary onError={failWebgl}>
+            <Room
+              exhibits={exhibits}
+              exhibitionVersion={exhibitionVersion}
+              fading={phase === "fading"}
+              active={active}
+              reducedMotion={reducedMotion}
+              lowQuality={lowQuality}
+              onSelect={select}
+              key={roomVisit}
+            />
+          </CanvasBoundary>
+        )}
+        {webglError && (
+          <div className="no-webgl">
+            <Compass size={24} />
+            <p>この環境では3Dを表示できません。</p>
+            <span>展示の作成と、作品一覧からの鑑賞をご利用いただけます。</span>
+          </div>
+        )}
+      </div>
+      <section
+        className="entrance"
+        aria-labelledby="entrance-heading"
+        aria-hidden={entered}
+        inert={entered}
+      >
+        <h1 id="entrance-heading" aria-label="お前の美術館">
+          <span>お前の</span>
+          <span>美術館</span>
+        </h1>
+        <button className="entrance-button" onClick={() => setEntered(true)}>
+          部屋に入る <ArrowRight size={16} />
+        </button>
+        <div className="entrance-tools">
+          <button
+            className="icon-button"
+            onClick={() => {
+              document.exitPointerLock?.();
+              setSettings(true);
+            }}
+            aria-label="表示設定"
+          >
+            <SlidersHorizontal size={18} />
+          </button>
+        </div>
+      </section>
+      {entered && (
+        <>
+          <button className="leave-room" onClick={leaveRoom}>
+            部屋から出る
+          </button>
+          {formOpen && (
+            <section className="feeling-panel" aria-label="気持ちを入力">
+              {!busy && (
+                <button
+                  className="icon-button form-close"
+                  onClick={() => setFormOpen(false)}
+                  aria-label={exhibition ? "展示に戻る" : "部屋を見回す"}
+                >
+                  <X size={16} />
+                </button>
+              )}
+              {aiAvailable === false && (
+                <p className="form-error" role="status">
+                  MiMoの接続設定が完了していません。
+                </p>
+              )}
+              <form
+                className={`feeling-form${chooseFeeling ? " feeling-form-choices" : ""}`}
+                onSubmit={createExhibition}
+              >
+                <div
+                  className="feeling-input-modes"
+                  aria-label="気持ちの入力方法"
+                >
+                  <button
+                    type="button"
+                    aria-pressed={!chooseFeeling}
+                    disabled={busy}
+                    onClick={() => setChooseFeeling(false)}
+                  >
+                    自分の言葉で書く
+                  </button>
+                  <button
+                    type="button"
+                    aria-pressed={chooseFeeling}
+                    disabled={busy}
+                    onClick={() => setChooseFeeling(true)}
+                  >
+                    近い感覚から選ぶ
+                  </button>
+                </div>
+                {chooseFeeling && (
+                  <fieldset className="feeling-choices" disabled={busy}>
+                    <legend>近いものを、ふたつまで</legend>
+                    <div className="feeling-choice-grid">
+                      {[...FEELING_CHOICES, UNKNOWN_FEELING].map((choice) => {
+                        const selected = feelingChoices.includes(choice);
+                        const unknown = choice === UNKNOWN_FEELING;
+                        return (
+                          <button
+                            key={choice}
+                            type="button"
+                            aria-pressed={selected}
+                            className={
+                              unknown ? "feeling-choice-unknown" : undefined
+                            }
+                            disabled={
+                              !selected &&
+                              !unknown &&
+                              feelingChoices.length >= 2
+                            }
+                            onClick={() =>
+                              setFeelingChoices((current) =>
+                                selected
+                                  ? current.filter((value) => value !== choice)
+                                  : unknown
+                                    ? [choice]
+                                    : [
+                                        ...current.filter(
+                                          (value) => value !== UNKNOWN_FEELING,
+                                        ),
+                                        choice,
+                                      ],
+                              )
+                            }
+                          >
+                            {choice}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </fieldset>
+                )}
+                <label htmlFor="feeling">
+                  {chooseFeeling
+                    ? "言葉を足す（任意）"
+                    : "今の気持ちを教えてください"}
+                </label>
+                <textarea
+                  id="feeling"
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                  maxLength={800}
+                  placeholder={chooseFeeling ? "選ぶだけでも大丈夫" : undefined}
+                  disabled={busy}
+                  rows={2}
+                />
+                {inputText.length > 800 && (
+                  <p className="form-error" role="status">
+                    選んだ感覚と言葉を合わせて800文字以内にしてください。
+                  </p>
+                )}
+                <div className="form-bottom">
+                  <span>
+                    {inputText.length > 0 ? `${inputText.length} / 800` : ""}
+                  </span>
+                  <button
+                    type="submit"
+                    className="create-button"
+                    disabled={!canSubmit || busy}
+                  >
+                    {busy ? (
+                      <>
+                        <LoaderCircle size={15} className="spin" />
+                        選定中
+                      </>
+                    ) : (
+                      <>
+                        展示する
+                        <ArrowRight size={17} />
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+              {exhibition && !busy && (
+                <button
+                  className="text-button artwork-list-button"
+                  onClick={() => {
+                    setFormOpen(false);
+                    setList(true);
+                  }}
+                >
+                  作品一覧
+                </button>
+              )}
+              {inspectionAvailable && reviewEnabled && review && !busy && (
+                <button
+                  className="text-button"
+                  onClick={() => {
+                    setReviewOpen(true);
+                    setFormOpen(false);
+                  }}
+                >
+                  選定結果を確認（試験用）
+                </button>
+              )}
+              {inspectionAvailable && reviewEnabled && !busy && (
+                <button
+                  className="text-button"
+                  onClick={() => {
+                    setFormOpen(false);
+                    setUsageOpen("form");
+                  }}
+                >
+                  API使用量・料金（試験用）
+                </button>
+              )}
+              {inspectionAvailable &&
+                reviewEnabled &&
+                lastAccounting &&
+                !busy && (
+                  <section aria-label="直近のAPI使用量">
+                    <h3>直近のAPI使用量</h3>
+                    <UsageDetails accounting={lastAccounting} />
+                    {!lastAccounting.persisted && (
+                      <p role="alert">
+                        選定結果・使用量を保存できませんでした。履歴や累計に反映されていない可能性があります。自動再送はしません。
+                      </p>
+                    )}
+                  </section>
+                )}
+              {inspectionAvailable && reviewEnabled && !busy && (
+                <button
+                  className="text-button"
+                  onClick={() => {
+                    setFormOpen(false);
+                    setHistoryOpen("form");
+                  }}
+                >
+                  選定・料金の履歴（試験用）
+                </button>
+              )}
+              <p className="privacy-note">
+                {inspectionAvailable ? (
+                  <>
+                    入力文と候補作品の資料をXiaomi
+                    MiMoへ送信します。API利用料が発生します。
+                    入力文・選定結果・使用量と推定料金を、試験記録として保存します。
+                  </>
+                ) : (
+                  <>
+                    作品の選定にAIを使用します。入力文・選定結果は、試験・改善のために運営側へ記録されます。
+                  </>
+                )}
+              </p>
+              {error && (
+                <div className="form-error" role="alert">
+                  {error}
+                </div>
+              )}
+              {busy && (
+                <div
+                  className="progress-status"
+                  role="status"
+                  aria-live="polite"
+                >
+                  <span className="loading-line" />
+                  {phase === "selecting"
+                    ? "言葉の背景から、作品を選んでいます。"
+                    : phase === "loading"
+                      ? `作品の画像を準備しています。 ${progress.done} / ${progress.total}`
+                      : "前の展示が、静かに消えていきます。"}
+                  <button
+                    className="text-button"
+                    onClick={() => {
+                      abort.current?.abort();
+                      submitting.current = false;
+                      setPhase("idle");
+                    }}
+                  >
+                    キャンセル
+                  </button>
+                </div>
+              )}
+            </section>
+          )}
+          {!formOpen && (
+            <>
+              <div className="room-actions">
+                <button className="pill-button" onClick={openForm}>
+                  気持ちを教える
+                </button>
+              </div>
+              {error && (
+                <div className="toast" role="status">
+                  {error}
+                  <button
+                    className="icon-button"
+                    onClick={() => setError("")}
+                    aria-label="通知を閉じる"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+        </>
+      )}
+      {viewed && (
+        <ArtworkView
+          key={viewed.id}
+          exhibit={viewed}
+          onClose={() => setSelected(null)}
+        />
+      )}
+      {settings && (
+        <Dialog title="表示設定" onClose={() => setSettings(false)}>
+          <span className="eyebrow">YOUR COMFORT</span>
+          <h2>心地よい、余白に。</h2>
+          <label className="setting-row">
+            <span>
+              描画を軽くする<small>スマートフォンや動きが重いときに</small>
+            </span>
+            <input
+              type="checkbox"
+              checked={lowQuality}
+              onChange={(e) => setLowQuality(e.target.checked)}
+            />
+          </label>
+          <label className="setting-row">
+            <span>
+              動きを減らす<small>作品のフェードインを省略します</small>
+            </span>
+            <input
+              type="checkbox"
+              checked={reducedMotion}
+              onChange={(e) => setReducedMotion(e.target.checked)}
+            />
+          </label>
+          {inspectionAvailable && (
+            <>
+              <label className="setting-row">
+                <span>
+                  選定結果を確認する
+                  <small>試験用。入力欄から結果を開けます</small>
+                </span>
+                <input
+                  type="checkbox"
+                  checked={reviewEnabled}
+                  onChange={(e) => setReviewEnabled(e.target.checked)}
+                />
+              </label>
+              {inspectionAvailable && reviewEnabled && (
+                <button
+                  className="text-button"
+                  onClick={() => {
+                    setSettings(false);
+                    setUsageOpen("settings");
+                  }}
+                >
+                  API使用量・料金（試験用）
+                </button>
+              )}
+              <button
+                className="text-button"
+                onClick={() => {
+                  setSettings(false);
+                  setHistoryOpen("settings");
+                }}
+              >
+                選定・料金の履歴（試験用）
+              </button>
+            </>
+          )}
+          <p className="license-note">
+            {inspectionAvailable
+              ? "作品はGitHubの絵画DBから、MiMoが選定します。入力文・検索候補・選定結果・使用量・推定料金・日時を試験記録として保存します。部屋から出ても履歴は残ります。"
+              : "作品の選定にAIを使用します。入力文・選定結果は、試験・改善のために運営側へ記録されます。"}
+            同じ作品が続くのを抑えるため、このブラウザに直近20展示の作品IDを保存します。
+          </p>
+        </Dialog>
+      )}
+      {inspectionAvailable && historyOpen && (
+        <HistoryView
+          onClose={() => {
+            if (historyOpen === "settings") setSettings(true);
+            else setFormOpen(true);
+            setHistoryOpen(null);
+          }}
+        />
+      )}
+      {inspectionAvailable && usageOpen && (
+        <UsageView
+          onClose={() => {
+            if (usageOpen === "settings") setSettings(true);
+            else setFormOpen(true);
+            setUsageOpen(null);
+          }}
+        />
+      )}
+      {inspectionAvailable && reviewOpen && review && (
+        <SelectionReviewView
+          review={review}
+          onClose={() => {
+            setReviewOpen(false);
+            setFormOpen(true);
+          }}
+        />
+      )}
+      {list && (
+        <Dialog
+          title="展示作品一覧"
+          onClose={() => setList(false)}
+          className="list-dialog"
+        >
+          <span className="eyebrow">THE COLLECTION</span>
+          <h2>{exhibition?.title}</h2>
+          <p className="small">気になる一枚を、選んでください。</p>
+          <div className="artwork-grid">
+            {exhibits.map((exhibit) => (
+              <button
+                key={exhibit.id}
+                onClick={() => {
+                  setList(false);
+                  select(exhibit.id);
+                }}
+              >
+                <img
+                  src={exhibit.artwork.localImage}
+                  alt={exhibit.artwork.titleJa}
+                />
+                <span>{exhibit.artwork.titleJa}</span>
+                <small>{exhibit.artwork.artist}</small>
+              </button>
+            ))}
+          </div>
+        </Dialog>
+      )}
+    </main>
+  );
+}
