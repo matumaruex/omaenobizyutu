@@ -690,14 +690,15 @@ svg {
   z-index: 4;
   overflow: hidden;
   color: var(--entrance-white);
-  /* Approved option 1, complete painted texture. A light color correction
-     matches the selected preview; never enlarge a small cropped fragment. */
-  background-color: #81aa80;
+  /* The mirrored doorway has separate compositions for wide and tall screens. */
+  background-color: #707962;
   background-image:
-    linear-gradient(#8e70c811, #8e70c811),
-    url("/textures/entrance-painted-green.webp");
+    linear-gradient(90deg, #18251d54, #18251d18 45%, transparent 65%),
+    url("/textures/entrance-mirror-door-landscape.webp");
   background-size: auto, cover;
-  background-position: center;
+  background-position:
+    center,
+    center top;
   background-repeat: no-repeat;
   opacity: 1;
   visibility: visible;
@@ -719,27 +720,15 @@ svg {
   top: 26%;
   margin: 0;
   font-family: "Entrance Mincho", var(--serif);
-  font-size: clamp(52px, 13vw, 108px);
+  font-size: clamp(52px, 7.5vw, 100px);
   font-weight: 400;
   line-height: 1.4;
   letter-spacing: 0.04em;
+  text-shadow: 0 2px 20px #1b291d40;
 }
 .entrance h1 span {
   display: block;
-  /* A translucent chalk layer lets a little pigment show through the type. */
   color: var(--entrance-white);
-  background-image:
-    linear-gradient(#f5f3e8f5, #f5f3e8f5),
-    url("/textures/entrance-painted-green.webp");
-  background-size:
-    auto,
-    360px auto;
-  background-position:
-    center,
-    left top;
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
 }
 .entrance-button {
   position: absolute;
@@ -787,6 +776,49 @@ svg {
   .entrance-button {
     bottom: 22%;
     font-size: 20px;
+  }
+}
+@media (max-aspect-ratio: 1/1) {
+  .entrance {
+    background-image:
+      linear-gradient(#18251d20, transparent 40%),
+      url("/textures/entrance-mirror-door-portrait.webp");
+    background-position: center;
+  }
+  .entrance h1 {
+    top: max(13%, calc(env(safe-area-inset-top) + 24px));
+    left: 0;
+    width: 100%;
+    padding: 0 24px;
+    text-align: center;
+    font-size: clamp(30px, 8.4vw, 52px);
+    line-height: 1.5;
+    letter-spacing: 0.08em;
+  }
+  .entrance h1 span {
+    display: inline;
+  }
+  .entrance-button {
+    left: 50%;
+    bottom: max(4%, calc(env(safe-area-inset-bottom) + 16px));
+    transform: translateX(-50%);
+    gap: 16px;
+    padding: 12px 22px;
+    border: 1px solid #e6e0c655;
+    border-radius: 2px;
+    background: #29392ee8;
+    font-size: 19px;
+    white-space: nowrap;
+    backdrop-filter: blur(6px);
+  }
+  .entrance-button::after {
+    display: none;
+  }
+  .entrance .icon-button {
+    background: #29392ecf;
+  }
+  .entrance .icon-button:hover {
+    background: #29392e;
   }
 }
 .feeling-panel {
