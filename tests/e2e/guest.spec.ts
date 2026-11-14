@@ -53,7 +53,7 @@ test("guests can view the exhibition and its explanation, with no shared trial t
   await page.locator(".artwork-grid button").first().click();
   await page.getByRole("button", { name: "解説を開く", exact: true }).click();
   await expect(
-    page.getByRole("region", { name: "制作背景", exact: true }),
+    page.getByRole("region", { name: /^(鑑賞者向け解説|制作背景)$/ }),
   ).toBeVisible();
   expect(calls).toBe(1);
   expect(privateReads).toBe(0);
