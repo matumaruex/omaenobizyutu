@@ -2,7 +2,7 @@
 
 日本語で書いた気持ちを入口に、GitHubの絵画データベースからXiaomi MiMoが作品を選ぶ3D美術館です。作品の参照元は [matumaruex/kaiga-data](https://github.com/matumaruex/kaiga-data) だけです。
 
-開発を引き継ぐときは [開発ガイド](docs/DEVELOPMENT-GUIDE.md) が入口です。履歴への接続や実AI試験の方法は [接続・調査の手順](docs/OPERATIONS.md) を必要なときに参照してください。アプリのリポジトリは `matumaruex/omaenobizyutu`、通常の作業先は `codex/museum-preview` です。
+開発を引き継ぐときは、AIは [AGENTS.md](AGENTS.md) から、作業内容の確認は [開発ガイド](docs/DEVELOPMENT-GUIDE.md) から始めます。履歴への接続や実AI試験の方法は [接続・調査の手順](docs/OPERATIONS.md) を必要なときに参照してください。アプリのリポジトリは `matumaruex/omaenobizyutu`、通常の作業先は `codex/museum-preview` です。
 
 作品はDB側で随時追加・更新されます。GitHubの最新DB・同梱初期DB・稼働中のキャッシュで件数が異なる場合があるため、展示の履歴に記録されたDB版・作品数を確認してください。[作品データ](docs/COLLECTION.md)と[説明書の目次](docs/README.md)を参照できます。
 
