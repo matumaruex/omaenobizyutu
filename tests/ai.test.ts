@@ -680,3 +680,116 @@ it.each([
     expect(result.selections).toHaveLength(8);
   },
 );
+
+describe("semantic fallback for untagged feelings", () => {
+  it("samples the nearest 80 current works, keeps artist limits and excludes negated-only works", async () => {
+    vi.stubEnv("VOYAGE_API_KEY", "test-voyage");
+    vi.stubEnv("UPSTASH_REDIS_REST_URL", "https://redis.example");
+    vi.stubEnv("UPSTASH_REDIS_REST_TOKEN", "test-redis");
+    // Descending similarity in catalog order. Use distinct unit directions.
+    let offset = 0,
+      queries = 0;
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (url, init) => {
+        const b = JSON.parse(init.body);
+        if (String(url) === "https://redis.example") {
+          expect(b[0]).toBe("HMGET");
+          return Response.json({
+            result: b.slice(2).map(() => {
+              const v = Buffer.alloc(512 * 4);
+              v.writeFloatLE(1, 0);
+              v.writeFloatLE(++offset / 100, 4);
+              return v.toString("base64");
+            }),
+          });
+        }
+        if (String(url).startsWith("https://api.voyageai.com/")) {
+          queries++;
+          expect(b.input).toEqual(["退屈"]);
+          expect(b.input_type).toBe("query");
+          return Response.json({
+            data: [{ embedding: [1, ...Array(511).fill(0)] }],
+            usage: { total_tokens: 2 },
+          });
+        }
+        return response(
+          JSON.parse(b.messages.at(-1).content).availableTags
+            ? { tags: [], negatedTags: ["喜び"] }
+            : chosen(),
+        );
+      }),
+    );
+    const result = await selectWithAI("退屈");
+    const tr = result.verification.search!;
+    const eligible = seed.selection
+      .filter((w) => {
+        const tags = [...w.primary, ...w.secondary];
+        return !tags.length || tags.some((t) => t !== "喜び");
+      })
+      .slice(0, 80);
+    expect(queries).toBe(1);
+    expect(tr.semanticSearch).toEqual({
+      querySent: true,
+      queryTokens: 2,
+      poolSize: 80,
+    });
+    expect(tr.candidates).toHaveLength(24);
+    expect(
+      tr.candidates.every((w) => eligible.some((a) => a.id === w.id)),
+    ).toBe(true);
+    expect(
+      tr.candidates.every(
+        (w) => tr.candidates.filter((a) => a.artist === w.artist).length <= 2,
+      ),
+    ).toBe(true);
+  });
+  it("still exhibits eight works when Voyage is rate limited", async () => {
+    vi.stubEnv("VOYAGE_API_KEY", "test-voyage");
+    vi.stubEnv("UPSTASH_REDIS_REST_URL", "https://redis.example");
+    vi.stubEnv("UPSTASH_REDIS_REST_TOKEN", "test-redis");
+    const v = Buffer.alloc(2048);
+    v.writeFloatLE(1);
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (url, init) => {
+        const b = JSON.parse(init.body);
+        if (String(url) === "https://redis.example")
+          return Response.json({
+            result: b.slice(2).map(() => v.toString("base64")),
+          });
+        if (String(url).startsWith("https://api.voyageai.com/"))
+          return new Response(null, { status: 429 });
+        return response(
+          JSON.parse(b.messages.at(-1).content).availableTags
+            ? { tags: [], negatedTags: [] }
+            : chosen(),
+        );
+      }),
+    );
+    const r = await selectWithAI("退屈");
+    expect(r.verification.search?.semanticSearch).toEqual({
+      querySent: true,
+      queryTokens: null,
+      poolSize: 0,
+    });
+    expect(r.selections).toHaveLength(8);
+  });
+  it.each([
+    ["不安", ["不安"]],
+    ["近い感覚：まだわからない", []],
+  ])("does not send %s to Voyage", async (text, tags) => {
+    vi.stubEnv("VOYAGE_API_KEY", "test-voyage");
+    const mock = vi.fn(async (_url, init) =>
+      response(
+        JSON.parse(JSON.parse(init.body).messages.at(-1).content).availableTags
+          ? { tags, negatedTags: [] }
+          : chosen(),
+      ),
+    );
+    vi.stubGlobal("fetch", mock);
+    const r = await selectWithAI(text as string);
+    expect(mock).toHaveBeenCalledTimes(2);
+    expect(r.verification.search?.semanticSearch).toBeUndefined();
+  });
+});

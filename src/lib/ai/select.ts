@@ -8,6 +8,9 @@ import {
   profileForFeeling,
 } from "./tag-profile";
 import { retrieveByTags, type CandidateSampling } from "./tag-candidates";
+import { semanticPool } from "./semantic-search";
+import { CANDIDATE_COUNT } from "./candidates";
+import { UNKNOWN_FEELING_INPUT } from "../feeling-choices";
 import { getCatalog } from "../catalog/server";
 import type { Exhibition } from "../types";
 import {
@@ -180,12 +183,28 @@ export async function selectWithAI(
       ),
   );
   profile.value = profileForFeeling(text, profile.value);
-  const retrieval = retrieveByTags(
-    text,
-    profile.value,
-    catalog.selection,
-    sampling,
-  );
+  let pool = catalog.selection;
+  if (!profile.value.tags.length && text.trim() !== UNKNOWN_FEELING_INPUT) {
+    const semantic = await semanticPool(
+      text,
+      catalog,
+      profile.value.negatedTags,
+      signal,
+    );
+    search.semanticSearch = semantic.trace;
+    pool = semantic.pool ?? pool;
+  }
+  let retrieval = retrieveByTags(text, profile.value, pool, sampling);
+  if (pool !== catalog.selection && retrieval.chosen.length < CANDIDATE_COUNT) {
+    retrieval = retrieveByTags(
+      text,
+      profile.value,
+      catalog.selection,
+      sampling,
+    );
+  } else if (pool !== catalog.selection && search.semanticSearch) {
+    search.semanticSearch.poolSize = pool.length;
+  }
   const candidates = retrieval.chosen;
   if (candidates.length < EXHIBITION_SIZE)
     throw new SelectionFailure({
