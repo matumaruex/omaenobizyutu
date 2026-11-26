@@ -19,9 +19,11 @@
 
 MiMoの従量課金用APIキーはVercelのSecret `MIMO_API_KEY` に設定済みです。作品選定には実APIの料金がかかります。利用者の依頼に基づき、入力文・候補・選定結果・使用量をRedisへ試験履歴として保存します。[履歴の説明](HISTORY.md)を参照してください。新しい作業環境にキーがないだけで、Vercel側の再登録が必要になるわけではありません。
 
+Vercel ToolbarのPreview・Production両方の設定（`enablePreviewFeedback` / `enableProductionFeedback`）は鑑賞中の開発メニューを避けるためオフにする運用です。デプロイの認証保護とは独立しています。設定の実際の値は作業時に確認します。
+
 ## 接続先
 
-- リポジトリ：`matumaruex/omaenobizyutu`（非公開、旧名 `bijutsukan`）
+- リポジトリ：`matumaruex/omaenobizyutu`（公開リポジトリ、旧名 `bijutsukan`。アプリの認証範囲とは別）
 - Vercelプロジェクト：`bijutsukan`
 - Vercelチーム：`matumaruexs-projects`
 - 用途：スマホで確認するためのテスト用サイト（初回の自動配信はVercel上でproductionとして作成）
